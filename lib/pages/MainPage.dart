@@ -20,10 +20,6 @@ class _MainPageState extends State<MainPage> {
         title: Text('Задачи', style: TextStyle(color: Colors.white)),
         actions: [
           PopupMenuButton(
-              icon: Icon(
-                Icons.dehaze,
-                color: Colors.white,
-              ),
               itemBuilder: (context) => [
                     PopupMenuItem(child: Text('Скрыть завершенные')),
                     PopupMenuItem(child: Text('Удалить завершенные')),

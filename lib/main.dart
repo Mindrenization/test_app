@@ -9,12 +9,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        primaryIconTheme: IconThemeData(color: Colors.white),
         appBarTheme: AppBarTheme(
           color: Color.fromRGBO(98, 2, 238, 1),
         ),
         primaryColor: Color.fromRGBO(181, 201, 253, 1),
       ),
-      color: Color.fromRGBO(181, 201, 253, 1),
       home: MainPage(),
     );
   }
