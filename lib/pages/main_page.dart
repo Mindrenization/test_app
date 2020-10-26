@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'TaskPage.dart';
-import '../models/TaskModel.dart';
+import 'task_page.dart';
+import '../models/task_model.dart';
 
 class MainPage extends StatefulWidget {
   @override
