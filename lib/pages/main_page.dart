@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../models/task.dart';
 import '../widgets/task_tile.dart';
 import '../widgets/create_task.dart';
@@ -112,11 +113,19 @@ class _MainPageState extends State<MainPage> {
         color: Theme.of(context).primaryColor,
         child: tasksList.isEmpty
             ? Center(
-                child: Text(
-                'На данный момент задач нет',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-              ))
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset('assets/images/empty_tasks.svg'),
+                    Container(height: 20),
+                    Text(
+                      'На данный момент задач нет',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                    )
+                  ],
+                ),
+              )
             : ListView.builder(
                 itemCount:
                     isFiltered ? filteredTasksList.length : tasksList.length,
