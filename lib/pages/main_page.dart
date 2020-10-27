@@ -91,18 +91,134 @@ class _MainPageState extends State<MainPage> {
                         ],
                       ),
                     ),
-                    // PopupMenuItem(
-                    //   child: FlatButton(
-                    //     child: Text('Сначала новые'),
-                    //     onPressed: () {},
-                    //   ),
-                    // ),
-                    // PopupMenuItem(
-                    //   child: FlatButton(
-                    //     child: Text('Изменить тему'),
-                    //     onPressed: () {},
-                    //   ),
-                    // ),
+                    PopupMenuItem(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.graphic_eq,
+                            color: Colors.grey,
+                          ),
+                          FlatButton(
+                            child: Text(
+                              'Сначала новые',
+                              style: TextStyle(color: Colors.grey[700]),
+                            ),
+                            onPressed: () {},
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.brush,
+                            color: Colors.grey,
+                          ),
+                          FlatButton(
+                            child: Text(
+                              'Изменить тему',
+                              style: TextStyle(color: Colors.grey[700]),
+                            ),
+                            onPressed: () {
+                              showBottomSheet(
+                                context: context,
+                                builder: (context) => IntrinsicHeight(
+                                  child: Container(
+                                    padding: EdgeInsets.all(20),
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          'Выбор темы',
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                        Container(
+                                          height: 10,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  color:
+                                                      const Color(0xFF6202EE),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20)),
+                                              height: 30,
+                                              width: 70,
+                                              child: FlatButton(
+                                                  child: Text('Цвет',
+                                                      style: TextStyle(
+                                                          color: Colors
+                                                              .grey[200])),
+                                                  onPressed: null),
+                                            ),
+                                            Container(
+                                              width: 10,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  color:
+                                                      const Color(0xFF6202EE),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20)),
+                                              height: 30,
+                                              width: 70,
+                                              child: FlatButton(
+                                                  child: Text('Фото',
+                                                      style: TextStyle(
+                                                          color: Colors
+                                                              .grey[200])),
+                                                  onPressed: null),
+                                            ),
+                                          ],
+                                        ),
+                                        ButtonBar(
+                                          alignment: MainAxisAlignment.start,
+                                          children: [
+                                            Radio(
+                                                value: null,
+                                                groupValue: null,
+                                                onChanged: null),
+                                            Radio(
+                                                value: null,
+                                                groupValue: null,
+                                                onChanged: null),
+                                            Radio(
+                                                value: null,
+                                                groupValue: null,
+                                                onChanged: null),
+                                            Radio(
+                                                value: null,
+                                                groupValue: null,
+                                                onChanged: null),
+                                            Radio(
+                                                value: null,
+                                                groupValue: null,
+                                                onChanged: null),
+                                            Radio(
+                                                value: null,
+                                                groupValue: null,
+                                                onChanged: null),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ])
         ],
       ),
