@@ -13,9 +13,9 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   TextEditingController _controller = TextEditingController();
   List tasksList = [
-    Task('Задача 1', false, 0, 0),
-    Task('Задача 2', false, 2, 4),
-    Task('Задача 3', false, 1, 3),
+    Task(1, 'Задача 1', false, 0, 0),
+    Task(2, 'Задача 2', false, 2, 4),
+    Task(3, 'Задача 3', false, 1, 3),
   ];
   List filteredTasksList = [];
   bool isFiltered = false;
@@ -117,17 +117,33 @@ class _MainPageState extends State<MainPage> {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 30, color: Colors.grey[700]),
               ))
-            : ListView.builder(
-                itemCount:
-                    isFiltered ? filteredTasksList.length : tasksList.length,
-                itemBuilder: (context, index) {
-                  var task =
-                      isFiltered ? filteredTasksList[index] : tasksList[index];
-                  return TaskTile(task, () {
-                    setState(() => tasksList.removeAt(index));
-                  });
-                },
-              ),
+            : filteredTasksList.isEmpty && isFiltered
+                ? Center(
+                    child: Text(
+                    'У вас нет невыполненных задач',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                  ))
+                : ListView.builder(
+                    itemCount: isFiltered
+                        ? filteredTasksList.length
+                        : tasksList.length,
+                    itemBuilder: (context, index) {
+                      var task = isFiltered
+                          ? filteredTasksList[index]
+                          : tasksList[index];
+                      return TaskTile(task, () {
+                        setState(() {
+                          tasksList
+                              .removeWhere((element) => element.id == task.id);
+                          if (isFiltered) {
+                            filteredTasksList.removeWhere(
+                                (element) => element.id == task.id);
+                          }
+                        });
+                      });
+                    },
+                  ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.cyan[600],
@@ -138,8 +154,9 @@ class _MainPageState extends State<MainPage> {
             builder: (context) {
               return CreateTask(_controller, () {
                 var text = _controller.text;
+                var x = tasksList.isEmpty ? 1 : tasksList.last.id;
                 setState(
-                  () => tasksList.add(Task(text, false, 0, 0)),
+                  () => tasksList.add(Task(++x, text, false, 0, 0)),
                 );
                 Navigator.pop(context);
                 _controller.clear();
