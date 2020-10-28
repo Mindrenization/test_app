@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/task.dart';
 import '../widgets/task_tile.dart';
-import '../widgets/create_task.dart';
+import '../widgets/create_task_dialog.dart';
 
 // Список задач
-
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
@@ -22,15 +21,25 @@ class _MainPageState extends State<MainPage> {
 
   void _filterTasks() {
     if (!isFiltered) {
-      if (!tasksList.every((task) => task.isComplete == false)) {
+      if (tasksList.any((task) => task.isComplete)) {
         setState(() {
           filteredTasksList =
-              tasksList.where((task) => task.isComplete == false).toList();
+              tasksList.where((task) => !task.isComplete).toList();
           isFiltered = true;
         });
       }
     } else {
       setState(() => isFiltered = false);
+    }
+  }
+
+  void deleteCompletedTasks() {
+    for (var index = 0; index < tasksList.length; index++) {
+      if (tasksList[index].isComplete == true) {
+        setState(() {
+          tasksList.removeAt(index);
+        });
+      }
     }
   }
 
@@ -76,15 +85,7 @@ class _MainPageState extends State<MainPage> {
                               style: TextStyle(color: Colors.grey[700]),
                             ),
                             onPressed: () {
-                              for (var index = 0;
-                                  index < tasksList.length;
-                                  index++) {
-                                if (tasksList[index].isComplete == true) {
-                                  setState(() {
-                                    tasksList.removeAt(index);
-                                  });
-                                }
-                              }
+                              deleteCompletedTasks();
                             },
                           ),
                         ],
@@ -132,16 +133,18 @@ class _MainPageState extends State<MainPage> {
                       var task = isFiltered
                           ? filteredTasksList[index]
                           : tasksList[index];
-                      return TaskTile(task, () {
-                        setState(() {
-                          tasksList
-                              .removeWhere((element) => element.id == task.id);
-                          if (isFiltered) {
-                            filteredTasksList.removeWhere(
-                                (element) => element.id == task.id);
-                          }
-                        });
-                      });
+                      return TaskTile(
+                          task: task,
+                          delete: () {
+                            setState(() {
+                              tasksList.removeWhere(
+                                  (element) => element.id == task.id);
+                              if (isFiltered) {
+                                filteredTasksList.removeWhere(
+                                    (element) => element.id == task.id);
+                              }
+                            });
+                          });
                     },
                   ),
       ),
@@ -152,15 +155,18 @@ class _MainPageState extends State<MainPage> {
           showDialog(
             context: context,
             builder: (context) {
-              return CreateTask(_controller, () {
-                var text = _controller.text;
-                var x = tasksList.isEmpty ? 1 : tasksList.last.id;
-                setState(
-                  () => tasksList.add(Task(++x, text, false, 0, 0)),
-                );
-                Navigator.pop(context);
-                _controller.clear();
-              });
+              return CreateTaskDialog(
+                  controller: _controller,
+                  create: () {
+                    var text = _controller.text;
+                    var lastTaskId = tasksList.isEmpty ? 1 : tasksList.last.id;
+                    setState(
+                      () =>
+                          tasksList.add(Task(++lastTaskId, text, false, 0, 0)),
+                    );
+                    Navigator.pop(context);
+                    _controller.clear();
+                  });
             },
           );
         },

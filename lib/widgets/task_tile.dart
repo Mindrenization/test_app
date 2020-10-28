@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import '../pages/task_page.dart';
 
 // Карточка задачи в списке
-
 class TaskTile extends StatefulWidget {
   final task;
   final VoidCallback delete;
-  TaskTile(this.task, this.delete);
+  TaskTile({this.task, this.delete});
   @override
   _TaskTileState createState() => _TaskTileState();
 }

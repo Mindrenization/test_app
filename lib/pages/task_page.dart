@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/task.dart';
 
 // Страница конкретной задачи
-
 class TaskPage extends StatefulWidget {
   @override
   _TaskPageState createState() => _TaskPageState();
