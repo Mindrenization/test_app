@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../models/task.dart';
 import '../widgets/task_tile.dart';
 import '../widgets/create_task_dialog.dart';
-import '../widgets/color_theme.dart';
+import '../widgets/color_theme_dialog.dart';
 
 // Список задач
 class MainPage extends StatefulWidget {
@@ -12,6 +12,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  // Color currentColor = ColorThemeDialog.currentColor;
   TextEditingController _controller = TextEditingController();
   List tasksList = [
     Task(1, 'Задача 1', false, 0, 0),
@@ -36,9 +37,9 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  void deleteCompletedTasks() {
+  void _deleteCompletedTasks() {
     for (var index = 0; index < tasksList.length; index++) {
-      if (tasksList[index].isComplete == true) {
+      if (tasksList[index].isComplete) {
         setState(() {
           tasksList.removeAt(index);
         });
@@ -50,6 +51,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: ColorThemeDialog.currentColor,
         title: Text('Задачи', style: TextStyle(color: Colors.white)),
         actions: [
           PopupMenuButton(
@@ -88,7 +90,7 @@ class _MainPageState extends State<MainPage> {
                               style: TextStyle(color: Colors.grey[700]),
                             ),
                             onPressed: () {
-                              deleteCompletedTasks();
+                              _deleteCompletedTasks();
                             },
                           ),
                         ],
@@ -106,7 +108,10 @@ class _MainPageState extends State<MainPage> {
                               'Сначала новые',
                               style: TextStyle(color: Colors.grey[700]),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              print(ColorThemeDialog.currentColor);
+                              setState(() {});
+                            },
                           ),
                         ],
                       ),
@@ -126,7 +131,9 @@ class _MainPageState extends State<MainPage> {
                             onPressed: () {
                               showBottomSheet(
                                 context: context,
-                                builder: (context) => ColorsTheme(),
+                                builder: (context) => ColorThemeDialog(() {
+                                  setState(() {});
+                                }),
                               );
                             },
                           ),
@@ -174,7 +181,7 @@ class _MainPageState extends State<MainPage> {
                           : tasksList[index];
                       return TaskTile(
                           task: task,
-                          delete: () {
+                          onDelete: () {
                             setState(() {
                               tasksList.removeWhere(
                                   (element) => element.id == task.id);
@@ -196,7 +203,7 @@ class _MainPageState extends State<MainPage> {
             builder: (context) {
               return CreateTaskDialog(
                   controller: _controller,
-                  create: () {
+                  onCreate: () {
                     var text = _controller.text;
                     var lastTaskId = tasksList.isEmpty ? 1 : tasksList.last.id;
                     setState(

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 // Модал создания задачи
 class CreateTaskDialog extends StatelessWidget {
-  final controller;
-  final VoidCallback create;
-  CreateTaskDialog({this.controller, this.create});
+  final TextEditingController controller;
+  final VoidCallback onCreate;
+  CreateTaskDialog({this.controller, this.onCreate});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class CreateTaskDialog extends StatelessWidget {
                 'Создать',
                 style: TextStyle(fontSize: 18),
               ),
-              onPressed: create,
+              onPressed: onCreate,
             ),
           ],
         ),

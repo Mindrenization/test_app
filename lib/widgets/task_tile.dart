@@ -4,8 +4,8 @@ import '../pages/task_page.dart';
 // Карточка задачи в списке
 class TaskTile extends StatefulWidget {
   final task;
-  final VoidCallback delete;
-  TaskTile({this.task, this.delete});
+  final VoidCallback onDelete;
+  TaskTile({this.task, this.onDelete});
   @override
   _TaskTileState createState() => _TaskTileState();
 }
@@ -63,7 +63,7 @@ class _TaskTileState extends State<TaskTile> {
                     Icons.delete,
                     color: const Color(0xFF6202EE),
                   ),
-                  onPressed: widget.delete,
+                  onPressed: widget.onDelete,
                 ),
               ],
             ),
