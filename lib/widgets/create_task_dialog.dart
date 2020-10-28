@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
 // Модал создания задачи
-
-class CreateTask extends StatelessWidget {
+class CreateTaskDialog extends StatelessWidget {
   final controller;
   final VoidCallback create;
-  CreateTask(this.controller, this.create);
+  CreateTaskDialog({this.controller, this.create});
 
   @override
   Widget build(BuildContext context) {
