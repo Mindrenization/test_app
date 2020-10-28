@@ -1,18 +1,48 @@
 import 'package:flutter/material.dart';
-import 'task_page.dart';
 import '../models/task.dart';
+import '../widgets/task_tile.dart';
+import '../widgets/create_task_dialog.dart';
 
+// Список задач
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
+  TextEditingController _controller = TextEditingController();
   List tasksList = [
-    Task('Задача 1', false, 0, 0),
-    Task('Задача 2', false, 2, 4),
-    Task('Задача 3', false, 1, 3),
+    Task(1, 'Задача 1', false, 0, 0),
+    Task(2, 'Задача 2', false, 2, 4),
+    Task(3, 'Задача 3', false, 1, 3),
   ];
+  List filteredTasksList = [];
+  bool isFiltered = false;
+
+  void _filterTasks() {
+    if (!isFiltered) {
+      if (tasksList.any((task) => task.isComplete)) {
+        setState(() {
+          filteredTasksList =
+              tasksList.where((task) => !task.isComplete).toList();
+          isFiltered = true;
+        });
+      }
+    } else {
+      setState(() => isFiltered = false);
+    }
+  }
+
+  void _deleteCompletedTasks() {
+    for (var index = 0; index < tasksList.length; index++) {
+      if (tasksList[index].isComplete) {
+        setState(() {
+          tasksList.removeAt(index);
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,10 +51,58 @@ class _MainPageState extends State<MainPage> {
         actions: [
           PopupMenuButton(
               itemBuilder: (context) => [
-                    PopupMenuItem(child: Text('Скрыть завершенные')),
-                    PopupMenuItem(child: Text('Удалить завершенные')),
-                    PopupMenuItem(child: Text('Сначала новые')),
-                    PopupMenuItem(child: Text('Изменить тему')),
+                    PopupMenuItem(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.grey,
+                          ),
+                          FlatButton(
+                            child: Text(
+                              isFiltered
+                                  ? 'Показать завершенные'
+                                  : 'Скрыть завершенные',
+                              style: TextStyle(color: Colors.grey[700]),
+                            ),
+                            onPressed: () {
+                              _filterTasks();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.delete,
+                            color: Colors.grey,
+                          ),
+                          FlatButton(
+                            child: Text(
+                              'Удалить завершенные',
+                              style: TextStyle(color: Colors.grey[700]),
+                            ),
+                            onPressed: () {
+                              _deleteCompletedTasks();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    // PopupMenuItem(
+                    //   child: FlatButton(
+                    //     child: Text('Сначала новые'),
+                    //     onPressed: () {},
+                    //   ),
+                    // ),
+                    // PopupMenuItem(
+                    //   child: FlatButton(
+                    //     child: Text('Изменить тему'),
+                    //     onPressed: () {},
+                    //   ),
+                    // ),
                   ])
         ],
       ),
@@ -40,82 +118,58 @@ class _MainPageState extends State<MainPage> {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 30, color: Colors.grey[700]),
               ))
-            : ListView.builder(
-                itemCount: tasksList.length,
-                itemBuilder: (context, index) {
-                  var task = tasksList[index];
-                  return Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TaskPage(),
-                            settings: RouteSettings(
-                              arguments: task,
-                            ),
-                          ),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: task.isComplete,
-                                activeColor: Color.fromRGBO(98, 2, 238, 1),
-                                onChanged: (value) {
-                                  setState(() => task.isComplete = value);
-                                },
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    task.title,
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                  task.maxSteps == 0
-                                      ? Container()
-                                      : Text(
-                                          '${task.currentStep} из ${task.maxSteps}',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.grey[600]),
-                                        ),
-                                ],
-                              ),
-                              Spacer(
-                                flex: 1,
-                              ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Color.fromRGBO(98, 2, 238, 1),
-                                ),
-                                onPressed: () {
-                                  setState(() => tasksList.removeAt(index));
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 5,
-                      )
-                    ],
-                  );
-                },
-              ),
+            : filteredTasksList.isEmpty && isFiltered
+                ? Center(
+                    child: Text(
+                    'У вас нет невыполненных задач',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                  ))
+                : ListView.builder(
+                    itemCount: isFiltered
+                        ? filteredTasksList.length
+                        : tasksList.length,
+                    itemBuilder: (context, index) {
+                      var task = isFiltered
+                          ? filteredTasksList[index]
+                          : tasksList[index];
+                      return TaskTile(
+                          task: task,
+                          onDelete: () {
+                            setState(() {
+                              tasksList.removeWhere(
+                                  (element) => element.id == task.id);
+                              if (isFiltered) {
+                                filteredTasksList.removeWhere(
+                                    (element) => element.id == task.id);
+                              }
+                            });
+                          });
+                    },
+                  ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.cyan[600],
         child: Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return CreateTaskDialog(
+                  controller: _controller,
+                  onCreate: () {
+                    var text = _controller.text;
+                    var lastTaskId = tasksList.isEmpty ? 1 : tasksList.last.id;
+                    setState(
+                      () =>
+                          tasksList.add(Task(++lastTaskId, text, false, 0, 0)),
+                    );
+                    Navigator.pop(context);
+                    _controller.clear();
+                  });
+            },
+          );
+        },
       ),
     );
   }

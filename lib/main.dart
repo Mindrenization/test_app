@@ -11,9 +11,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryIconTheme: IconThemeData(color: Colors.white),
         appBarTheme: AppBarTheme(
-          color: Color.fromRGBO(98, 2, 238, 1),
+          color: const Color(0xFF6202EE),
         ),
-        primaryColor: Color.fromRGBO(181, 201, 253, 1),
+        primaryColor: const Color.fromRGBO(181, 201, 253, 1),
       ),
       home: MainPage(),
     );
