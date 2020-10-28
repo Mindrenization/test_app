@@ -33,9 +33,9 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  void deleteCompletedTasks() {
+  void _deleteCompletedTasks() {
     for (var index = 0; index < tasksList.length; index++) {
-      if (tasksList[index].isComplete == true) {
+      if (tasksList[index].isComplete) {
         setState(() {
           tasksList.removeAt(index);
         });
@@ -85,7 +85,7 @@ class _MainPageState extends State<MainPage> {
                               style: TextStyle(color: Colors.grey[700]),
                             ),
                             onPressed: () {
-                              deleteCompletedTasks();
+                              _deleteCompletedTasks();
                             },
                           ),
                         ],
@@ -135,7 +135,7 @@ class _MainPageState extends State<MainPage> {
                           : tasksList[index];
                       return TaskTile(
                           task: task,
-                          delete: () {
+                          onDelete: () {
                             setState(() {
                               tasksList.removeWhere(
                                   (element) => element.id == task.id);
@@ -157,7 +157,7 @@ class _MainPageState extends State<MainPage> {
             builder: (context) {
               return CreateTaskDialog(
                   controller: _controller,
-                  create: () {
+                  onCreate: () {
                     var text = _controller.text;
                     var lastTaskId = tasksList.isEmpty ? 1 : tasksList.last.id;
                     setState(
