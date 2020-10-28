@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../models/task.dart';
 import '../widgets/task_tile.dart';
 import '../widgets/create_task.dart';
+import '../widgets/color_theme.dart';
 
 // Список задач
 
@@ -14,10 +15,11 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   TextEditingController _controller = TextEditingController();
   List tasksList = [
-    Task('Задача 1', false, 0, 0),
-    Task('Задача 2', false, 2, 4),
-    Task('Задача 3', false, 1, 3),
+    Task(1, 'Задача 1', false, 0, 0),
+    Task(2, 'Задача 2', false, 2, 4),
+    Task(3, 'Задача 3', false, 1, 3),
   ];
+
   List filteredTasksList = [];
   bool isFiltered = false;
 
@@ -123,96 +125,7 @@ class _MainPageState extends State<MainPage> {
                             onPressed: () {
                               showBottomSheet(
                                 context: context,
-                                builder: (context) => IntrinsicHeight(
-                                  child: Container(
-                                    padding: EdgeInsets.all(20),
-                                    width: MediaQuery.of(context).size.width,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          height: 10,
-                                        ),
-                                        Text(
-                                          'Выбор темы',
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        Container(
-                                          height: 10,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                  color:
-                                                      const Color(0xFF6202EE),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                              height: 30,
-                                              width: 70,
-                                              child: FlatButton(
-                                                  child: Text('Цвет',
-                                                      style: TextStyle(
-                                                          color: Colors
-                                                              .grey[200])),
-                                                  onPressed: null),
-                                            ),
-                                            Container(
-                                              width: 10,
-                                            ),
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                  color:
-                                                      const Color(0xFF6202EE),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                              height: 30,
-                                              width: 70,
-                                              child: FlatButton(
-                                                  child: Text('Фото',
-                                                      style: TextStyle(
-                                                          color: Colors
-                                                              .grey[200])),
-                                                  onPressed: null),
-                                            ),
-                                          ],
-                                        ),
-                                        ButtonBar(
-                                          alignment: MainAxisAlignment.start,
-                                          children: [
-                                            Radio(
-                                                value: null,
-                                                groupValue: null,
-                                                onChanged: null),
-                                            Radio(
-                                                value: null,
-                                                groupValue: null,
-                                                onChanged: null),
-                                            Radio(
-                                                value: null,
-                                                groupValue: null,
-                                                onChanged: null),
-                                            Radio(
-                                                value: null,
-                                                groupValue: null,
-                                                onChanged: null),
-                                            Radio(
-                                                value: null,
-                                                groupValue: null,
-                                                onChanged: null),
-                                            Radio(
-                                                value: null,
-                                                groupValue: null,
-                                                onChanged: null),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                builder: (context) => ColorsTheme(),
                               );
                             },
                           ),
@@ -230,29 +143,46 @@ class _MainPageState extends State<MainPage> {
         child: tasksList.isEmpty
             ? Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset('assets/images/empty_tasks.svg'),
-                    Container(height: 20),
-                    Text(
-                      'На данный момент задач нет',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-                    )
-                  ],
-                ),
-              )
-            : ListView.builder(
-                itemCount:
-                    isFiltered ? filteredTasksList.length : tasksList.length,
-                itemBuilder: (context, index) {
-                  var task =
-                      isFiltered ? filteredTasksList[index] : tasksList[index];
-                  return TaskTile(task, () {
-                    setState(() => tasksList.removeAt(index));
-                  });
-                },
-              ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset('assets/images/empty_tasks.svg'),
+                  Container(
+                    height: 20,
+                  ),
+                  Text(
+                    'На данный момент задач нет',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                  ),
+                ],
+              ))
+            : filteredTasksList.isEmpty && isFiltered
+                ? Center(
+                    child: Text(
+                    'У вас нет невыполненных задач',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                  ))
+                : ListView.builder(
+                    itemCount: isFiltered
+                        ? filteredTasksList.length
+                        : tasksList.length,
+                    itemBuilder: (context, index) {
+                      var task = isFiltered
+                          ? filteredTasksList[index]
+                          : tasksList[index];
+                      return TaskTile(task, () {
+                        setState(() {
+                          tasksList
+                              .removeWhere((element) => element.id == task.id);
+                          if (isFiltered) {
+                            filteredTasksList.removeWhere(
+                                (element) => element.id == task.id);
+                          }
+                        });
+                      });
+                    },
+                  ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.cyan[600],
@@ -263,8 +193,9 @@ class _MainPageState extends State<MainPage> {
             builder: (context) {
               return CreateTask(_controller, () {
                 var text = _controller.text;
+                var x = tasksList.isEmpty ? 1 : tasksList.last.id;
                 setState(
-                  () => tasksList.add(Task(text, false, 0, 0)),
+                  () => tasksList.add(Task(++x, text, false, 0, 0)),
                 );
                 Navigator.pop(context);
                 _controller.clear();
