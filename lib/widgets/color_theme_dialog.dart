@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-enum ColorThemes { red, orange, yellow, green, blue, purple }
-
 class ColorThemeDialog extends StatefulWidget {
-  static Color currentColor;
+  static Color currentColor = Color(0xFF6202EE);
   final VoidCallback onChange;
   ColorThemeDialog(this.onChange);
 
@@ -12,43 +10,26 @@ class ColorThemeDialog extends StatefulWidget {
 }
 
 class _ColorThemeDialogState extends State<ColorThemeDialog> {
-  static ColorThemes color = ColorThemes.purple;
   void onTap(value) {
     setState(() {
-      color = value;
+      ColorThemeDialog.currentColor = value;
     });
-    switch (color) {
-      case ColorThemes.red:
-        {
-          ColorThemeDialog.currentColor = Colors.red;
-        }
-        break;
-      case ColorThemes.orange:
-        {
-          ColorThemeDialog.currentColor = Colors.orange;
-        }
-        break;
-      case ColorThemes.yellow:
-        {
-          ColorThemeDialog.currentColor = Colors.yellow;
-        }
-        break;
-      case ColorThemes.green:
-        {
-          ColorThemeDialog.currentColor = Colors.green;
-        }
-        break;
-      case ColorThemes.blue:
-        {
-          ColorThemeDialog.currentColor = Colors.blue;
-        }
-        break;
-      case ColorThemes.purple:
-        {
-          ColorThemeDialog.currentColor = Colors.purple;
-        }
-        break;
-    }
+  }
+
+  Widget radioTheme(Color color) {
+    return Container(
+      height: 15,
+      width: 15,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+      child: Radio(
+        activeColor: Colors.black,
+        value: color,
+        groupValue: ColorThemeDialog.currentColor,
+        onChanged: (value) {
+          onTap(value);
+        },
+      ),
+    );
   }
 
   @override
@@ -70,86 +51,31 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
             Container(
               height: 10,
             ),
-            // Row(
-            //   children: [
-            //     Container(
-            //       decoration: BoxDecoration(
-            //           color: const Color(0xFF6202EE),
-            //           borderRadius: BorderRadius.circular(20)),
-            //       height: 30,
-            //       width: 70,
-            //       child: FlatButton(
-            //           child: Text('Цвет',
-            //               style: TextStyle(color: Colors.grey[200])),
-            //           onPressed: null),
-            //     ),
-            //     Container(
-            //       width: 10,
-            //     ),
-            //     Container(
-            //       decoration: BoxDecoration(
-            //           color: const Color(0xFF6202EE),
-            //           borderRadius: BorderRadius.circular(20)),
-            //       height: 30,
-            //       width: 70,
-            //       child: FlatButton(
-            //           child: Text('Фото',
-            //               style: TextStyle(color: Colors.grey[200])),
-            //           onPressed: null),
-            //     ),
-            //   ],
-            // ),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Radio(
-                  activeColor: Colors.red,
-                  value: ColorThemes.red,
-                  groupValue: color,
-                  onChanged: (ColorThemes value) {
-                    onTap(value);
-                  },
+                radioTheme(Colors.red),
+                Container(
+                  width: 10,
                 ),
-                Radio(
-                  activeColor: Colors.orange,
-                  value: ColorThemes.orange,
-                  groupValue: color,
-                  onChanged: (ColorThemes value) {
-                    onTap(value);
-                  },
+                radioTheme(Colors.orange),
+                Container(
+                  width: 10,
                 ),
-                Radio(
-                  activeColor: Colors.yellow,
-                  value: ColorThemes.yellow,
-                  groupValue: color,
-                  onChanged: (ColorThemes value) {
-                    onTap(value);
-                  },
+                radioTheme(Colors.yellow),
+                Container(
+                  width: 10,
                 ),
-                Radio(
-                  activeColor: Colors.green,
-                  value: ColorThemes.green,
-                  groupValue: color,
-                  onChanged: (ColorThemes value) {
-                    onTap(value);
-                  },
+                radioTheme(Colors.green),
+                Container(
+                  width: 10,
                 ),
-                Radio(
-                  activeColor: Colors.blue,
-                  value: ColorThemes.blue,
-                  groupValue: color,
-                  onChanged: (ColorThemes value) {
-                    onTap(value);
-                  },
+                radioTheme(Colors.blue),
+                Container(
+                  width: 10,
                 ),
-                Radio(
-                  activeColor: Colors.purple,
-                  value: ColorThemes.purple,
-                  groupValue: color,
-                  onChanged: (ColorThemes value) {
-                    onTap(value);
-                  },
-                ),
+                radioTheme(Color(0xFF6202EE)),
+                IconButton(onPressed: widget.onChange, icon: Icon(Icons.check))
               ],
             )
           ],

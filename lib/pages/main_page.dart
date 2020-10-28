@@ -12,7 +12,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  // Color currentColor = ColorThemeDialog.currentColor;
   TextEditingController _controller = TextEditingController();
   List tasksList = [
     Task(1, 'Задача 1', false, 0, 0),
@@ -108,10 +107,7 @@ class _MainPageState extends State<MainPage> {
                               'Сначала новые',
                               style: TextStyle(color: Colors.grey[700]),
                             ),
-                            onPressed: () {
-                              print(ColorThemeDialog.currentColor);
-                              setState(() {});
-                            },
+                            onPressed: () {},
                           ),
                         ],
                       ),
