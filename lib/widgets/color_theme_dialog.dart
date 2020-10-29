@@ -4,7 +4,7 @@ class ColorThemeDialog extends StatefulWidget {
   static Color mainColor = const Color(0xFF6202EE);
   static Color backgroundColor = const Color.fromRGBO(181, 201, 253, 1);
   final VoidCallback onChange;
-  ColorThemeDialog(this.onChange);
+  ColorThemeDialog({this.onChange});
 
   @override
   _ColorThemeDialogState createState() => _ColorThemeDialogState();
@@ -54,7 +54,6 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
                   width: 10,
                 ),
                 radioTheme(const Color(0xFF6202EE)),
-                IconButton(onPressed: widget.onChange, icon: Icon(Icons.check))
               ],
             )
           ],
@@ -80,6 +79,7 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
         ColorThemeDialog.backgroundColor = Color.fromRGBO(181, 201, 253, 1);
       }
     });
+    widget.onChange();
   }
 
   Widget radioTheme(Color color) {
