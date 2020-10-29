@@ -66,7 +66,8 @@ class _MainPageState extends State<MainPage> {
                           onTap: () {
                             showBottomSheet(
                               context: context,
-                              builder: (context) => ColorThemeDialog(() {
+                              builder: (context) =>
+                                  ColorThemeDialog(onChange: () {
                                 setState(() {});
                               }),
                             );
