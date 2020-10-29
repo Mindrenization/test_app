@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ColorThemeDialog extends StatefulWidget {
-  static Color currentColor = Color(0xFF6202EE);
+  static Color mainColor = const Color(0xFF6202EE);
+  static Color backgroundColor = const Color.fromRGBO(181, 201, 253, 1);
   final VoidCallback onChange;
   ColorThemeDialog(this.onChange);
 
@@ -12,7 +13,20 @@ class ColorThemeDialog extends StatefulWidget {
 class _ColorThemeDialogState extends State<ColorThemeDialog> {
   void onTap(value) {
     setState(() {
-      ColorThemeDialog.currentColor = value;
+      ColorThemeDialog.mainColor = value;
+      if (value == Colors.red) {
+        ColorThemeDialog.backgroundColor = Colors.red[100];
+      } else if (value == Colors.orange) {
+        ColorThemeDialog.backgroundColor = Colors.orange[100];
+      } else if (value == Colors.yellow) {
+        ColorThemeDialog.backgroundColor = Colors.yellow[100];
+      } else if (value == Colors.green) {
+        ColorThemeDialog.backgroundColor = Colors.green[100];
+      } else if (value == Colors.blue) {
+        ColorThemeDialog.backgroundColor = Colors.blue[100];
+      } else if (value == const Color(0xFF6202EE)) {
+        ColorThemeDialog.backgroundColor = Color.fromRGBO(181, 201, 253, 1);
+      }
     });
   }
 
@@ -24,7 +38,7 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
       child: Radio(
         activeColor: Colors.black,
         value: color,
-        groupValue: ColorThemeDialog.currentColor,
+        groupValue: ColorThemeDialog.mainColor,
         onChanged: (value) {
           onTap(value);
         },
@@ -74,7 +88,7 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
                 Container(
                   width: 10,
                 ),
-                radioTheme(Color(0xFF6202EE)),
+                radioTheme(const Color(0xFF6202EE)),
                 IconButton(onPressed: widget.onChange, icon: Icon(Icons.check))
               ],
             )

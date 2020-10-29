@@ -50,90 +50,107 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: ColorThemeDialog.currentColor,
+        backgroundColor: ColorThemeDialog.mainColor,
         title: Text('Задачи', style: TextStyle(color: Colors.white)),
         actions: [
           PopupMenuButton(
               itemBuilder: (context) => [
                     PopupMenuItem(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.grey,
-                          ),
-                          FlatButton(
-                            child: Text(
+                      child: GestureDetector(
+                        onTap: () {
+                          _filterTasks();
+                          Navigator.pop(context);
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: Colors.grey,
+                            ),
+                            Container(
+                              width: 15,
+                            ),
+                            Text(
                               isFiltered
                                   ? 'Показать завершенные'
                                   : 'Скрыть завершенные',
                               style: TextStyle(color: Colors.grey[700]),
                             ),
-                            onPressed: () {
-                              _filterTasks();
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     PopupMenuItem(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.delete,
-                            color: Colors.grey,
-                          ),
-                          FlatButton(
-                            child: Text(
+                      child: GestureDetector(
+                        onTap: () {
+                          _deleteCompletedTasks();
+                          Navigator.pop(context);
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.delete,
+                              color: Colors.grey,
+                            ),
+                            Container(
+                              width: 15,
+                            ),
+                            Text(
                               'Удалить завершенные',
                               style: TextStyle(color: Colors.grey[700]),
                             ),
-                            onPressed: () {
-                              _deleteCompletedTasks();
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     PopupMenuItem(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.graphic_eq,
-                            color: Colors.grey,
-                          ),
-                          FlatButton(
-                            child: Text(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.graphic_eq,
+                              color: Colors.grey,
+                            ),
+                            Container(
+                              width: 15,
+                            ),
+                            Text(
                               'Сначала новые',
                               style: TextStyle(color: Colors.grey[700]),
                             ),
-                            onPressed: () {},
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     PopupMenuItem(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.brush,
-                            color: Colors.grey,
-                          ),
-                          FlatButton(
-                            child: Text(
+                      child: GestureDetector(
+                        onTap: () {
+                          showBottomSheet(
+                            context: context,
+                            builder: (context) => ColorThemeDialog(() {
+                              setState(() {});
+                            }),
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.brush,
+                              color: Colors.grey,
+                            ),
+                            Container(
+                              width: 15,
+                            ),
+                            Text(
                               'Изменить тему',
                               style: TextStyle(color: Colors.grey[700]),
                             ),
-                            onPressed: () {
-                              showBottomSheet(
-                                context: context,
-                                builder: (context) => ColorThemeDialog(() {
-                                  setState(() {});
-                                }),
-                              );
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ])
@@ -143,23 +160,24 @@ class _MainPageState extends State<MainPage> {
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        color: Theme.of(context).primaryColor,
+        color: ColorThemeDialog.backgroundColor,
         child: tasksList.isEmpty
             ? Center(
                 child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset('assets/images/empty_tasks.svg'),
-                  Container(
-                    height: 20,
-                  ),
-                  Text(
-                    'На данный момент задач нет',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-                  ),
-                ],
-              ))
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset('assets/images/empty_tasks.svg'),
+                    Container(
+                      height: 20,
+                    ),
+                    Text(
+                      'На данный момент задач нет',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                    ),
+                  ],
+                ),
+              )
             : filteredTasksList.isEmpty && isFiltered
                 ? Center(
                     child: Text(
