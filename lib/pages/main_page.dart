@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:test_app/models/task.dart';
 import 'package:test_app/widgets/task_tile.dart';
+import 'package:test_app/widgets/popup_button.dart';
 import 'package:test_app/widgets/create_task_dialog.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
 
@@ -32,49 +33,48 @@ class _MainPageState extends State<MainPage> {
           PopupMenuButton(
               itemBuilder: (context) => [
                     PopupMenuItem(
-                      child: GestureDetector(
-                          onTap: () {
-                            _filterTasks();
-                            Navigator.pop(context);
-                          },
-                          child: _popupButton(
-                              isFiltered
-                                  ? 'Показать завершенные'
-                                  : 'Скрыть завершенные',
-                              Icons.check_circle)),
-                    ),
-                    PopupMenuItem(
-                      child: GestureDetector(
+                      child: PopupButton(
+                        text: isFiltered
+                            ? 'Показать завершенные'
+                            : 'Скрыть завершенные',
+                        icon: Icons.check_circle,
                         onTap: () {
-                          _deleteCompletedTasks();
+                          _filterTasks();
                           Navigator.pop(context);
                         },
-                        child:
-                            _popupButton('Удалить завершенные', Icons.delete),
                       ),
                     ),
                     PopupMenuItem(
-                      child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child:
-                              _popupButton('Сначала новые', Icons.graphic_eq)),
-                    ),
+                        child: PopupButton(
+                      text: 'Удалить завершенные',
+                      icon: Icons.delete,
+                      onTap: () {
+                        _deleteCompletedTasks();
+                        Navigator.pop(context);
+                      },
+                    )),
                     PopupMenuItem(
-                      child: GestureDetector(
-                          onTap: () {
-                            showBottomSheet(
-                              context: context,
-                              builder: (context) =>
-                                  ColorThemeDialog(onChange: () {
-                                setState(() {});
-                              }),
-                            );
-                            Navigator.pop(context);
-                          },
-                          child: _popupButton('Изменить тему', Icons.brush)),
-                    ),
+                        child: PopupButton(
+                      text: 'Сначала новые',
+                      icon: Icons.graphic_eq,
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    )),
+                    PopupMenuItem(
+                        child: PopupButton(
+                      text: 'Изменить тему',
+                      icon: Icons.brush,
+                      onTap: () {
+                        showBottomSheet(
+                          context: context,
+                          builder: (context) => ColorThemeDialog(onChange: () {
+                            setState(() {});
+                          }),
+                        );
+                        Navigator.pop(context);
+                      },
+                    )),
                   ])
         ],
       ),
@@ -172,23 +172,5 @@ class _MainPageState extends State<MainPage> {
 
   void _deleteCompletedTasks() {
     setState(() => tasksList.removeWhere((task) => task.isComplete));
-  }
-
-  Widget _popupButton(text, icon) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          color: Colors.grey,
-        ),
-        Container(
-          width: 15,
-        ),
-        Text(
-          text,
-          style: TextStyle(color: Colors.grey[700]),
-        ),
-      ],
-    );
   }
 }
