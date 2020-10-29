@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../pages/task_page.dart';
-import '../widgets/color_theme_dialog.dart';
+import 'package:test_app/pages/task_page.dart';
+import 'package:test_app/widgets/color_theme_dialog.dart';
 
 // Карточка задачи в списке
 class TaskTile extends StatefulWidget {
@@ -20,7 +20,11 @@ class _TaskTileState extends State<TaskTile> {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TaskPage(),
+              builder: (context) => TaskPage(
+                () {
+                  setState(() {});
+                },
+              ),
               settings: RouteSettings(
                 arguments: widget.task,
               ),

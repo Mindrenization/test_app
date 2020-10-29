@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../models/task.dart';
-import '../widgets/task_tile.dart';
-import '../widgets/create_task_dialog.dart';
-import '../widgets/color_theme_dialog.dart';
+import 'package:test_app/models/task.dart';
+import 'package:test_app/widgets/task_tile.dart';
+import 'package:test_app/widgets/create_task_dialog.dart';
+import 'package:test_app/widgets/color_theme_dialog.dart';
 
 // Список задач
 class MainPage extends StatefulWidget {
@@ -15,36 +15,12 @@ class _MainPageState extends State<MainPage> {
   TextEditingController _controller = TextEditingController();
   List tasksList = [
     Task(1, 'Задача 1', false, 0, 0),
-    Task(2, 'Задача 2', false, 2, 4),
-    Task(3, 'Задача 3', false, 1, 3),
+    Task(2, 'Задача 2', false, 0, 0),
+    Task(3, 'Задача 3', false, 0, 0),
   ];
-
+  static const String emptyTaskListImage = 'assets/images/empty_tasks.svg';
   List filteredTasksList = [];
   bool isFiltered = false;
-
-  void _filterTasks() {
-    if (!isFiltered) {
-      if (tasksList.any((task) => task.isComplete)) {
-        setState(() {
-          filteredTasksList =
-              tasksList.where((task) => !task.isComplete).toList();
-          isFiltered = true;
-        });
-      }
-    } else {
-      setState(() => isFiltered = false);
-    }
-  }
-
-  void _deleteCompletedTasks() {
-    for (var index = 0; index < tasksList.length; index++) {
-      if (tasksList[index].isComplete) {
-        setState(() {
-          tasksList.removeAt(index);
-        });
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,28 +33,15 @@ class _MainPageState extends State<MainPage> {
               itemBuilder: (context) => [
                     PopupMenuItem(
                       child: GestureDetector(
-                        onTap: () {
-                          _filterTasks();
-                          Navigator.pop(context);
-                        },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              color: Colors.grey,
-                            ),
-                            Container(
-                              width: 15,
-                            ),
-                            Text(
+                          onTap: () {
+                            _filterTasks();
+                            Navigator.pop(context);
+                          },
+                          child: _popupButton(
                               isFiltered
                                   ? 'Показать завершенные'
                                   : 'Скрыть завершенные',
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                          ],
-                        ),
-                      ),
+                              Icons.check_circle)),
                     ),
                     PopupMenuItem(
                       child: GestureDetector(
@@ -86,72 +49,30 @@ class _MainPageState extends State<MainPage> {
                           _deleteCompletedTasks();
                           Navigator.pop(context);
                         },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.delete,
-                              color: Colors.grey,
-                            ),
-                            Container(
-                              width: 15,
-                            ),
-                            Text(
-                              'Удалить завершенные',
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                          ],
-                        ),
+                        child:
+                            _popupButton('Удалить завершенные', Icons.delete),
                       ),
                     ),
                     PopupMenuItem(
                       child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.graphic_eq,
-                              color: Colors.grey,
-                            ),
-                            Container(
-                              width: 15,
-                            ),
-                            Text(
-                              'Сначала новые',
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                          ],
-                        ),
-                      ),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child:
+                              _popupButton('Сначала новые', Icons.graphic_eq)),
                     ),
                     PopupMenuItem(
                       child: GestureDetector(
-                        onTap: () {
-                          showBottomSheet(
-                            context: context,
-                            builder: (context) => ColorThemeDialog(() {
-                              setState(() {});
-                            }),
-                          );
-                          Navigator.pop(context);
-                        },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.brush,
-                              color: Colors.grey,
-                            ),
-                            Container(
-                              width: 15,
-                            ),
-                            Text(
-                              'Изменить тему',
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                          ],
-                        ),
-                      ),
+                          onTap: () {
+                            showBottomSheet(
+                              context: context,
+                              builder: (context) => ColorThemeDialog(() {
+                                setState(() {});
+                              }),
+                            );
+                            Navigator.pop(context);
+                          },
+                          child: _popupButton('Изменить тему', Icons.brush)),
                     ),
                   ])
         ],
@@ -166,7 +87,7 @@ class _MainPageState extends State<MainPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset('assets/images/empty_tasks.svg'),
+                    SvgPicture.asset(emptyTaskListImage),
                     Container(
                       height: 20,
                     ),
@@ -219,7 +140,7 @@ class _MainPageState extends State<MainPage> {
                   controller: _controller,
                   onCreate: () {
                     var text = _controller.text;
-                    var lastTaskId = tasksList.isEmpty ? 1 : tasksList.last.id;
+                    var lastTaskId = tasksList.isEmpty ? 0 : tasksList.last.id;
                     setState(
                       () =>
                           tasksList.add(Task(++lastTaskId, text, false, 0, 0)),
@@ -231,6 +152,42 @@ class _MainPageState extends State<MainPage> {
           );
         },
       ),
+    );
+  }
+
+  void _filterTasks() {
+    if (!isFiltered) {
+      if (tasksList.any((task) => task.isComplete)) {
+        setState(() {
+          filteredTasksList =
+              tasksList.where((task) => !task.isComplete).toList();
+          isFiltered = true;
+        });
+      }
+    } else {
+      setState(() => isFiltered = false);
+    }
+  }
+
+  void _deleteCompletedTasks() {
+    setState(() => tasksList.removeWhere((task) => task.isComplete));
+  }
+
+  Widget _popupButton(text, icon) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: Colors.grey,
+        ),
+        Container(
+          width: 15,
+        ),
+        Text(
+          text,
+          style: TextStyle(color: Colors.grey[700]),
+        ),
+      ],
     );
   }
 }

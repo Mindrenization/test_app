@@ -1,9 +1,12 @@
+import 'package:test_app/models/task_step.dart';
+
 class Task {
   final int id;
-  final String title;
+  String title;
   bool isComplete;
-  final int currentStep;
-  final int maxSteps;
+  int currentStep;
+  int maxSteps;
+  List<TaskStep> steps = [];
 
   Task(this.id, this.title, this.isComplete, this.currentStep, this.maxSteps);
 }
