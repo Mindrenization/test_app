@@ -11,41 +11,6 @@ class ColorThemeDialog extends StatefulWidget {
 }
 
 class _ColorThemeDialogState extends State<ColorThemeDialog> {
-  void onTap(value) {
-    setState(() {
-      ColorThemeDialog.mainColor = value;
-      if (value == Colors.red) {
-        ColorThemeDialog.backgroundColor = Colors.red[100];
-      } else if (value == Colors.orange) {
-        ColorThemeDialog.backgroundColor = Colors.orange[100];
-      } else if (value == Colors.yellow) {
-        ColorThemeDialog.backgroundColor = Colors.yellow[100];
-      } else if (value == Colors.green) {
-        ColorThemeDialog.backgroundColor = Colors.green[100];
-      } else if (value == Colors.blue) {
-        ColorThemeDialog.backgroundColor = Colors.blue[100];
-      } else if (value == const Color(0xFF6202EE)) {
-        ColorThemeDialog.backgroundColor = Color.fromRGBO(181, 201, 253, 1);
-      }
-    });
-  }
-
-  Widget radioTheme(Color color) {
-    return Container(
-      height: 15,
-      width: 15,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-      child: Radio(
-        activeColor: Colors.black,
-        value: color,
-        groupValue: ColorThemeDialog.mainColor,
-        onChanged: (value) {
-          onTap(value);
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
@@ -94,6 +59,41 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  void _onTap(value) {
+    setState(() {
+      ColorThemeDialog.mainColor = value;
+      if (value == Colors.red) {
+        ColorThemeDialog.backgroundColor = Colors.red[100];
+      } else if (value == Colors.orange) {
+        ColorThemeDialog.backgroundColor = Colors.orange[100];
+      } else if (value == Colors.yellow) {
+        ColorThemeDialog.backgroundColor = Colors.yellow[100];
+      } else if (value == Colors.green) {
+        ColorThemeDialog.backgroundColor = Colors.green[100];
+      } else if (value == Colors.blue) {
+        ColorThemeDialog.backgroundColor = Colors.blue[100];
+      } else if (value == const Color(0xFF6202EE)) {
+        ColorThemeDialog.backgroundColor = Color.fromRGBO(181, 201, 253, 1);
+      }
+    });
+  }
+
+  Widget radioTheme(Color color) {
+    return Container(
+      height: 15,
+      width: 15,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+      child: Radio(
+        activeColor: Colors.black,
+        value: color,
+        groupValue: ColorThemeDialog.mainColor,
+        onChanged: (value) {
+          _onTap(value);
+        },
       ),
     );
   }
