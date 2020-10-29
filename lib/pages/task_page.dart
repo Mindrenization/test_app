@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/task.dart';
+import 'package:test_app/models/task.dart';
 
 // Страница конкретной задачи
 class TaskPage extends StatefulWidget {

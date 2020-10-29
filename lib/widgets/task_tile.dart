@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../pages/task_page.dart';
+import 'package:test_app/pages/task_page.dart';
+import 'package:test_app/widgets/color_theme_dialog.dart';
 
 // Карточка задачи в списке
 class TaskTile extends StatefulWidget {
@@ -61,7 +62,7 @@ class _TaskTileState extends State<TaskTile> {
                 IconButton(
                   icon: Icon(
                     Icons.delete,
-                    color: const Color(0xFF6202EE),
+                    color: ColorThemeDialog.mainColor,
                   ),
                   onPressed: widget.onDelete,
                 ),

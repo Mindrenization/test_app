@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/task.dart';
-import '../widgets/task_tile.dart';
-import '../widgets/create_task_dialog.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:test_app/models/task.dart';
+import 'package:test_app/widgets/task_tile.dart';
+import 'package:test_app/widgets/popup_button.dart';
+import 'package:test_app/widgets/create_task_dialog.dart';
+import 'package:test_app/widgets/color_theme_dialog.dart';
 
 // Список задач
 class MainPage extends StatefulWidget {
@@ -13,96 +16,65 @@ class _MainPageState extends State<MainPage> {
   TextEditingController _controller = TextEditingController();
   List tasksList = [
     Task(1, 'Задача 1', false, 0, 0),
-    Task(2, 'Задача 2', false, 2, 4),
-    Task(3, 'Задача 3', false, 1, 3),
+    Task(2, 'Задача 2', false, 0, 0),
+    Task(3, 'Задача 3', false, 0, 0),
   ];
+  static const String emptyTaskListImage = 'assets/images/empty_tasks.svg';
   List filteredTasksList = [];
   bool isFiltered = false;
-
-  void _filterTasks() {
-    if (!isFiltered) {
-      if (tasksList.any((task) => task.isComplete)) {
-        setState(() {
-          filteredTasksList =
-              tasksList.where((task) => !task.isComplete).toList();
-          isFiltered = true;
-        });
-      }
-    } else {
-      setState(() => isFiltered = false);
-    }
-  }
-
-  void _deleteCompletedTasks() {
-    for (var index = 0; index < tasksList.length; index++) {
-      if (tasksList[index].isComplete) {
-        setState(() {
-          tasksList.removeAt(index);
-        });
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: ColorThemeDialog.mainColor,
         title: Text('Задачи', style: TextStyle(color: Colors.white)),
         actions: [
           PopupMenuButton(
               itemBuilder: (context) => [
                     PopupMenuItem(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.grey,
-                          ),
-                          FlatButton(
-                            child: Text(
-                              isFiltered
-                                  ? 'Показать завершенные'
-                                  : 'Скрыть завершенные',
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                            onPressed: () {
-                              _filterTasks();
-                            },
-                          ),
-                        ],
+                      child: PopupButton(
+                        text: isFiltered
+                            ? 'Показать завершенные'
+                            : 'Скрыть завершенные',
+                        icon: Icons.check_circle,
+                        onTap: () {
+                          _filterTasks();
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
                     PopupMenuItem(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.delete,
-                            color: Colors.grey,
-                          ),
-                          FlatButton(
-                            child: Text(
-                              'Удалить завершенные',
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                            onPressed: () {
-                              _deleteCompletedTasks();
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    // PopupMenuItem(
-                    //   child: FlatButton(
-                    //     child: Text('Сначала новые'),
-                    //     onPressed: () {},
-                    //   ),
-                    // ),
-                    // PopupMenuItem(
-                    //   child: FlatButton(
-                    //     child: Text('Изменить тему'),
-                    //     onPressed: () {},
-                    //   ),
-                    // ),
+                        child: PopupButton(
+                      text: 'Удалить завершенные',
+                      icon: Icons.delete,
+                      onTap: () {
+                        _deleteCompletedTasks();
+                        Navigator.pop(context);
+                      },
+                    )),
+                    PopupMenuItem(
+                        child: PopupButton(
+                      text: 'Сначала новые',
+                      icon: Icons.graphic_eq,
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    )),
+                    PopupMenuItem(
+                        child: PopupButton(
+                      text: 'Изменить тему',
+                      icon: Icons.brush,
+                      onTap: () {
+                        showBottomSheet(
+                          context: context,
+                          builder: (context) => ColorThemeDialog(onChange: () {
+                            setState(() {});
+                          }),
+                        );
+                        Navigator.pop(context);
+                      },
+                    )),
                   ])
         ],
       ),
@@ -110,14 +82,24 @@ class _MainPageState extends State<MainPage> {
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        color: Theme.of(context).primaryColor,
+        color: ColorThemeDialog.backgroundColor,
         child: tasksList.isEmpty
             ? Center(
-                child: Text(
-                'На данный момент задач нет',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-              ))
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(emptyTaskListImage),
+                    Container(
+                      height: 20,
+                    ),
+                    Text(
+                      'На данный момент задач нет',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                    ),
+                  ],
+                ),
+              )
             : filteredTasksList.isEmpty && isFiltered
                 ? Center(
                     child: Text(
@@ -159,7 +141,7 @@ class _MainPageState extends State<MainPage> {
                   controller: _controller,
                   onCreate: () {
                     var text = _controller.text;
-                    var lastTaskId = tasksList.isEmpty ? 1 : tasksList.last.id;
+                    var lastTaskId = tasksList.isEmpty ? 0 : tasksList.last.id;
                     setState(
                       () =>
                           tasksList.add(Task(++lastTaskId, text, false, 0, 0)),
@@ -172,5 +154,23 @@ class _MainPageState extends State<MainPage> {
         },
       ),
     );
+  }
+
+  void _filterTasks() {
+    if (!isFiltered) {
+      if (tasksList.any((task) => task.isComplete)) {
+        setState(() {
+          filteredTasksList =
+              tasksList.where((task) => !task.isComplete).toList();
+          isFiltered = true;
+        });
+      }
+    } else {
+      setState(() => isFiltered = false);
+    }
+  }
+
+  void _deleteCompletedTasks() {
+    setState(() => tasksList.removeWhere((task) => task.isComplete));
   }
 }
