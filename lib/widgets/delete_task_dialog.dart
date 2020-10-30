@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Кнопка с иконкой для popup меню
+// Модал удаления задачи
 class DeleteTaskDialog extends StatefulWidget {
   final task;
   final VoidCallback onDelete;

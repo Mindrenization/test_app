@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Кнопка с иконкой для popup меню
+// Модал изменения названия задачи
 class ChangeTaskTitleDialog extends StatefulWidget {
   final task;
   final VoidCallback onRefresh;

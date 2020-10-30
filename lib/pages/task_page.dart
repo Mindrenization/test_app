@@ -206,7 +206,7 @@ class _TaskPageState extends State<TaskPage> {
         Expanded(
           child: Text(
             task.steps[index].title,
-            maxLines: 5,
+            maxLines: null,
           ),
         ),
         Padding(
@@ -220,9 +220,13 @@ class _TaskPageState extends State<TaskPage> {
               setState(() {
                 widget.onRefresh();
                 task.maxSteps--;
-                task.steps[index].isComplete ? task.currentStep-- : null;
+                if (task.steps[index].isComplete) {
+                  task.currentStep--;
+                }
                 task.steps.removeAt(index);
-                task.steps.isEmpty ? isText = false : null;
+                if (task.steps.isEmpty) {
+                  isText = false;
+                }
               });
             },
           ),

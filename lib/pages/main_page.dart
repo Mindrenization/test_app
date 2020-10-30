@@ -19,7 +19,7 @@ class _MainPageState extends State<MainPage> {
     Task(3, 'Задача 3', false, 0, 0, ''),
   ];
   static const String emptyTaskListImage = 'assets/images/empty_tasks.svg';
-  List filteredTasksList = [];
+  List filteredTaskList = [];
   bool isFiltered = false;
 
   @override
@@ -97,7 +97,7 @@ class _MainPageState extends State<MainPage> {
                   ],
                 ),
               )
-            : filteredTasksList.isEmpty && isFiltered
+            : filteredTaskList.isEmpty && isFiltered
                 ? Center(
                     child: Text(
                     'У вас нет невыполненных задач',
@@ -106,23 +106,29 @@ class _MainPageState extends State<MainPage> {
                   ))
                 : ListView.builder(
                     itemCount:
-                        isFiltered ? filteredTasksList.length : taskList.length,
+                        isFiltered ? filteredTaskList.length : taskList.length,
                     itemBuilder: (context, index) {
                       var task = isFiltered
-                          ? filteredTasksList[index]
+                          ? filteredTaskList[index]
                           : taskList[index];
-                      return TaskTile(
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 5),
+                        child: TaskTile(
                           task: task,
                           onDelete: () {
-                            setState(() {
-                              taskList.removeWhere(
-                                  (element) => element.id == task.id);
-                              if (isFiltered) {
-                                filteredTasksList.removeWhere(
+                            setState(
+                              () {
+                                taskList.removeWhere(
                                     (element) => element.id == task.id);
-                              }
-                            });
-                          });
+                                if (isFiltered) {
+                                  filteredTaskList.removeWhere(
+                                      (element) => element.id == task.id);
+                                }
+                              },
+                            );
+                          },
+                        ),
+                      );
                     },
                   ),
       ),
@@ -149,7 +155,7 @@ class _MainPageState extends State<MainPage> {
     if (!isFiltered) {
       if (taskList.any((task) => task.isComplete)) {
         setState(() {
-          filteredTasksList =
+          filteredTaskList =
               taskList.where((task) => !task.isComplete).toList();
           isFiltered = true;
         });
