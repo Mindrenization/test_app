@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/models/task.dart';
 
-// Модал создания задачи
-class CreateTaskDialog extends StatefulWidget {
-  @override
-  _CreateTaskDialogState createState() => _CreateTaskDialogState();
-  final List<Task> tasksList;
+// Кнопка с иконкой для popup меню
+class ChangeTaskTitleDialog extends StatefulWidget {
+  final task;
   final VoidCallback onRefresh;
-  CreateTaskDialog({this.tasksList, this.onRefresh});
+  ChangeTaskTitleDialog({this.task, this.onRefresh});
+  @override
+  _ChangeTaskTitleDialogState createState() => _ChangeTaskTitleDialogState();
 }
 
-class _CreateTaskDialogState extends State<CreateTaskDialog> {
+class _ChangeTaskTitleDialogState extends State<ChangeTaskTitleDialog> {
   final TextEditingController _titleController = TextEditingController();
 
   @override
@@ -18,7 +17,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
     return SimpleDialog(
       contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       title: Text(
-        'Создать задачу',
+        'Редактирование',
         style: TextStyle(fontSize: 16),
       ),
       children: [
@@ -30,7 +29,10 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
             autofocus: true,
             controller: _titleController,
             decoration: InputDecoration(
-                hintText: 'Введите название задачи', isDense: true),
+                labelText: 'Введите новое название задачи',
+                labelStyle: TextStyle(color: Colors.grey[700]),
+                hintText: widget.task.title,
+                isDense: true),
           ),
         ),
         Container(
@@ -50,16 +52,13 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
             ),
             FlatButton(
               child: Text(
-                'Создать',
+                'Выбрать',
                 style: TextStyle(fontSize: 18),
               ),
               onPressed: () {
-                var lastTaskId =
-                    widget.tasksList.isEmpty ? 0 : widget.tasksList.last.id;
-                setState(
-                  () => widget.tasksList.add(Task(
-                      ++lastTaskId, _titleController.text, false, 0, 0, '')),
-                );
+                setState(() {
+                  widget.task.title = _titleController.text;
+                });
                 widget.onRefresh();
                 Navigator.pop(context);
               },

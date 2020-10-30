@@ -13,8 +13,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  TextEditingController _controller = TextEditingController();
-  List tasksList = [
+  List<Task> taskList = [
     Task(1, 'Задача 1', false, 0, 0, ''),
     Task(2, 'Задача 2', false, 0, 0, ''),
     Task(3, 'Задача 3', false, 0, 0, ''),
@@ -81,7 +80,7 @@ class _MainPageState extends State<MainPage> {
       ),
       body: Container(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: tasksList.isEmpty
+        child: taskList.isEmpty
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -106,18 +105,17 @@ class _MainPageState extends State<MainPage> {
                     style: TextStyle(fontSize: 30, color: Colors.grey[700]),
                   ))
                 : ListView.builder(
-                    itemCount: isFiltered
-                        ? filteredTasksList.length
-                        : tasksList.length,
+                    itemCount:
+                        isFiltered ? filteredTasksList.length : taskList.length,
                     itemBuilder: (context, index) {
                       var task = isFiltered
                           ? filteredTasksList[index]
-                          : tasksList[index];
+                          : taskList[index];
                       return TaskTile(
                           task: task,
                           onDelete: () {
                             setState(() {
-                              tasksList.removeWhere(
+                              taskList.removeWhere(
                                   (element) => element.id == task.id);
                               if (isFiltered) {
                                 filteredTasksList.removeWhere(
@@ -136,16 +134,9 @@ class _MainPageState extends State<MainPage> {
             context: context,
             builder: (context) {
               return CreateTaskDialog(
-                  controller: _controller,
-                  onCreate: () {
-                    var text = _controller.text;
-                    var lastTaskId = tasksList.isEmpty ? 0 : tasksList.last.id;
-                    setState(
-                      () => tasksList
-                          .add(Task(++lastTaskId, text, false, 0, 0, '')),
-                    );
-                    Navigator.pop(context);
-                    _controller.clear();
+                  tasksList: taskList,
+                  onRefresh: () {
+                    setState(() {});
                   });
             },
           );
@@ -156,10 +147,10 @@ class _MainPageState extends State<MainPage> {
 
   void _filterTasks() {
     if (!isFiltered) {
-      if (tasksList.any((task) => task.isComplete)) {
+      if (taskList.any((task) => task.isComplete)) {
         setState(() {
           filteredTasksList =
-              tasksList.where((task) => !task.isComplete).toList();
+              taskList.where((task) => !task.isComplete).toList();
           isFiltered = true;
         });
       }
@@ -169,6 +160,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _deleteCompletedTasks() {
-    setState(() => tasksList.removeWhere((task) => task.isComplete));
+    setState(() => taskList.removeWhere((task) => task.isComplete));
   }
 }

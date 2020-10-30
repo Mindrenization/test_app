@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:test_app/models/task.dart';
 import 'package:test_app/models/task_step.dart';
+import 'package:test_app/widgets/change_task_name_dialog.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
+import 'package:test_app/widgets/delete_task_dialog.dart';
 import 'package:test_app/widgets/popup_button.dart';
 
-// Страница конкретной задачи
+// Страница детализации задачи
 class TaskPage extends StatefulWidget {
   final Task task;
-  final VoidCallback onCheck;
-  TaskPage({this.task, this.onCheck});
+  final VoidCallback onRefresh;
+  final VoidCallback onDelete;
+  TaskPage({this.task, this.onRefresh, this.onDelete});
   @override
   _TaskPageState createState() => _TaskPageState();
 }
@@ -44,6 +47,17 @@ class _TaskPageState extends State<TaskPage> {
                 icon: Icons.line_style,
                 onTap: () {
                   Navigator.pop(context);
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ChangeTaskTitleDialog(
+                          task: widget.task,
+                          onRefresh: () {
+                            setState(() {});
+                            widget.onRefresh();
+                          },
+                        );
+                      });
                 },
               )),
               PopupMenuItem(
@@ -52,6 +66,17 @@ class _TaskPageState extends State<TaskPage> {
                 icon: Icons.delete,
                 onTap: () {
                   Navigator.pop(context);
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return DeleteTaskDialog(
+                          task: widget.task,
+                          onDelete: () {
+                            widget.onDelete();
+                            Navigator.pop(context);
+                          },
+                        );
+                      });
                 },
               )),
             ],
@@ -59,47 +84,40 @@ class _TaskPageState extends State<TaskPage> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Card(
-          margin: EdgeInsets.all(20),
-          color: Colors.white,
-          elevation: 5,
-          child: Column(
-            children: [
-              for (int index = 0; index < widget.task.steps.length; index++)
-                _stepTile(widget.task, index),
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: _addStepButton(widget.task),
-              ),
-              Divider(
-                indent: 25,
-                endIndent: 25,
-                height: 1,
-                color: Colors.black,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: TextField(
-                  controller: _descriptionController,
-                  maxLines: null,
-                  onChanged: (text) {
-                    setState(() {
-                      widget.task.description = text;
-                      print(widget.task.description);
-                    });
-                  },
-                  decoration: InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                    labelText: 'Заметки по задаче...',
-                    labelStyle: TextStyle(
-                      color: Colors.grey[700],
-                    ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+              child: _topButton(),
+            ),
+            Card(
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              color: Colors.white,
+              elevation: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (int index = 0; index < widget.task.steps.length; index++)
+                    _stepTile(widget.task, index),
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: _addStepButton(widget.task),
                   ),
-                ),
+                  Divider(
+                    indent: 25,
+                    endIndent: 25,
+                    height: 1,
+                    color: Colors.black,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: _descriptionField(),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -144,10 +162,31 @@ class _TaskPageState extends State<TaskPage> {
             task.maxSteps++;
             _stepController.text = '';
           });
-          widget.onCheck();
+          widget.onRefresh();
         },
       );
     }
+  }
+
+  Widget _descriptionField() {
+    return TextField(
+      controller: _descriptionController,
+      maxLines: null,
+      onChanged: (text) {
+        setState(() {
+          widget.task.description = text;
+          print(widget.task.description);
+        });
+      },
+      decoration: InputDecoration(
+        isDense: true,
+        border: InputBorder.none,
+        labelText: 'Заметки по задаче...',
+        labelStyle: TextStyle(
+          color: Colors.grey[700],
+        ),
+      ),
+    );
   }
 
   Widget _stepTile(task, index) {
@@ -157,7 +196,7 @@ class _TaskPageState extends State<TaskPage> {
           value: task.steps[index].isComplete,
           activeColor: const Color(0xFF6202EE),
           onChanged: (value) {
-            widget.onCheck();
+            widget.onRefresh();
             setState(() {
               task.steps[index].isComplete = value;
               value ? task.currentStep++ : task.currentStep--;
@@ -179,7 +218,7 @@ class _TaskPageState extends State<TaskPage> {
             ),
             onPressed: () {
               setState(() {
-                widget.onCheck();
+                widget.onRefresh();
                 task.maxSteps--;
                 task.steps[index].isComplete ? task.currentStep-- : null;
                 task.steps.removeAt(index);
@@ -189,6 +228,39 @@ class _TaskPageState extends State<TaskPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _topButton() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (widget.task.isComplete) {
+            widget.task.isComplete = false;
+          } else {
+            widget.task.isComplete = true;
+          }
+        });
+        widget.onRefresh();
+      },
+      child: Container(
+        height: 50,
+        width: 50,
+        decoration: BoxDecoration(
+            color: Colors.cyan[600],
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                  offset: Offset.zero,
+                  spreadRadius: 1,
+                  blurRadius: 3,
+                  color: Colors.black38)
+            ]),
+        child: Icon(
+          widget.task.isComplete ? Icons.close : Icons.check,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }
