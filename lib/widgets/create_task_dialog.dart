@@ -20,6 +20,7 @@ class CreateTaskDialog extends StatelessWidget {
         ),
         Container(
           child: TextField(
+            autofocus: true,
             controller: controller,
             decoration: InputDecoration(
                 hintText: 'Введите название задачи', isDense: true),

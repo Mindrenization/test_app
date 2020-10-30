@@ -3,95 +3,104 @@ import 'package:flutter/rendering.dart';
 import 'package:test_app/models/task.dart';
 import 'package:test_app/models/task_step.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
+import 'package:test_app/widgets/popup_button.dart';
 
 // Страница конкретной задачи
 class TaskPage extends StatefulWidget {
+  final Task task;
   final VoidCallback onCheck;
-  TaskPage(this.onCheck);
+  TaskPage({this.task, this.onCheck});
   @override
   _TaskPageState createState() => _TaskPageState();
 }
 
 class _TaskPageState extends State<TaskPage> {
-  TextEditingController _controller = TextEditingController();
+  TextEditingController _stepController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
   bool isText = false;
 
   @override
+  void initState() {
+    super.initState();
+    _descriptionController.text = widget.task.description;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final Task task = ModalRoute.of(context).settings.arguments;
     return Scaffold(
+      backgroundColor: ColorThemeDialog.backgroundColor,
       appBar: AppBar(
         backgroundColor: ColorThemeDialog.mainColor,
         title: Text(
-          task.title,
+          widget.task.title,
           style: TextStyle(color: Colors.white),
         ),
         actions: [
           PopupMenuButton(
             itemBuilder: (context) => [
               PopupMenuItem(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.line_style,
-                        color: Colors.grey,
-                      ),
-                      Container(
-                        width: 15,
-                      ),
-                      Text(
-                        'Редактировать',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+                  child: PopupButton(
+                text: 'Редактировать',
+                icon: Icons.line_style,
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              )),
               PopupMenuItem(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
+                  child: PopupButton(
+                text: 'Удалить',
+                icon: Icons.delete,
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              )),
+            ],
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Card(
+          margin: EdgeInsets.all(20),
+          color: Colors.white,
+          elevation: 5,
+          child: Column(
+            children: [
+              for (int index = 0; index < widget.task.steps.length; index++)
+                _stepTile(widget.task, index),
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: _addStepButton(widget.task),
+              ),
+              Divider(
+                indent: 25,
+                endIndent: 25,
+                height: 1,
+                color: Colors.black,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: TextField(
+                  controller: _descriptionController,
+                  maxLines: null,
+                  onChanged: (text) {
+                    setState(() {
+                      widget.task.description = text;
+                      print(widget.task.description);
+                    });
                   },
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.delete,
-                        color: Colors.grey,
-                      ),
-                      Container(
-                        width: 15,
-                      ),
-                      Text(
-                        'Удалить',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                    ],
+                  decoration: InputDecoration(
+                    isDense: true,
+                    border: InputBorder.none,
+                    labelText: 'Заметки по задаче...',
+                    labelStyle: TextStyle(
+                      color: Colors.grey[700],
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-        ],
-      ),
-      body: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        color: ColorThemeDialog.backgroundColor,
-        child: task.steps.isEmpty
-            ? _addStepButton(task)
-            : Column(
-                children: [
-                  if (task.steps.isNotEmpty)
-                    for (int index = 0; index < task.steps.length; index++)
-                      _stepTile(task, index),
-                  _addStepButton(task),
-                ],
-              ),
+        ),
       ),
     );
   }
@@ -106,60 +115,80 @@ class _TaskPageState extends State<TaskPage> {
         },
         child: Row(
           children: [
-            Icon(Icons.add),
+            Icon(
+              Icons.add,
+              color: Colors.blue,
+            ),
             Container(
               width: 10,
             ),
-            Text('Добавить шаг')
+            Text(
+              'Добавить шаг',
+              style: TextStyle(color: Colors.blue),
+            )
           ],
         ),
       );
     } else if (isText) {
       return TextField(
-        controller: _controller,
+        autofocus: true,
+        controller: _stepController,
+        decoration: InputDecoration(
+          isDense: true,
+          border: InputBorder.none,
+        ),
         onEditingComplete: () {
           setState(() {
             var lastStepId = task.steps.isEmpty ? 0 : task.steps.last.id;
-            task.steps.add(TaskStep(++lastStepId, _controller.text, false));
+            task.steps.add(TaskStep(++lastStepId, _stepController.text, false));
             task.maxSteps++;
-            _controller.text = '';
+            _stepController.text = '';
           });
+          widget.onCheck();
         },
       );
     }
   }
 
   Widget _stepTile(task, index) {
-    return Container(
-      color: Colors.white,
-      child: Row(
-        children: [
-          Checkbox(
-            value: task.steps[index].isComplete,
-            activeColor: const Color(0xFF6202EE),
-            onChanged: (value) {
-              widget.onCheck();
+    return Row(
+      children: [
+        Checkbox(
+          value: task.steps[index].isComplete,
+          activeColor: const Color(0xFF6202EE),
+          onChanged: (value) {
+            widget.onCheck();
+            setState(() {
+              task.steps[index].isComplete = value;
+              value ? task.currentStep++ : task.currentStep--;
+            });
+          },
+        ),
+        Expanded(
+          child: Text(
+            task.steps[index].title,
+            maxLines: 5,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: IconButton(
+            icon: Icon(
+              Icons.close,
+              color: Colors.grey[700],
+            ),
+            onPressed: () {
               setState(() {
-                task.steps[index].isComplete = value;
-                value ? task.currentStep++ : task.currentStep--;
+                widget.onCheck();
+                task.maxSteps--;
+                task.steps[index].isComplete ? task.currentStep-- : null;
+                task.steps.removeAt(index);
+                task.steps.isEmpty ? isText = false : null;
               });
             },
           ),
-          Text(task.steps[index].title),
-          Spacer(),
-          IconButton(
-              icon: Icon(Icons.close),
-              onPressed: () {
-                setState(() {
-                  widget.onCheck();
-                  task.maxSteps--;
-                  task.steps[index].isComplete ? task.currentStep-- : null;
-                  task.steps.removeAt(index);
-                  task.steps.isEmpty ? isText = false : null;
-                });
-              })
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
