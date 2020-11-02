@@ -147,6 +147,13 @@ class _TaskPageState extends State<TaskPage> {
     );
   }
 
+  @override
+  void dispose() {
+    _stepController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
   Widget _addStepButton(task) {
     if (!isText) {
       return GestureDetector(
