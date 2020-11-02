@@ -39,6 +39,7 @@ class _TaskPageState extends State<TaskPage> {
             SliverAppBar(
               floating: true,
               snap: true,
+              centerTitle: true,
               title: Text(
                 widget.task.title,
                 style: TextStyle(color: Colors.white),

@@ -26,6 +26,7 @@ class _ChangeTaskTitleDialogState extends State<ChangeTaskTitleDialog> {
         ),
         Container(
           child: TextField(
+            maxLength: 30,
             autofocus: true,
             controller: _titleController,
             decoration: InputDecoration(

@@ -27,7 +27,9 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
         ),
         Container(
           child: TextField(
+            maxLength: 30,
             autofocus: true,
+            onEditingComplete: () => _complete(),
             controller: _titleController,
             decoration: InputDecoration(
                 hintText: 'Введите название задачи', isDense: true),
@@ -53,20 +55,21 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
                 'Создать',
                 style: TextStyle(fontSize: 18),
               ),
-              onPressed: () {
-                var lastTaskId =
-                    widget.tasksList.isEmpty ? 0 : widget.tasksList.last.id;
-                setState(
-                  () => widget.tasksList.add(Task(
-                      ++lastTaskId, _titleController.text, false, 0, 0, '')),
-                );
-                widget.onRefresh();
-                Navigator.pop(context);
-              },
+              onPressed: () => _complete(),
             ),
           ],
         ),
       ],
     );
+  }
+
+  _complete() {
+    var lastTaskId = widget.tasksList.isEmpty ? 0 : widget.tasksList.last.id;
+    setState(
+      () => widget.tasksList
+          .add(Task(++lastTaskId, _titleController.text, false, 0, 0, '')),
+    );
+    widget.onRefresh();
+    Navigator.pop(context);
   }
 }
