@@ -33,31 +33,47 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                radioTheme(Colors.red),
+                _radioTheme(Colors.red),
                 Container(
                   width: 10,
                 ),
-                radioTheme(Colors.orange),
+                _radioTheme(Colors.orange),
                 Container(
                   width: 10,
                 ),
-                radioTheme(Colors.yellow),
+                _radioTheme(Colors.yellow),
                 Container(
                   width: 10,
                 ),
-                radioTheme(Colors.green),
+                _radioTheme(Colors.green),
                 Container(
                   width: 10,
                 ),
-                radioTheme(Colors.blue),
+                _radioTheme(Colors.blue),
                 Container(
                   width: 10,
                 ),
-                radioTheme(const Color(0xFF6202EE)),
+                _radioTheme(const Color(0xFF6202EE)),
               ],
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _radioTheme(Color color) {
+    return Container(
+      height: 15,
+      width: 15,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+      child: Radio(
+        activeColor: Colors.black,
+        value: color,
+        groupValue: ColorThemeDialog.mainColor,
+        onChanged: (value) {
+          _onTap(value);
+        },
       ),
     );
   }
@@ -80,21 +96,5 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
       }
     });
     widget.onChange();
-  }
-
-  Widget radioTheme(Color color) {
-    return Container(
-      height: 15,
-      width: 15,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-      child: Radio(
-        activeColor: Colors.black,
-        value: color,
-        groupValue: ColorThemeDialog.mainColor,
-        onChanged: (value) {
-          _onTap(value);
-        },
-      ),
-    );
   }
 }

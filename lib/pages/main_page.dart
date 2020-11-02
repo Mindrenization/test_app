@@ -15,9 +15,9 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   TextEditingController _controller = TextEditingController();
   List tasksList = [
-    Task(1, 'Задача 1', false, 0, 0),
-    Task(2, 'Задача 2', false, 0, 0),
-    Task(3, 'Задача 3', false, 0, 0),
+    Task(1, 'Задача 1', false, 0, 0, ''),
+    Task(2, 'Задача 2', false, 0, 0, ''),
+    Task(3, 'Задача 3', false, 0, 0, ''),
   ];
   static const String emptyTaskListImage = 'assets/images/empty_tasks.svg';
   List filteredTasksList = [];
@@ -26,6 +26,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorThemeDialog.backgroundColor,
       appBar: AppBar(
         backgroundColor: ColorThemeDialog.mainColor,
         title: Text('Задачи', style: TextStyle(color: Colors.white)),
@@ -80,9 +81,6 @@ class _MainPageState extends State<MainPage> {
       ),
       body: Container(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        color: ColorThemeDialog.backgroundColor,
         child: tasksList.isEmpty
             ? Center(
                 child: Column(
@@ -143,8 +141,8 @@ class _MainPageState extends State<MainPage> {
                     var text = _controller.text;
                     var lastTaskId = tasksList.isEmpty ? 0 : tasksList.last.id;
                     setState(
-                      () =>
-                          tasksList.add(Task(++lastTaskId, text, false, 0, 0)),
+                      () => tasksList
+                          .add(Task(++lastTaskId, text, false, 0, 0, '')),
                     );
                     Navigator.pop(context);
                     _controller.clear();
@@ -154,6 +152,12 @@ class _MainPageState extends State<MainPage> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _filterTasks() {

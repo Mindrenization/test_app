@@ -20,9 +20,11 @@ class _TaskTileState extends State<TaskTile> {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TaskPage(),
-              settings: RouteSettings(
-                arguments: widget.task,
+              builder: (context) => TaskPage(
+                widget.task,
+                onCheck: () {
+                  setState(() {});
+                },
               ),
             ),
           ),
