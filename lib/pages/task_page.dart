@@ -9,6 +9,7 @@ import 'package:test_app/widgets/popup_button.dart';
 
 // Страница детализации задачи
 class TaskPage extends StatefulWidget {
+  @required
   final Task task;
   final VoidCallback onRefresh;
   final VoidCallback onDelete;
@@ -121,6 +122,13 @@ class _TaskPageState extends State<TaskPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _stepController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   Widget _addStepButton(task) {

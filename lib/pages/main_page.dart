@@ -151,6 +151,12 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _filterTasks() {
     if (!isFiltered) {
       if (taskList.any((task) => task.isComplete)) {
