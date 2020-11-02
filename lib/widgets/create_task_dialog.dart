@@ -55,6 +55,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
                     context: context,
                     builder: (context) {
                       return SimpleDialog(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
                         children: [
                           FlatButton(
                             child: Text('Завтра'),
