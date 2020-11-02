@@ -70,7 +70,7 @@ class _TaskTileState extends State<TaskTile> {
                   widget.task.maxSteps == 0
                       ? Container()
                       : Text(
-                          '${widget.task.currentStep} из ${widget.task.maxSteps}',
+                          '${widget.task.completedSteps} из ${widget.task.maxSteps}',
                           style:
                               TextStyle(fontSize: 16, color: Colors.grey[600]),
                         ),

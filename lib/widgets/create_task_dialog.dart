@@ -12,6 +12,7 @@ class CreateTaskDialog extends StatefulWidget {
 
 class _CreateTaskDialogState extends State<CreateTaskDialog> {
   final TextEditingController _titleController = TextEditingController();
+  DateTime _deadline;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,6 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
         Container(
           child: TextField(
             maxLength: 30,
-            autofocus: true,
             onEditingComplete: () => _complete(),
             controller: _titleController,
             decoration: InputDecoration(
@@ -37,6 +37,63 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
         ),
         Container(
           height: 10,
+        ),
+        Column(
+          children: [
+            _deadlineButton(
+                text: 'Напомнить',
+                icon: Icons.notifications_on_outlined,
+                onTap: () {}),
+            Container(
+              height: 10,
+            ),
+            _deadlineButton(
+                text: 'Дата выполнения',
+                icon: Icons.calendar_today_outlined,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return SimpleDialog(
+                        children: [
+                          FlatButton(
+                            child: Text('Завтра'),
+                            onPressed: () {
+                              int _tomorrow = DateTime.now().day + 1;
+                              _deadline = DateTime(DateTime.now().year,
+                                  DateTime.now().month, _tomorrow);
+                              Navigator.pop(context);
+                            },
+                          ),
+                          FlatButton(
+                            child: Text('На следующей неделе'),
+                            onPressed: () {
+                              int _nextWeek = DateTime.now().day + 7;
+                              _deadline = DateTime(DateTime.now().year,
+                                  DateTime.now().month, _nextWeek);
+                              Navigator.pop(context);
+                            },
+                          ),
+                          FlatButton(
+                            child: Text('Выбрать дату'),
+                            onPressed: () async {
+                              var futureYear = DateTime.now().year + 100;
+                              _deadline = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime(futureYear,
+                                    DateTime.now().month, DateTime.now().day),
+                              );
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }),
+          ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -63,11 +120,41 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
     );
   }
 
+  Widget _deadlineButton({String text, IconData icon, onTap()}) {
+    return GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 30),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          height: 35,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon),
+              Expanded(
+                child: Text(
+                  text,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+          decoration: BoxDecoration(
+            color: Colors.blue[100],
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
   _complete() {
     var lastTaskId = widget.tasksList.isEmpty ? 0 : widget.tasksList.last.id;
     setState(
-      () => widget.tasksList
-          .add(Task(++lastTaskId, _titleController.text, false, 0, 0, '')),
+      () => widget.tasksList.add(
+        Task(++lastTaskId, _titleController.text, _deadline),
+      ),
     );
     widget.onRefresh();
     Navigator.pop(context);

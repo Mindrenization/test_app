@@ -5,10 +5,19 @@ class Task {
   String title;
   String description;
   bool isComplete;
-  int currentStep;
+  int completedSteps;
   int maxSteps;
+  final DateTime createDate = DateTime.now();
+  DateTime deadline;
   List<TaskStep> steps = [];
 
-  Task(this.id, this.title, this.isComplete, this.currentStep, this.maxSteps,
-      this.description);
+  Task(
+    this.id,
+    this.title, [
+    this.deadline,
+    this.isComplete = false,
+    this.completedSteps = 0,
+    this.maxSteps = 0,
+    this.description,
+  ]);
 }

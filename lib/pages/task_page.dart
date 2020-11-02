@@ -118,6 +118,16 @@ class _TaskPageState extends State<TaskPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                            'Создано: ${widget.task.deadline}'), // --------------------------
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                            'Создано: ${widget.task.createDate.day}.${widget.task.createDate.month}.${widget.task.createDate.year}'),
+                      ),
                       for (int index = 0;
                           index < widget.task.steps.length;
                           index++)
@@ -206,7 +216,6 @@ class _TaskPageState extends State<TaskPage> {
       onChanged: (text) {
         setState(() {
           widget.task.description = text;
-          print(widget.task.description);
         });
       },
       decoration: InputDecoration(
@@ -230,7 +239,7 @@ class _TaskPageState extends State<TaskPage> {
             widget.onRefresh();
             setState(() {
               task.steps[index].isComplete = value;
-              value ? task.currentStep++ : task.currentStep--;
+              value ? task.completedSteps++ : task.completedSteps--;
             });
           },
         ),
@@ -252,7 +261,7 @@ class _TaskPageState extends State<TaskPage> {
                 widget.onRefresh();
                 task.maxSteps--;
                 if (task.steps[index].isComplete) {
-                  task.currentStep--;
+                  task.completedSteps--;
                 }
                 task.steps.removeAt(index);
                 if (task.steps.isEmpty) {

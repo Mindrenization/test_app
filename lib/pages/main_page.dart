@@ -14,9 +14,9 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   List<Task> taskList = [
-    Task(1, 'Задача 1', false, 0, 0, ''),
-    Task(2, 'Задача 2', false, 0, 0, ''),
-    Task(3, 'Задача 3', false, 0, 0, ''),
+    Task(0, 'Задача 1'),
+    Task(1, 'Задача 2'),
+    Task(2, 'Задача 3'),
   ];
   static const String emptyTaskListImage = 'assets/images/empty_tasks.svg';
   List filteredTaskList = [];
