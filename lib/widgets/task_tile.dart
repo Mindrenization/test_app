@@ -21,7 +21,7 @@ class _TaskTileState extends State<TaskTile> {
             context,
             MaterialPageRoute(
               builder: (context) => TaskPage(
-                task: widget.task,
+                widget.task,
                 onCheck: () {
                   setState(() {});
                 },
