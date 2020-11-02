@@ -9,6 +9,7 @@ import 'package:test_app/widgets/popup_button.dart';
 
 // Страница детализации задачи
 class TaskPage extends StatefulWidget {
+  @required
   final Task task;
   final VoidCallback onRefresh;
   final VoidCallback onDelete;
@@ -32,92 +33,114 @@ class _TaskPageState extends State<TaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorThemeDialog.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: ColorThemeDialog.mainColor,
-        title: Text(
-          widget.task.title,
-          style: TextStyle(color: Colors.white),
-        ),
-        actions: [
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                  child: PopupButton(
-                text: 'Редактировать',
-                icon: Icons.line_style,
-                onTap: () {
-                  Navigator.pop(context);
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return ChangeTaskTitleDialog(
-                          task: widget.task,
-                          onRefresh: () {
-                            setState(() {});
-                            widget.onRefresh();
-                          },
-                        );
-                      });
-                },
-              )),
-              PopupMenuItem(
-                  child: PopupButton(
-                text: 'Удалить',
-                icon: Icons.delete,
-                onTap: () {
-                  Navigator.pop(context);
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return DeleteTaskDialog(
-                          task: widget.task,
-                          onDelete: () {
-                            widget.onDelete();
-                            Navigator.pop(context);
-                          },
-                        );
-                      });
-                },
-              )),
-            ],
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              child: _topButton(),
-            ),
-            Card(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              color: Colors.white,
-              elevation: 5,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (int index = 0; index < widget.task.steps.length; index++)
-                    _stepTile(widget.task, index),
-                  Padding(
-                    padding: EdgeInsets.all(10),
-                    child: _addStepButton(widget.task),
-                  ),
-                  Divider(
-                    indent: 25,
-                    endIndent: 25,
-                    height: 1,
-                    color: Colors.black,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: _descriptionField(),
-                  ),
-                ],
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              floating: true,
+              snap: true,
+              title: Text(
+                widget.task.title,
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: ColorThemeDialog.mainColor,
+              expandedHeight: 100,
+              actions: [
+                PopupMenuButton(
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      child: PopupButton(
+                        text: 'Редактировать',
+                        icon: Icons.line_style,
+                        onTap: () {
+                          Navigator.pop(context);
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return ChangeTaskTitleDialog(
+                                task: widget.task,
+                                onRefresh: () {
+                                  setState(() {});
+                                  widget.onRefresh();
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                        child: PopupButton(
+                      text: 'Удалить',
+                      icon: Icons.delete,
+                      onTap: () {
+                        Navigator.pop(context);
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return DeleteTaskDialog(
+                                task: widget.task,
+                                onDelete: () {
+                                  widget.onDelete();
+                                  Navigator.pop(context);
+                                },
+                              );
+                            });
+                      },
+                    )),
+                  ],
+                ),
+              ],
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(30),
+                child: Row(
+                  children: [
+                    Transform.translate(
+                      offset: Offset(20, 28),
+                      child: _topButton(),
+                    )
+                  ],
+                ),
               ),
             ),
-          ],
+          ];
+        },
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 30),
+                child: Card(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  color: Colors.white,
+                  elevation: 5,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (int index = 0;
+                          index < widget.task.steps.length;
+                          index++)
+                        _stepTile(widget.task, index),
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: _addStepButton(widget.task),
+                      ),
+                      Divider(
+                        indent: 25,
+                        endIndent: 25,
+                        height: 1,
+                        color: Colors.black,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: _descriptionField(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -248,8 +271,8 @@ class _TaskPageState extends State<TaskPage> {
         widget.onRefresh();
       },
       child: Container(
-        height: 50,
-        width: 50,
+        height: 60,
+        width: 60,
         decoration: BoxDecoration(
             color: Colors.cyan[600],
             shape: BoxShape.circle,
@@ -263,6 +286,7 @@ class _TaskPageState extends State<TaskPage> {
         child: Icon(
           widget.task.isComplete ? Icons.close : Icons.check,
           color: Colors.white,
+          size: 30,
         ),
       ),
     );
