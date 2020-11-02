@@ -4,6 +4,7 @@ import 'package:test_app/models/task.dart';
 import 'package:test_app/models/task_step.dart';
 import 'package:test_app/widgets/change_task_name_dialog.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
+import 'package:test_app/widgets/deadline_dialog.dart';
 import 'package:test_app/widgets/delete_task_dialog.dart';
 import 'package:test_app/widgets/popup_button.dart';
 
@@ -22,6 +23,7 @@ class _TaskPageState extends State<TaskPage> {
   TextEditingController _stepController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   bool isText = false;
+  DateTime _deadline;
 
   @override
   void initState() {
@@ -121,11 +123,6 @@ class _TaskPageState extends State<TaskPage> {
                       Padding(
                         padding: EdgeInsets.all(10),
                         child: Text(
-                            'Создано: ${widget.task.deadline}'), // --------------------------
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
                             'Создано: ${widget.task.createDate.day}.${widget.task.createDate.month}.${widget.task.createDate.year}'),
                       ),
                       for (int index = 0;
@@ -148,6 +145,43 @@ class _TaskPageState extends State<TaskPage> {
                       ),
                     ],
                   ),
+                ),
+              ),
+              Card(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                color: Colors.white,
+                elevation: 5,
+                child: Column(
+                  children: [
+                    _deadlineButton(
+                        text: 'Напомнить',
+                        icon: Icons.notifications_on_outlined,
+                        onTap: () {}),
+                    Divider(
+                      indent: 70,
+                      height: 1,
+                      color: Colors.black,
+                    ),
+                    _deadlineButton(
+                      text: widget.task.deadline == null
+                          ? 'Добавить дату выполнения'
+                          : '${widget.task.deadline.day}.${widget.task.deadline.month}.${widget.task.deadline.year}',
+                      icon: Icons.calendar_today_outlined,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return DeadlineDialog(
+                              deadline: _deadline,
+                              onRefresh: () {
+                                setState(() {});
+                              },
+                            );
+                          },
+                        );
+                      },
+                    )
+                  ],
                 ),
               ),
             ],
@@ -306,6 +340,29 @@ class _TaskPageState extends State<TaskPage> {
           size: 30,
         ),
       ),
+    );
+  }
+
+  Widget _deadlineButton({String text, IconData icon, onTap()}) {
+    return GestureDetector(
+      child: Container(
+        margin: EdgeInsets.all(10),
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        height: 35,
+        child: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(right: 15),
+              child: Icon(icon),
+            ),
+            Text(
+              text,
+              textAlign: TextAlign.start,
+            ),
+          ],
+        ),
+      ),
+      onTap: onTap,
     );
   }
 }

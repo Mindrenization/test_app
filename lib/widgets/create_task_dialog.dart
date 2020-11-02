@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/models/task.dart';
+import 'package:test_app/widgets/deadline_dialog.dart';
 
 // Модал создания задачи
 class CreateTaskDialog extends StatefulWidget {
   @override
   _CreateTaskDialogState createState() => _CreateTaskDialogState();
-  final List<Task> tasksList;
+  final List<Task> taskList;
   final VoidCallback onRefresh;
-  CreateTaskDialog({this.tasksList, this.onRefresh});
+  CreateTaskDialog({this.taskList, this.onRefresh});
 }
 
 class _CreateTaskDialogState extends State<CreateTaskDialog> {
@@ -48,49 +49,67 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
               height: 10,
             ),
             _deadlineButton(
-                text: 'Дата выполнения',
+                text: _deadline == null
+                    ? 'Дата выполнения'
+                    : '${_deadline.day}.${_deadline.month}.${_deadline.year}',
                 icon: Icons.calendar_today_outlined,
                 onTap: () {
                   showDialog(
                     context: context,
                     builder: (context) {
-                      return SimpleDialog(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
-                        children: [
-                          FlatButton(
-                            child: Text('Завтра'),
-                            onPressed: () {
-                              int _tomorrow = DateTime.now().day + 1;
-                              _deadline = DateTime(DateTime.now().year,
-                                  DateTime.now().month, _tomorrow);
-                              Navigator.pop(context);
-                            },
-                          ),
-                          FlatButton(
-                            child: Text('На следующей неделе'),
-                            onPressed: () {
-                              int _nextWeek = DateTime.now().day + 7;
-                              _deadline = DateTime(DateTime.now().year,
-                                  DateTime.now().month, _nextWeek);
-                              Navigator.pop(context);
-                            },
-                          ),
-                          FlatButton(
-                            child: Text('Выбрать дату'),
-                            onPressed: () async {
-                              var futureYear = DateTime.now().year + 100;
-                              _deadline = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime(futureYear,
-                                    DateTime.now().month, DateTime.now().day),
-                              );
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
+                      return DeadlineDialog(
+                        deadline: _deadline,
+                        onRefresh: () {
+                          setState(() {
+                            //   int _tomorrow = DateTime.now().day + 1;
+                            //   _deadline = DateTime(DateTime.now().year,
+                            //       DateTime.now().month, _tomorrow);
+                            // Navigator.pop(context);
+                          });
+                        },
                       );
+                      // return SimpleDialog(
+                      //   contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                      //   children: [
+                      //     FlatButton(
+                      //       child: Text('Завтра'),
+                      //       onPressed: () {
+                      //         int _tomorrow = DateTime.now().day + 1;
+                      //         setState(() {
+                      //           _deadline = DateTime(DateTime.now().year,
+                      //               DateTime.now().month, _tomorrow);
+                      //         });
+                      //         Navigator.pop(context);
+                      //       },
+                      //     ),
+                      //     FlatButton(
+                      //       child: Text('На следующей неделе'),
+                      //       onPressed: () {
+                      //         int _nextWeek = DateTime.now().day + 7;
+                      //         setState(() {
+                      //           _deadline = DateTime(DateTime.now().year,
+                      //               DateTime.now().month, _nextWeek);
+                      //         });
+                      //         Navigator.pop(context);
+                      //       },
+                      //     ),
+                      //     FlatButton(
+                      //       child: Text('Выбрать дату'),
+                      //       onPressed: () async {
+                      //         var futureYear = DateTime.now().year + 100;
+                      //         _deadline = await showDatePicker(
+                      //           context: context,
+                      //           initialDate: DateTime.now(),
+                      //           firstDate: DateTime.now(),
+                      //           lastDate: DateTime(futureYear,
+                      //               DateTime.now().month, DateTime.now().day),
+                      //         );
+                      //         setState(() {});
+                      //         Navigator.pop(context);
+                      //       },
+                      //     ),
+                      //   ],
+                      // );
                     },
                   );
                 }),
@@ -151,11 +170,9 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
   }
 
   _complete() {
-    var lastTaskId = widget.tasksList.isEmpty ? 0 : widget.tasksList.last.id;
-    setState(
-      () => widget.tasksList.add(
-        Task(++lastTaskId, _titleController.text, _deadline),
-      ),
+    var lastTaskId = widget.taskList.isEmpty ? 0 : widget.taskList.last.id;
+    widget.taskList.add(
+      Task(++lastTaskId, _titleController.text, _deadline),
     );
     widget.onRefresh();
     Navigator.pop(context);

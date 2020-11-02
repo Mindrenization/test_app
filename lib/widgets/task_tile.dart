@@ -6,6 +6,7 @@ class TaskTile extends StatefulWidget {
   final task;
   final VoidCallback onDelete;
   TaskTile({this.task, this.onDelete});
+
   @override
   _TaskTileState createState() => _TaskTileState();
 }
@@ -14,8 +15,8 @@ class _TaskTileState extends State<TaskTile> {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(widget.task.toString()),
-      onDismissed: (direction) => widget.onDelete,
+      key: UniqueKey(),
+      onDismissed: (direction) => widget.onDelete(),
       direction: DismissDirection.endToStart,
       background: Container(
         decoration: BoxDecoration(

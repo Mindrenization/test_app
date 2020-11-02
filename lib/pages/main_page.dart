@@ -13,7 +13,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  List<Task> taskList = [
+  List<Task> _taskList = [
     Task(0, 'Задача 1'),
     Task(1, 'Задача 2'),
     Task(2, 'Задача 3'),
@@ -80,7 +80,7 @@ class _MainPageState extends State<MainPage> {
       ),
       body: Container(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: taskList.isEmpty
+        child: _taskList.isEmpty
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -106,11 +106,11 @@ class _MainPageState extends State<MainPage> {
                   ))
                 : ListView.builder(
                     itemCount:
-                        isFiltered ? filteredTaskList.length : taskList.length,
+                        isFiltered ? filteredTaskList.length : _taskList.length,
                     itemBuilder: (context, index) {
                       var task = isFiltered
                           ? filteredTaskList[index]
-                          : taskList[index];
+                          : _taskList[index];
                       return Padding(
                         padding: EdgeInsets.only(bottom: 5),
                         child: TaskTile(
@@ -118,7 +118,7 @@ class _MainPageState extends State<MainPage> {
                           onDelete: () {
                             setState(
                               () {
-                                taskList.removeWhere(
+                                _taskList.removeWhere(
                                     (element) => element.id == task.id);
                                 if (isFiltered) {
                                   filteredTaskList.removeWhere(
@@ -140,7 +140,7 @@ class _MainPageState extends State<MainPage> {
             context: context,
             builder: (context) {
               return CreateTaskDialog(
-                  tasksList: taskList,
+                  taskList: _taskList,
                   onRefresh: () {
                     setState(() {});
                   });
@@ -153,10 +153,10 @@ class _MainPageState extends State<MainPage> {
 
   void _filterTasks() {
     if (!isFiltered) {
-      if (taskList.any((task) => task.isComplete)) {
+      if (_taskList.any((task) => task.isComplete)) {
         setState(() {
           filteredTaskList =
-              taskList.where((task) => !task.isComplete).toList();
+              _taskList.where((task) => !task.isComplete).toList();
           isFiltered = true;
         });
       }
@@ -166,6 +166,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _deleteCompletedTasks() {
-    setState(() => taskList.removeWhere((task) => task.isComplete));
+    setState(() => _taskList.removeWhere((task) => task.isComplete));
   }
 }
