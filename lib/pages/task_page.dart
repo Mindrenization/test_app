@@ -9,7 +9,6 @@ import 'package:test_app/widgets/popup_button.dart';
 
 // Страница детализации задачи
 class TaskPage extends StatefulWidget {
-  @required
   final Task task;
   final VoidCallback onRefresh;
   final VoidCallback onDelete;
