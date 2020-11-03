@@ -53,42 +53,14 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
                     ? 'Дата выполнения'
                     : '${_deadline.day}.${_deadline.month}.${_deadline.year}',
                 icon: Icons.calendar_today_outlined,
-                onTap: () {
-                  showDialog(
+                onTap: () async {
+                  _deadline = await showDialog(
                     context: context,
                     builder: (context) {
-                      return DeadlineDialog(
-                        onTomorrow: () {
-                          setState(() {
-                            int _tomorrow = DateTime.now().day + 1;
-                            _deadline = DateTime(DateTime.now().year,
-                                DateTime.now().month, _tomorrow);
-                            Navigator.pop(context);
-                          });
-                        },
-                        onNextWeek: () {
-                          setState(() {
-                            int _nextWeek = DateTime.now().day + 7;
-                            _deadline = DateTime(DateTime.now().year,
-                                DateTime.now().month, _nextWeek);
-                            Navigator.pop(context);
-                          });
-                        },
-                        onCustomDate: () async {
-                          var futureYear = DateTime.now().year + 100;
-                          _deadline = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(futureYear, DateTime.now().month,
-                                DateTime.now().day),
-                          );
-                          setState(() {});
-                          Navigator.pop(context);
-                        },
-                      );
+                      return DeadlineDialog();
                     },
                   );
+                  setState(() {});
                 }),
           ],
         ),

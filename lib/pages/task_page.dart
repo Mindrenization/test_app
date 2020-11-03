@@ -22,6 +22,7 @@ class _TaskPageState extends State<TaskPage> {
   TextEditingController _stepController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   bool isText = false;
+  DateTime _deadline;
 
   @override
   void initState() {
@@ -180,46 +181,15 @@ class _TaskPageState extends State<TaskPage> {
                             ? Colors.black
                             : Colors.blue,
                       ),
-                      onTap: () {
-                        showDialog(
+                      onTap: () async {
+                        _deadline = await showDialog(
                           context: context,
                           builder: (context) {
-                            return DeadlineDialog(
-                              onTomorrow: () {
-                                setState(() {
-                                  int _tomorrow = DateTime.now().day + 1;
-                                  widget.task.deadline = DateTime(
-                                      DateTime.now().year,
-                                      DateTime.now().month,
-                                      _tomorrow);
-                                  Navigator.pop(context);
-                                });
-                              },
-                              onNextWeek: () {
-                                setState(() {
-                                  int _nextWeek = DateTime.now().day + 7;
-                                  widget.task.deadline = DateTime(
-                                      DateTime.now().year,
-                                      DateTime.now().month,
-                                      _nextWeek);
-                                  Navigator.pop(context);
-                                });
-                              },
-                              onCustomDate: () async {
-                                var futureYear = DateTime.now().year + 100;
-                                widget.task.deadline = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime.now(),
-                                  lastDate: DateTime(futureYear,
-                                      DateTime.now().month, DateTime.now().day),
-                                );
-                                setState(() {});
-                                Navigator.pop(context);
-                              },
-                            );
+                            return DeadlineDialog();
                           },
                         );
+                        widget.task.deadline = _deadline;
+                        setState(() {});
                       },
                     )
                   ],
