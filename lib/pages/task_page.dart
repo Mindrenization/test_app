@@ -22,7 +22,6 @@ class _TaskPageState extends State<TaskPage> {
   TextEditingController _stepController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   bool isText = false;
-  DateTime _deadline;
 
   @override
   void initState() {
@@ -153,8 +152,11 @@ class _TaskPageState extends State<TaskPage> {
                 child: Column(
                   children: [
                     _deadlineButton(
-                        text: 'Напомнить',
-                        icon: Icons.notifications_on_outlined,
+                        text: Text(
+                          'Напомнить',
+                          textAlign: TextAlign.start,
+                        ),
+                        icon: Icon(Icons.notifications_on_outlined),
                         onTap: () {}),
                     Divider(
                       indent: 70,
@@ -162,18 +164,58 @@ class _TaskPageState extends State<TaskPage> {
                       color: Colors.black,
                     ),
                     _deadlineButton(
-                      text: widget.task.deadline == null
-                          ? 'Добавить дату выполнения'
-                          : '${widget.task.deadline.day}.${widget.task.deadline.month}.${widget.task.deadline.year}',
-                      icon: Icons.calendar_today_outlined,
+                      text: Text(
+                        widget.task.deadline == null
+                            ? 'Добавить дату выполнения'
+                            : '${widget.task.deadline.day}.${widget.task.deadline.month}.${widget.task.deadline.year}',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                            color: widget.task.deadline == null
+                                ? Colors.black
+                                : Colors.blue),
+                      ),
+                      icon: Icon(
+                        Icons.calendar_today_outlined,
+                        color: widget.task.deadline == null
+                            ? Colors.black
+                            : Colors.blue,
+                      ),
                       onTap: () {
                         showDialog(
                           context: context,
                           builder: (context) {
                             return DeadlineDialog(
-                              deadline: _deadline,
-                              onRefresh: () {
+                              onTomorrow: () {
+                                setState(() {
+                                  int _tomorrow = DateTime.now().day + 1;
+                                  widget.task.deadline = DateTime(
+                                      DateTime.now().year,
+                                      DateTime.now().month,
+                                      _tomorrow);
+                                  Navigator.pop(context);
+                                });
+                              },
+                              onNextWeek: () {
+                                setState(() {
+                                  int _nextWeek = DateTime.now().day + 7;
+                                  widget.task.deadline = DateTime(
+                                      DateTime.now().year,
+                                      DateTime.now().month,
+                                      _nextWeek);
+                                  Navigator.pop(context);
+                                });
+                              },
+                              onCustomDate: () async {
+                                var futureYear = DateTime.now().year + 100;
+                                widget.task.deadline = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime(futureYear,
+                                      DateTime.now().month, DateTime.now().day),
+                                );
                                 setState(() {});
+                                Navigator.pop(context);
                               },
                             );
                           },
@@ -342,7 +384,7 @@ class _TaskPageState extends State<TaskPage> {
     );
   }
 
-  Widget _deadlineButton({String text, IconData icon, onTap()}) {
+  Widget _deadlineButton({Text text, Icon icon, onTap()}) {
     return GestureDetector(
       child: Container(
         margin: EdgeInsets.all(10),
@@ -352,12 +394,9 @@ class _TaskPageState extends State<TaskPage> {
           children: [
             Padding(
               padding: EdgeInsets.only(right: 15),
-              child: Icon(icon),
+              child: icon,
             ),
-            Text(
-              text,
-              textAlign: TextAlign.start,
-            ),
+            text
           ],
         ),
       ),

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 // Модал установки дедлайна задачи
 class DeadlineDialog extends StatelessWidget {
-  DateTime deadline;
-  VoidCallback onRefresh;
-  DeadlineDialog({this.deadline, this.onRefresh});
+  VoidCallback onTomorrow;
+  VoidCallback onNextWeek;
+  VoidCallback onCustomDate;
+  DeadlineDialog({this.onTomorrow, this.onNextWeek, this.onCustomDate});
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
@@ -12,38 +13,15 @@ class DeadlineDialog extends StatelessWidget {
       children: [
         FlatButton(
           child: Text('Завтра'),
-          onPressed: () {
-            int _tomorrow = DateTime.now().day + 1;
-            deadline =
-                DateTime(DateTime.now().year, DateTime.now().month, _tomorrow);
-            onRefresh();
-            Navigator.pop(context);
-          },
+          onPressed: () => onTomorrow(),
         ),
         FlatButton(
           child: Text('На следующей неделе'),
-          onPressed: () {
-            int _nextWeek = DateTime.now().day + 7;
-            deadline =
-                DateTime(DateTime.now().year, DateTime.now().month, _nextWeek);
-            Navigator.pop(context);
-            onRefresh();
-          },
+          onPressed: () => onNextWeek(),
         ),
         FlatButton(
           child: Text('Выбрать дату'),
-          onPressed: () async {
-            var futureYear = DateTime.now().year + 100;
-            deadline = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime.now(),
-              lastDate: DateTime(
-                  futureYear, DateTime.now().month, DateTime.now().day),
-            );
-            Navigator.pop(context);
-            onRefresh();
-          },
+          onPressed: () => onCustomDate(),
         ),
       ],
     );
