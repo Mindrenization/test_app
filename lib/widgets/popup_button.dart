@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Кнопка с иконкой для popup меню
 class PopupButton extends StatelessWidget {
   final String text;
   final IconData icon;

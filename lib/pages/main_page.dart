@@ -13,14 +13,13 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  TextEditingController _controller = TextEditingController();
-  List tasksList = [
+  List<Task> taskList = [
     Task(1, 'Задача 1', false, 0, 0, ''),
     Task(2, 'Задача 2', false, 0, 0, ''),
     Task(3, 'Задача 3', false, 0, 0, ''),
   ];
   static const String emptyTaskListImage = 'assets/images/empty_tasks.svg';
-  List filteredTasksList = [];
+  List filteredTaskList = [];
   bool isFiltered = false;
 
   @override
@@ -80,92 +79,96 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: tasksList.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(emptyTaskListImage),
-                    Container(
-                      height: 20,
-                    ),
-                    Text(
-                      'На данный момент задач нет',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-                    ),
-                  ],
-                ),
-              )
-            : filteredTasksList.isEmpty && isFiltered
-                ? Center(
-                    child: Text(
-                    'У вас нет невыполненных задач',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-                  ))
-                : ListView.builder(
-                    itemCount: isFiltered
-                        ? filteredTasksList.length
-                        : tasksList.length,
-                    itemBuilder: (context, index) {
-                      var task = isFiltered
-                          ? filteredTasksList[index]
-                          : tasksList[index];
-                      return TaskTile(
-                          task: task,
-                          onDelete: () {
-                            setState(() {
-                              tasksList.removeWhere(
-                                  (element) => element.id == task.id);
-                              if (isFiltered) {
-                                filteredTasksList.removeWhere(
-                                    (element) => element.id == task.id);
-                              }
-                            });
-                          });
-                    },
-                  ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.cyan[600],
-        child: Icon(Icons.add),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return CreateTaskDialog(
-                  controller: _controller,
-                  onCreate: () {
-                    var text = _controller.text;
-                    var lastTaskId = tasksList.isEmpty ? 0 : tasksList.last.id;
-                    setState(
-                      () => tasksList
-                          .add(Task(++lastTaskId, text, false, 0, 0, '')),
-                    );
-                    Navigator.pop(context);
-                    _controller.clear();
-                  });
-            },
-          );
-        },
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          child: taskList.isEmpty
+              ? noTasksBackground()
+              : filteredTaskList.isEmpty && isFiltered
+                  ? noFilteredTasksBackground()
+                  : taskListView()),
+      floatingActionButton: addTaskButton(),
+    );
+  }
+
+  Widget noTasksBackground() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(emptyTaskListImage),
+          Container(
+            height: 20,
+          ),
+          Text(
+            'На данный момент задач нет',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+          ),
+        ],
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  Widget noFilteredTasksBackground() {
+    return Center(
+      child: Text(
+        'У вас нет невыполненных задач',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+      ),
+    );
+  }
+
+  Widget taskListView() {
+    return ListView.builder(
+      itemCount: isFiltered ? filteredTaskList.length : taskList.length,
+      itemBuilder: (context, index) {
+        var task = isFiltered ? filteredTaskList[index] : taskList[index];
+        return Padding(
+          padding: EdgeInsets.only(bottom: 5),
+          child: TaskTile(
+            task: task,
+            onDelete: () {
+              setState(
+                () {
+                  taskList.removeWhere((element) => element.id == task.id);
+                  if (isFiltered) {
+                    filteredTaskList
+                        .removeWhere((element) => element.id == task.id);
+                  }
+                },
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget addTaskButton() {
+    return FloatingActionButton(
+      backgroundColor: Colors.cyan[600],
+      child: Icon(Icons.add),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return CreateTaskDialog(
+                tasksList: taskList,
+                onRefresh: () {
+                  setState(() {});
+                });
+          },
+        );
+      },
+    );
   }
 
   void _filterTasks() {
     if (!isFiltered) {
-      if (tasksList.any((task) => task.isComplete)) {
+      if (taskList.any((task) => task.isComplete)) {
         setState(() {
-          filteredTasksList =
-              tasksList.where((task) => !task.isComplete).toList();
+          filteredTaskList =
+              taskList.where((task) => !task.isComplete).toList();
           isFiltered = true;
         });
       }
@@ -175,6 +178,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _deleteCompletedTasks() {
-    setState(() => tasksList.removeWhere((task) => task.isComplete));
+    setState(() => taskList.removeWhere((task) => task.isComplete));
   }
 }
