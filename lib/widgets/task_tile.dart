@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/pages/task_page.dart';
+import 'package:test_app/pages/task_details_page.dart';
 
 // Карточка задачи в списке
 class TaskTile extends StatefulWidget {
   final task;
   final VoidCallback onDelete;
-  TaskTile({this.task, this.onDelete});
+  final VoidCallback onRefresh;
+  TaskTile({this.task, this.onDelete, this.onRefresh});
 
   @override
   _TaskTileState createState() => _TaskTileState();
@@ -16,7 +17,10 @@ class _TaskTileState extends State<TaskTile> {
   Widget build(BuildContext context) {
     return Dismissible(
       key: UniqueKey(),
-      onDismissed: (direction) => widget.onDelete(),
+      onDismissed: (direction) {
+        widget.onDelete();
+        widget.onRefresh();
+      },
       direction: DismissDirection.endToStart,
       background: Container(
         decoration: BoxDecoration(
@@ -36,7 +40,7 @@ class _TaskTileState extends State<TaskTile> {
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TaskPage(
+            builder: (context) => TaskDetailsPage(
               task: widget.task,
               onRefresh: () {
                 setState(() {});
@@ -59,6 +63,7 @@ class _TaskTileState extends State<TaskTile> {
                 activeColor: const Color(0xFF6202EE),
                 onChanged: (value) {
                   setState(() => widget.task.isComplete = value);
+                  widget.onRefresh();
                 },
               ),
               Column(
