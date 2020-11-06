@@ -89,6 +89,12 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
     );
   }
 
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
+  }
+
   Widget _deadlineButton({String text, IconData icon, onTap()}) {
     return GestureDetector(
       child: Padding(

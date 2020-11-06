@@ -69,4 +69,10 @@ class _ChangeTaskTitleDialogState extends State<ChangeTaskTitleDialog> {
       ],
     );
   }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
+  }
 }
