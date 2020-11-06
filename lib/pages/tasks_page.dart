@@ -87,21 +87,38 @@ class _TasksPageState extends State<TasksPage> {
                     Container(
                       height: 20,
                     ),
-                    Text(
-                      'На данный момент задач нет',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 110),
+                      child: Text(
+                        'На данный момент в этой ветке нет задач',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 22, color: Colors.grey[700]),
+                      ),
                     ),
                   ],
                 ),
               )
             : filteredTaskList.isEmpty && isFiltered
                 ? Center(
-                    child: Text(
-                    'У вас нет невыполненных задач',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-                  ))
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(emptyTaskListImage),
+                        Container(
+                          height: 20,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 90),
+                          child: Text(
+                            'У вас нет невыполненных задач',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 22, color: Colors.grey[700]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                 : ListView.builder(
                     itemCount: isFiltered
                         ? filteredTaskList.length
