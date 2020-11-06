@@ -79,75 +79,87 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: _taskList.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(emptyTaskListImage),
-                    Container(
-                      height: 20,
-                    ),
-                    Text(
-                      'На данный момент задач нет',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-                    ),
-                  ],
-                ),
-              )
-            : filteredTaskList.isEmpty && isFiltered
-                ? Center(
-                    child: Text(
-                    'У вас нет невыполненных задач',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-                  ))
-                : ListView.builder(
-                    itemCount:
-                        isFiltered ? filteredTaskList.length : _taskList.length,
-                    itemBuilder: (context, index) {
-                      var task = isFiltered
-                          ? filteredTaskList[index]
-                          : _taskList[index];
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 5),
-                        child: TaskTile(
-                          task: task,
-                          onDelete: () {
-                            setState(
-                              () {
-                                _taskList.removeWhere(
-                                    (element) => element.id == task.id);
-                                if (isFiltered) {
-                                  filteredTaskList.removeWhere(
-                                      (element) => element.id == task.id);
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          child: _taskList.isEmpty
+              ? noTasksBackground()
+              : filteredTaskList.isEmpty && isFiltered
+                  ? noFilteredTasksBackground()
+                  : taskListView()),
+      floatingActionButton: addTaskButton(),
+    );
+  }
+
+  Widget noTasksBackground() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(emptyTaskListImage),
+          Container(
+            height: 20,
+          ),
+          Text(
+            'На данный момент задач нет',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.cyan[600],
-        child: Icon(Icons.add),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return CreateTaskDialog(
-                  taskList: _taskList,
-                  onRefresh: () {
-                    setState(() {});
-                  });
+    );
+  }
+
+  Widget noFilteredTasksBackground() {
+    return Center(
+      child: Text(
+        'У вас нет невыполненных задач',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+      ),
+    );
+  }
+
+  Widget taskListView() {
+    return ListView.builder(
+      itemCount: isFiltered ? filteredTaskList.length : _taskList.length,
+      itemBuilder: (context, index) {
+        var task = isFiltered ? filteredTaskList[index] : _taskList[index];
+        return Padding(
+          padding: EdgeInsets.only(bottom: 5),
+          child: TaskTile(
+            task: task,
+            onDelete: () {
+              setState(
+                () {
+                  _taskList.removeWhere((element) => element.id == task.id);
+                  if (isFiltered) {
+                    filteredTaskList
+                        .removeWhere((element) => element.id == task.id);
+                  }
+                },
+              );
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget addTaskButton() {
+    return FloatingActionButton(
+      backgroundColor: Colors.cyan[600],
+      child: Icon(Icons.add),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return CreateTaskDialog(
+                taskList: _taskList,
+                onRefresh: () {
+                  setState(() {});
+                });
+          },
+        );
+      },
     );
   }
 
