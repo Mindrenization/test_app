@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:test_app/models/branch.dart';
 import 'package:test_app/pages/tasks_page.dart';
+import 'package:test_app/widgets/circular_progress_bar.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
 import 'package:test_app/widgets/create_branch_dialog.dart';
 import 'package:test_app/widgets/delete_branch_dialog.dart';
@@ -36,95 +37,92 @@ class _MainPageState extends State<MainPage> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 25, horizontal: 15),
-        child: Column(
-          children: [
-            Container(
-              height: 120,
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                  color: const Color(0xFF86A5F5),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                        offset: Offset.fromDirection(1.5, 3),
-                        color: Colors.black26,
-                        spreadRadius: 0.1,
-                        blurRadius: 3),
-                  ]),
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Все задания',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: totalTasks != 0
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Завершено ${totalCompletedTasks.toInt()} задач из ${totalTasks.toInt()}',
-                                style: TextStyle(
-                                    fontSize: 11,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 5),
-                                child: LinearProgressBar(
-                                    totalCompletedTasks / totalTasks),
-                              ),
-                            ],
-                          )
-                        : Text(
-                            'На данный момент\nзадачи отсутствуют',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: SvgPicture.asset(
-                      mainLogo,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Row(
+      body: Column(
+        children: [
+          Container(
+            height: 130,
+            width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.fromLTRB(10, 25, 10, 10),
+            padding: EdgeInsets.all(15),
+            decoration: BoxDecoration(
+                color: const Color(0xFF86A5F5),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                      offset: Offset.fromDirection(1.5, 3),
+                      color: Colors.black26,
+                      spreadRadius: 0.1,
+                      blurRadius: 3),
+                ]),
+            child: Stack(
               children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15),
+                Align(
+                  alignment: Alignment.topLeft,
                   child: Text(
-                    'Ветки задач',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    'Все задания',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
-                )
+                ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: totalTasks != 0
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Завершено ${totalCompletedTasks.toInt()} задач из ${totalTasks.toInt()}',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 5),
+                              child: LinearProgressBar(
+                                  totalCompletedTasks / totalTasks),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          'На данный момент\nзадачи отсутствуют',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SvgPicture.asset(
+                    mainLogo,
+                  ),
+                ),
               ],
             ),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                children: [
-                  for (int index = 0; index < branchList.length; index++)
-                    _branchTile(index),
-                  _addBranchButton(),
-                ],
-              ),
+          ),
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                child: Text(
+                  'Ветки задач',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+              )
+            ],
+          ),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 2,
+              children: [
+                for (int index = 0; index < branchList.length; index++)
+                  _branchTile(index),
+                _addBranchButton(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -143,10 +141,17 @@ class _MainPageState extends State<MainPage> {
         );
       },
       child: Container(
-        margin: EdgeInsets.fromLTRB(5, 5, 90, 5),
+        margin: EdgeInsets.fromLTRB(10, 10, 90, 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: const Color(0xFF01A39D),
+          boxShadow: [
+            BoxShadow(
+                offset: Offset.fromDirection(1.5, 3),
+                color: Colors.black26,
+                spreadRadius: 0.1,
+                blurRadius: 3),
+          ],
         ),
         child: Icon(
           Icons.add,
@@ -172,18 +177,19 @@ class _MainPageState extends State<MainPage> {
         );
       },
       child: Container(
-        margin: EdgeInsets.all(7),
-        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.all(10),
+        padding: EdgeInsets.all(15),
         decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                  offset: Offset.fromDirection(1.5, 3),
-                  color: Colors.black26,
-                  spreadRadius: 0.1,
-                  blurRadius: 3),
-            ]),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+                offset: Offset.fromDirection(1.5, 3),
+                color: Colors.black26,
+                spreadRadius: 0.1,
+                blurRadius: 3),
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,11 +199,14 @@ class _MainPageState extends State<MainPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(bottom: 25, top: 10, left: 5),
-                  child: CircularProgressIndicator(
-                    value: 100,
-                    strokeWidth: 5,
-                  ),
+                  padding: EdgeInsets.only(bottom: 35, top: 20, left: 15),
+                  child: CircularProgressBar(branchList[index].tasks.length == 0
+                      ? 0
+                      : branchList[index]
+                              .tasks
+                              .where((task) => task.isComplete)
+                              .length /
+                          branchList[index].tasks.length),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -226,7 +235,10 @@ class _MainPageState extends State<MainPage> {
             SizedBox(
               height: 5,
             ),
-            Text('${branchList[index].tasks.length} задач(и)'),
+            Text(
+              '${branchList[index].tasks.length} задач(и)',
+              style: TextStyle(color: Colors.grey[700]),
+            ),
             SizedBox(
               height: 10,
             ),
