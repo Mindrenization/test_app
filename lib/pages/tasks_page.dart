@@ -160,6 +160,7 @@ class _TasksPageState extends State<TasksPage> {
                   taskList: widget.branch.tasks,
                   onRefresh: () {
                     setState(() {});
+                    widget.onRefresh();
                   });
             },
           );
