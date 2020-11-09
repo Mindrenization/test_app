@@ -5,6 +5,7 @@ import 'package:test_app/widgets/task_tile.dart';
 import 'package:test_app/widgets/popup_button.dart';
 import 'package:test_app/widgets/create_task_dialog.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
+import 'package:test_app/resources/resources.dart';
 
 // Список задач
 class MainPage extends StatefulWidget {
@@ -18,7 +19,6 @@ class _MainPageState extends State<MainPage> {
     Task(1, 'Задача 2'),
     Task(2, 'Задача 3'),
   ];
-  static const String emptyTaskListImage = 'assets/images/empty_tasks.svg';
   List filteredTaskList = [];
   bool isFiltered = false;
 
@@ -80,40 +80,34 @@ class _MainPageState extends State<MainPage> {
       ),
       body: Container(
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          child: _taskList.isEmpty
-              ? noTasksBackground()
-              : filteredTaskList.isEmpty && isFiltered
-                  ? noFilteredTasksBackground()
-                  : taskListView()),
+          child: _taskList.isEmpty || (filteredTaskList.isEmpty && isFiltered)
+              ? noTasksBackground(isFiltered)
+              : taskListView()),
       floatingActionButton: addTaskButton(),
     );
   }
 
-  Widget noTasksBackground() {
+  Widget noTasksBackground(bool isFiltered) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(emptyTaskListImage),
+          SvgPicture.asset(Resources.emptyTaskListImage),
           Container(
             height: 20,
           ),
-          Text(
-            'На данный момент задач нет',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-          ),
+          isFiltered
+              ? Text(
+                  'У вас нет невыполненных задач',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                )
+              : Text(
+                  'На данный момент задач нет',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                ),
         ],
-      ),
-    );
-  }
-
-  Widget noFilteredTasksBackground() {
-    return Center(
-      child: Text(
-        'У вас нет невыполненных задач',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 30, color: Colors.grey[700]),
       ),
     );
   }
@@ -152,11 +146,9 @@ class _MainPageState extends State<MainPage> {
         showDialog(
           context: context,
           builder: (context) {
-            return CreateTaskDialog(
-                taskList: _taskList,
-                onRefresh: () {
-                  setState(() {});
-                });
+            return CreateTaskDialog(_taskList, onRefresh: () {
+              setState(() {});
+            });
           },
         );
       },
