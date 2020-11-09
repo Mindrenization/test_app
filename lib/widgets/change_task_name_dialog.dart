@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Модал изменения названия задачи
+// Модальное окно для изменения названия задачи
 class ChangeTaskTitleDialog extends StatefulWidget {
   final task;
   final VoidCallback onRefresh;

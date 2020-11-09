@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Модал установки дедлайна задачи
+// Модальное окно для установки дедлайна задачи
 class DeadlineDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

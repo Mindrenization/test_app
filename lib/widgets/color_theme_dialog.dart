@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Модал выбора цветовой темы
+// Модальное окно для выбора цветовой темы
 class ColorThemeDialog extends StatefulWidget {
   static Color mainColor = const Color(0xFF6202EE);
   static Color backgroundColor = const Color.fromRGBO(181, 201, 253, 1);

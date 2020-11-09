@@ -13,11 +13,11 @@ class Task {
 
   Task(
     this.id,
-    this.title, [
+    this.title, {
     this.deadline,
     this.isComplete = false,
     this.completedSteps = 0,
     this.maxSteps = 0,
     this.description,
-  ]);
+  });
 }

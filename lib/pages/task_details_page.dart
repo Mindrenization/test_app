@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:test_app/models/task.dart';
 import 'package:test_app/widgets/change_task_name_dialog.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
@@ -38,12 +39,16 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
               floating: true,
               snap: true,
               centerTitle: true,
-              title: Text(
-                widget.task.title,
-                style: TextStyle(color: Colors.white),
-              ),
               backgroundColor: ColorThemeDialog.mainColor,
               expandedHeight: 100,
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: true,
+                titlePadding: EdgeInsets.only(left: 80, right: 40, bottom: 20),
+                title: Text(
+                  widget.task.title,
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
               actions: [
                 PopupMenuButton(
                   itemBuilder: (context) => [
@@ -138,7 +143,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                       text: Text(
                         widget.task.deadline == null
                             ? 'Добавить дату выполнения'
-                            : '${widget.task.deadline.day}.${widget.task.deadline.month}.${widget.task.deadline.year}',
+                            : '${DateFormat('dd.MM.yyyy').format(widget.task.deadline)}',
                         textAlign: TextAlign.start,
                         style: TextStyle(
                             color: widget.task.deadline == null

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Модал удаления задачи
+// Модальное окно для удаления задачи
 class DeleteTaskDialog extends StatelessWidget {
   final task;
   final VoidCallback onDelete;

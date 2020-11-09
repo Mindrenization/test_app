@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/models/task.dart';
 import 'package:test_app/widgets/deadline_dialog.dart';
+import 'package:intl/intl.dart';
 
-// Модал создания задачи
+// Модальное окно для создания задачи
 class CreateTaskDialog extends StatefulWidget {
   @override
   _CreateTaskDialogState createState() => _CreateTaskDialogState();
   final List<Task> taskList;
   final VoidCallback onRefresh;
-  CreateTaskDialog({this.taskList, this.onRefresh});
+  CreateTaskDialog(this.taskList, {this.onRefresh});
 }
 
 class _CreateTaskDialogState extends State<CreateTaskDialog> {
@@ -51,7 +52,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
             _deadlineButton(
                 text: _deadline == null
                     ? 'Дата выполнения'
-                    : '${_deadline.day}.${_deadline.month}.${_deadline.year}',
+                    : '${DateFormat('dd.MM.yyyy').format(_deadline)}',
                 icon: Icons.calendar_today_outlined,
                 onTap: () async {
                   _deadline = await showDialog(
@@ -127,7 +128,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
   _complete() {
     var lastTaskId = widget.taskList.isEmpty ? 0 : widget.taskList.last.id;
     widget.taskList.add(
-      Task(++lastTaskId, _titleController.text, _deadline),
+      Task(++lastTaskId, _titleController.text, deadline: _deadline),
     );
     widget.onRefresh();
     Navigator.pop(context);
