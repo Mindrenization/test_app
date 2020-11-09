@@ -199,7 +199,7 @@ class _MainPageState extends State<MainPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(bottom: 35, top: 20, left: 15),
+                  padding: EdgeInsets.only(bottom: 35, top: 20, left: 5),
                   child: CircularProgressBar(branchList[index].tasks.length == 0
                       ? 0
                       : branchList[index]

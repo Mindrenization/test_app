@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:test_app/models/branch.dart';
+import 'package:test_app/widgets/no_tasks_background.dart';
 import 'package:test_app/widgets/task_tile.dart';
 import 'package:test_app/widgets/popup_button.dart';
 import 'package:test_app/widgets/create_task_dialog.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
-import 'package:test_app/resources/resources.dart';
 
 // Список задач
 class TasksPage extends StatefulWidget {
@@ -20,26 +19,9 @@ class _TasksPageState extends State<TasksPage>
     with SingleTickerProviderStateMixin {
   List filteredTaskList = [];
   bool isFiltered = false;
-  Animation<double> _animation;
-  AnimationController controller;
-  var logoHight;
-
-  @override
-  void initState() {
-    controller =
-        AnimationController(duration: Duration(seconds: 1), vsync: this);
-    controller.forward();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    _animation = Tween(begin: -200.0, end: 0.0).animate(controller)
-      ..addListener(() {
-        setState(() {
-          logoHight = _animation.value;
-        });
-      });
     return Scaffold(
       backgroundColor: ColorThemeDialog.backgroundColor,
       appBar: AppBar(
@@ -99,50 +81,10 @@ class _TasksPageState extends State<TasksPage>
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: widget.branch.tasks.isEmpty ||
                 (filteredTaskList.isEmpty && isFiltered)
-            ? noTasksBackground(isFiltered)
+            ? NoTasksBackground(isFiltered)
             : taskListView(),
       ),
       floatingActionButton: addTaskButton(),
-    );
-  }
-
-  Widget noTasksBackground(bool isFiltered) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Stack(
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: SvgPicture.asset(Resources.emptyTasksBackground),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: SvgPicture.asset(Resources.emptyTasksSecondBackground),
-              ),
-              Positioned(
-                right: 86,
-                bottom: logoHight,
-                child: SvgPicture.asset(Resources.emptyTasksLogo),
-              ),
-            ],
-          ),
-          Container(
-            height: 20,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 90),
-            child: Text(
-              isFiltered
-                  ? 'У вас нет невыполненных задач'
-                  : 'На данный момент в этой ветке нет задач',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 22, color: Colors.grey[700]),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

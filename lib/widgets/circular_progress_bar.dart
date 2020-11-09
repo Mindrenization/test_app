@@ -24,7 +24,6 @@ class _CircularProgressBarState extends State<CircularProgressBar>
   @override
   void didUpdateWidget(covariant CircularProgressBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-
     if (widget.value != oldWidget.value) {
       controller
         ..value = 0
@@ -40,15 +39,20 @@ class _CircularProgressBarState extends State<CircularProgressBar>
           value = _animation.value;
         });
       });
-    return CustomPaint(
-      child: Text(
-        '${(value * 100).toInt()}%',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: const Color(0xFF01A39D),
+
+    return Container(
+      width: 40,
+      child: CustomPaint(
+        child: Text(
+          '${(value * 100).toInt()}%',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF01A39D),
+          ),
         ),
+        foregroundPainter: CircularPainter(value),
       ),
-      foregroundPainter: CircularPainter(value),
     );
   }
 
