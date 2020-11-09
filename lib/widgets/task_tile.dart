@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/pages/task_page.dart';
+import 'package:test_app/pages/task_details_page.dart';
 
 // Карточка задачи в списке
 class TaskTile extends StatefulWidget {
@@ -36,7 +36,7 @@ class _TaskTileState extends State<TaskTile> {
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TaskPage(
+            builder: (context) => TaskDetailsPage(
               task: widget.task,
               onRefresh: () {
                 setState(() {});

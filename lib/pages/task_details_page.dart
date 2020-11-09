@@ -9,16 +9,16 @@ import 'package:test_app/widgets/popup_button.dart';
 import 'package:test_app/widgets/step_list.dart';
 
 // Страница детализации задачи
-class TaskPage extends StatefulWidget {
+class TaskDetailsPage extends StatefulWidget {
   final Task task;
   final VoidCallback onRefresh;
   final VoidCallback onDelete;
-  TaskPage({this.task, this.onRefresh, this.onDelete});
+  TaskDetailsPage({this.task, this.onRefresh, this.onDelete});
   @override
-  _TaskPageState createState() => _TaskPageState();
+  _TaskDetailsPageState createState() => _TaskDetailsPageState();
 }
 
-class _TaskPageState extends State<TaskPage> {
+class _TaskDetailsPageState extends State<TaskDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

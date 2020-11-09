@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/pages/main_page.dart';
+import 'package:test_app/pages/tasks_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         ),
         primaryColor: const Color.fromRGBO(181, 201, 253, 1),
       ),
-      home: MainPage(),
+      home: TasksPage(),
     );
   }
 }
