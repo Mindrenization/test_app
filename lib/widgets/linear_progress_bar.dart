@@ -1,19 +1,60 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class LinearProgressBar extends StatelessWidget {
+class LinearProgressBar extends StatefulWidget {
   final double value;
 
   LinearProgressBar(this.value);
+
+  _LinearProgressBarState createState() => _LinearProgressBarState();
+}
+
+class _LinearProgressBarState extends State<LinearProgressBar>
+    with SingleTickerProviderStateMixin {
+  Animation<double> _animation;
+  AnimationController controller;
+  double value = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    controller =
+        AnimationController(duration: Duration(seconds: 2), vsync: this);
+    controller.forward();
+  }
+
+  @override
+  void didUpdateWidget(covariant LinearProgressBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.value != oldWidget.value) {
+      controller
+        ..value = 0
+        ..forward();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _animation = Tween(begin: 0.0, end: widget.value).animate(controller)
+      ..addListener(() {
+        setState(() {
+          value = _animation.value;
+        });
+      });
     return Container(
       height: 10,
       width: 150,
       child: CustomPaint(
-        foregroundPainter: LinearPainter(this.value),
+        foregroundPainter: LinearPainter(value),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }
 
