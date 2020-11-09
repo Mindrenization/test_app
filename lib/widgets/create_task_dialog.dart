@@ -31,7 +31,10 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
         Container(
           child: TextField(
             maxLength: 30,
-            onEditingComplete: () => _complete(),
+            onEditingComplete: () {
+              _complete();
+              widget.onRefresh();
+            },
             controller: _titleController,
             decoration: InputDecoration(
                 hintText: 'Введите название задачи', isDense: true),
@@ -82,7 +85,10 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
                 'Создать',
                 style: TextStyle(fontSize: 18),
               ),
-              onPressed: () => _complete(),
+              onPressed: () {
+                _complete();
+                widget.onRefresh();
+              },
             ),
           ],
         ),

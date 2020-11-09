@@ -77,11 +77,12 @@ class _TasksPageState extends State<TasksPage> {
         ],
       ),
       body: Container(
-          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          child: widget.branch.tasks.isEmpty ||
-                  (filteredTaskList.isEmpty && isFiltered)
-              ? noTasksBackground(isFiltered)
-              : taskListView()),
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: widget.branch.tasks.isEmpty ||
+                (filteredTaskList.isEmpty && isFiltered)
+            ? noTasksBackground(isFiltered)
+            : taskListView(),
+      ),
       floatingActionButton: addTaskButton(),
     );
   }
@@ -95,17 +96,16 @@ class _TasksPageState extends State<TasksPage> {
           Container(
             height: 20,
           ),
-          isFiltered
-              ? Text(
-                  'У вас нет невыполненных задач',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-                )
-              : Text(
-                  'На данный момент задач нет',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-                ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 110),
+            child: Text(
+              isFiltered
+                  ? 'У вас нет невыполненных задач'
+                  : 'На данный момент в этой ветке нет задач',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 22, color: Colors.grey[700]),
+            ),
+          ),
         ],
       ),
     );
@@ -133,7 +133,9 @@ class _TasksPageState extends State<TasksPage> {
                   }
                 },
               );
+              widget.onRefresh();
             },
+            onRefresh: () => widget.onRefresh(),
           ),
         );
       },
@@ -150,6 +152,7 @@ class _TasksPageState extends State<TasksPage> {
           builder: (context) {
             return CreateTaskDialog(widget.branch.tasks, onRefresh: () {
               setState(() {});
+              widget.onRefresh();
             });
           },
         );
