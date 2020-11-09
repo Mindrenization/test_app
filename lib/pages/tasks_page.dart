@@ -156,12 +156,10 @@ class _TasksPageState extends State<TasksPage> {
           showDialog(
             context: context,
             builder: (context) {
-              return CreateTaskDialog(
-                  taskList: widget.branch.tasks,
-                  onRefresh: () {
-                    setState(() {});
-                    widget.onRefresh();
-                  });
+              return CreateTaskDialog(widget.branch.tasks, onRefresh: () {
+                setState(() {});
+                widget.onRefresh();
+              });
             },
           );
         },

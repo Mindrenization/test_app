@@ -44,6 +44,7 @@ class _TaskTileState extends State<TaskTile> {
               task: widget.task,
               onRefresh: () {
                 setState(() {});
+                widget.onRefresh();
               },
               onDelete: widget.onDelete,
             ),
