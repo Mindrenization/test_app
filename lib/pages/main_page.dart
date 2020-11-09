@@ -7,6 +7,7 @@ import 'package:test_app/widgets/color_theme_dialog.dart';
 import 'package:test_app/widgets/create_branch_dialog.dart';
 import 'package:test_app/widgets/delete_branch_dialog.dart';
 import 'package:test_app/widgets/linear_progress_bar.dart';
+import 'package:test_app/resources/resources.dart';
 
 // Главная страница
 class MainPage extends StatefulWidget {
@@ -15,7 +16,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  static const String mainLogo = 'assets/images/main_page_logo.svg';
   int completedTasks;
   List<Branch> branchList = [];
 
@@ -95,7 +95,7 @@ class _MainPageState extends State<MainPage> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: SvgPicture.asset(
-                    mainLogo,
+                    Resources.mainLogo,
                   ),
                 ),
               ],

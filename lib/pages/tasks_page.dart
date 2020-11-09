@@ -16,12 +16,30 @@ class TasksPage extends StatefulWidget {
   _TasksPageState createState() => _TasksPageState();
 }
 
-class _TasksPageState extends State<TasksPage> {
+class _TasksPageState extends State<TasksPage>
+    with SingleTickerProviderStateMixin {
   List filteredTaskList = [];
   bool isFiltered = false;
+  Animation<double> _animation;
+  AnimationController controller;
+  var logoHight;
+
+  @override
+  void initState() {
+    controller =
+        AnimationController(duration: Duration(seconds: 1), vsync: this);
+    controller.forward();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    _animation = Tween(begin: -200.0, end: 0.0).animate(controller)
+      ..addListener(() {
+        setState(() {
+          logoHight = _animation.value;
+        });
+      });
     return Scaffold(
       backgroundColor: ColorThemeDialog.backgroundColor,
       appBar: AppBar(
@@ -49,6 +67,7 @@ class _TasksPageState extends State<TasksPage> {
                       onTap: () {
                         _deleteCompletedTasks();
                         Navigator.pop(context);
+                        widget.onRefresh();
                       },
                     )),
                     PopupMenuItem(
@@ -92,12 +111,28 @@ class _TasksPageState extends State<TasksPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(Resources.emptyTaskListImage),
+          Stack(
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: SvgPicture.asset(Resources.emptyTasksBackground),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: SvgPicture.asset(Resources.emptyTasksSecondBackground),
+              ),
+              Positioned(
+                right: 86,
+                bottom: logoHight,
+                child: SvgPicture.asset(Resources.emptyTasksLogo),
+              ),
+            ],
+          ),
           Container(
             height: 20,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 110),
+            padding: EdgeInsets.symmetric(horizontal: 90),
             child: Text(
               isFiltered
                   ? 'У вас нет невыполненных задач'
