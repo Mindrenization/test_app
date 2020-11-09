@@ -5,6 +5,7 @@ import 'package:test_app/widgets/task_tile.dart';
 import 'package:test_app/widgets/popup_button.dart';
 import 'package:test_app/widgets/create_task_dialog.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
+import 'package:test_app/resources/resources.dart';
 
 // Список задач
 class TasksPage extends StatefulWidget {
@@ -16,7 +17,6 @@ class TasksPage extends StatefulWidget {
 }
 
 class _TasksPageState extends State<TasksPage> {
-  static const String emptyTaskListImage = 'assets/images/empty_tasks.svg';
   List filteredTaskList = [];
   bool isFiltered = false;
 
@@ -76,94 +76,84 @@ class _TasksPageState extends State<TasksPage> {
                   ])
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: widget.branch.tasks.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(emptyTaskListImage),
-                    Container(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 110),
-                      child: Text(
-                        'На данный момент в этой ветке нет задач',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 22, color: Colors.grey[700]),
-                      ),
-                    ),
-                  ],
+      body: Container(
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          child: widget.branch.tasks.isEmpty ||
+                  (filteredTaskList.isEmpty && isFiltered)
+              ? noTasksBackground(isFiltered)
+              : taskListView()),
+      floatingActionButton: addTaskButton(),
+    );
+  }
+
+  Widget noTasksBackground(bool isFiltered) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(Resources.emptyTaskListImage),
+          Container(
+            height: 20,
+          ),
+          isFiltered
+              ? Text(
+                  'У вас нет невыполненных задач',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                )
+              : Text(
+                  'На данный момент задач нет',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 30, color: Colors.grey[700]),
                 ),
-              )
-            : filteredTaskList.isEmpty && isFiltered
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(emptyTaskListImage),
-                        Container(
-                          height: 20,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 90),
-                          child: Text(
-                            'У вас нет невыполненных задач',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 22, color: Colors.grey[700]),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: isFiltered
-                        ? filteredTaskList.length
-                        : widget.branch.tasks.length,
-                    itemBuilder: (context, index) {
-                      var task = isFiltered
-                          ? filteredTaskList[index]
-                          : widget.branch.tasks[index];
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 5),
-                        child: TaskTile(
-                          task: task,
-                          onDelete: () {
-                            setState(
-                              () {
-                                widget.branch.tasks.removeWhere(
-                                    (element) => element.id == task.id);
-                                if (isFiltered) {
-                                  filteredTaskList.removeWhere(
-                                      (element) => element.id == task.id);
-                                }
-                              },
-                            );
-                          },
-                          onRefresh: () => widget.onRefresh(),
-                        ),
-                      );
-                    },
-                  ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.cyan[600],
-        child: Icon(Icons.add),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return CreateTaskDialog(widget.branch.tasks, onRefresh: () {
-                setState(() {});
-                widget.onRefresh();
-              });
+    );
+  }
+
+  Widget taskListView() {
+    return ListView.builder(
+      itemCount:
+          isFiltered ? filteredTaskList.length : widget.branch.tasks.length,
+      itemBuilder: (context, index) {
+        var task =
+            isFiltered ? filteredTaskList[index] : widget.branch.tasks[index];
+        return Padding(
+          padding: EdgeInsets.only(bottom: 5),
+          child: TaskTile(
+            task: task,
+            onDelete: () {
+              setState(
+                () {
+                  widget.branch.tasks
+                      .removeWhere((element) => element.id == task.id);
+                  if (isFiltered) {
+                    filteredTaskList
+                        .removeWhere((element) => element.id == task.id);
+                  }
+                },
+              );
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget addTaskButton() {
+    return FloatingActionButton(
+      backgroundColor: Colors.cyan[600],
+      child: Icon(Icons.add),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return CreateTaskDialog(widget.branch.tasks, onRefresh: () {
+              setState(() {});
+            });
+          },
+        );
+      },
     );
   }
 
