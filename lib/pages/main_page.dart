@@ -5,6 +5,7 @@ import 'package:test_app/widgets/task_tile.dart';
 import 'package:test_app/widgets/popup_button.dart';
 import 'package:test_app/widgets/create_task_dialog.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
+import 'package:test_app/resources/resources.dart';
 
 // Список задач
 class MainPage extends StatefulWidget {
@@ -13,12 +14,11 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  List<Task> taskList = [
-    Task(1, 'Задача 1', false, 0, 0, ''),
-    Task(2, 'Задача 2', false, 0, 0, ''),
-    Task(3, 'Задача 3', false, 0, 0, ''),
+  List<Task> _taskList = [
+    Task(0, 'Задача 1'),
+    Task(1, 'Задача 2'),
+    Task(2, 'Задача 3'),
   ];
-  static const String emptyTaskListImage = 'assets/images/empty_tasks.svg';
   List filteredTaskList = [];
   bool isFiltered = false;
 
@@ -80,49 +80,43 @@ class _MainPageState extends State<MainPage> {
       ),
       body: Container(
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          child: taskList.isEmpty
-              ? noTasksBackground()
-              : filteredTaskList.isEmpty && isFiltered
-                  ? noFilteredTasksBackground()
-                  : taskListView()),
+          child: _taskList.isEmpty || (filteredTaskList.isEmpty && isFiltered)
+              ? noTasksBackground(isFiltered)
+              : taskListView()),
       floatingActionButton: addTaskButton(),
     );
   }
 
-  Widget noTasksBackground() {
+  Widget noTasksBackground(bool isFiltered) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(emptyTaskListImage),
+          SvgPicture.asset(Resources.emptyTaskListImage),
           Container(
             height: 20,
           ),
-          Text(
-            'На данный момент задач нет',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 30, color: Colors.grey[700]),
-          ),
+          isFiltered
+              ? Text(
+                  'У вас нет невыполненных задач',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                )
+              : Text(
+                  'На данный момент задач нет',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 30, color: Colors.grey[700]),
+                ),
         ],
-      ),
-    );
-  }
-
-  Widget noFilteredTasksBackground() {
-    return Center(
-      child: Text(
-        'У вас нет невыполненных задач',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 30, color: Colors.grey[700]),
       ),
     );
   }
 
   Widget taskListView() {
     return ListView.builder(
-      itemCount: isFiltered ? filteredTaskList.length : taskList.length,
+      itemCount: isFiltered ? filteredTaskList.length : _taskList.length,
       itemBuilder: (context, index) {
-        var task = isFiltered ? filteredTaskList[index] : taskList[index];
+        var task = isFiltered ? filteredTaskList[index] : _taskList[index];
         return Padding(
           padding: EdgeInsets.only(bottom: 5),
           child: TaskTile(
@@ -130,7 +124,7 @@ class _MainPageState extends State<MainPage> {
             onDelete: () {
               setState(
                 () {
-                  taskList.removeWhere((element) => element.id == task.id);
+                  _taskList.removeWhere((element) => element.id == task.id);
                   if (isFiltered) {
                     filteredTaskList
                         .removeWhere((element) => element.id == task.id);
@@ -152,11 +146,9 @@ class _MainPageState extends State<MainPage> {
         showDialog(
           context: context,
           builder: (context) {
-            return CreateTaskDialog(
-                tasksList: taskList,
-                onRefresh: () {
-                  setState(() {});
-                });
+            return CreateTaskDialog(_taskList, onRefresh: () {
+              setState(() {});
+            });
           },
         );
       },
@@ -165,10 +157,10 @@ class _MainPageState extends State<MainPage> {
 
   void _filterTasks() {
     if (!isFiltered) {
-      if (taskList.any((task) => task.isComplete)) {
+      if (_taskList.any((task) => task.isComplete)) {
         setState(() {
           filteredTaskList =
-              taskList.where((task) => !task.isComplete).toList();
+              _taskList.where((task) => !task.isComplete).toList();
           isFiltered = true;
         });
       }
@@ -178,6 +170,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _deleteCompletedTasks() {
-    setState(() => taskList.removeWhere((task) => task.isComplete));
+    setState(() => _taskList.removeWhere((task) => task.isComplete));
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Модал изменения названия задачи
+// Модальное окно для изменения названия задачи
 class ChangeTaskTitleDialog extends StatefulWidget {
   final task;
   final VoidCallback onRefresh;
@@ -26,6 +26,7 @@ class _ChangeTaskTitleDialogState extends State<ChangeTaskTitleDialog> {
         ),
         Container(
           child: TextField(
+            maxLength: 30,
             autofocus: true,
             controller: _titleController,
             decoration: InputDecoration(

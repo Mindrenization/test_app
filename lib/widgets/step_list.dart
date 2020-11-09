@@ -113,7 +113,6 @@ class _StepListState extends State<StepList> {
       onChanged: (text) {
         setState(() {
           widget.task.description = text;
-          print(widget.task.description);
         });
       },
       decoration: InputDecoration(
