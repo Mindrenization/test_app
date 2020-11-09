@@ -21,13 +21,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    double totalTasks = 0;
-    double totalCompletedTasks = 0;
-    for (var i = 0; i < branchList.length; i++) {
-      totalTasks += branchList[i].tasks.length;
-      totalCompletedTasks +=
-          branchList[i].tasks.where((task) => task.isComplete).length;
-    }
     return Scaffold(
       backgroundColor: ColorThemeDialog.backgroundColor,
       appBar: AppBar(
@@ -40,67 +33,21 @@ class _MainPageState extends State<MainPage> {
       body: Column(
         children: [
           Container(
-            height: 130,
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.fromLTRB(10, 25, 10, 10),
-            padding: EdgeInsets.all(15),
-            decoration: BoxDecoration(
-                color: const Color(0xFF86A5F5),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                      offset: Offset.fromDirection(1.5, 3),
-                      color: Colors.black26,
-                      spreadRadius: 0.1,
-                      blurRadius: 3),
-                ]),
-            child: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    'Все задания',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: totalTasks != 0
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Завершено ${totalCompletedTasks.toInt()} задач из ${totalTasks.toInt()}',
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 5),
-                              child: LinearProgressBar(
-                                  totalCompletedTasks / totalTasks),
-                            ),
-                          ],
-                        )
-                      : Text(
-                          'На данный момент\nзадачи отсутствуют',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: SvgPicture.asset(
-                    Resources.mainLogo,
-                  ),
-                ),
-              ],
-            ),
-          ),
+              height: 130,
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.fromLTRB(10, 25, 10, 10),
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                  color: const Color(0xFF86A5F5),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                        offset: Offset.fromDirection(1.5, 3),
+                        color: Colors.black26,
+                        spreadRadius: 0.1,
+                        blurRadius: 3),
+                  ]),
+              child: _headerCard()),
           Row(
             children: [
               Padding(
@@ -124,6 +71,62 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _headerCard() {
+    double totalTasks = 0;
+    double totalCompletedTasks = 0;
+    for (var i = 0; i < branchList.length; i++) {
+      totalTasks += branchList[i].tasks.length;
+      totalCompletedTasks +=
+          branchList[i].tasks.where((task) => task.isComplete).length;
+    }
+    return Stack(
+      children: [
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            'Все задания',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: totalTasks != 0
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Завершено ${totalCompletedTasks.toInt()} задач из ${totalTasks.toInt()}',
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 5),
+                      child:
+                          LinearProgressBar(totalCompletedTasks / totalTasks),
+                    ),
+                  ],
+                )
+              : Text(
+                  'На данный момент\nзадачи отсутствуют',
+                  style: TextStyle(fontSize: 16),
+                ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: SvgPicture.asset(
+            Resources.mainLogo,
+          ),
+        ),
+      ],
     );
   }
 
@@ -191,7 +194,6 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
