@@ -260,47 +260,39 @@ class _MainPageState extends State<MainPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: 70,
-                  height: 15,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                _sticker(
+                    text: '${branchBloc.completedTasks(index)} сделано',
                     color: Colors.green[100],
-                  ),
-                  child: StreamBuilder(
-                    stream: branchBloc.getBranch,
-                    builder: (context, builder) {
-                      return Text(
-                        '${branchBloc.completedTasks(index)} сделано',
-                        style:
-                            TextStyle(color: Colors.green[800], fontSize: 12),
-                        textAlign: TextAlign.center,
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  width: 75,
-                  height: 15,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.red[100]),
-                  child: StreamBuilder(
-                    stream: branchBloc.getBranch,
-                    builder: (context, builder) {
-                      return Text(
-                        '${branchBloc.uncompletedTasks(index)} осталось',
-                        style: TextStyle(color: Colors.red, fontSize: 12),
-                        textAlign: TextAlign.center,
-                      );
-                    },
-                  ),
-                ),
+                    textColor: Colors.green[800]),
+                _sticker(
+                    text: '${branchBloc.uncompletedTasks(index)} осталось',
+                    color: Colors.red[100],
+                    textColor: Colors.red),
               ],
             )
           ],
         ),
       ),
+    );
+  }
+
+  Widget _sticker({text, Color color, Color textColor}) {
+    return Container(
+      width: 70,
+      height: 15,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: color,
+      ),
+      child: StreamBuilder(
+          stream: branchBloc.getBranch,
+          builder: (context, builder) {
+            return Text(
+              text,
+              style: TextStyle(color: textColor, fontSize: 12),
+              textAlign: TextAlign.center,
+            );
+          }),
     );
   }
 }
