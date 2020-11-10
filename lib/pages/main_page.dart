@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:test_app/models/branch.dart';
+import 'package:test_app/blocs/branch_bloc.dart';
+import 'package:test_app/models/task.dart';
 import 'package:test_app/pages/tasks_page.dart';
 import 'package:test_app/widgets/circular_progress_bar.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
@@ -8,6 +9,7 @@ import 'package:test_app/widgets/create_branch_dialog.dart';
 import 'package:test_app/widgets/delete_branch_dialog.dart';
 import 'package:test_app/widgets/linear_progress_bar.dart';
 import 'package:test_app/resources/resources.dart';
+import 'package:test_app/repository/branch_list.dart';
 
 // Главная страница
 class MainPage extends StatefulWidget {
@@ -16,8 +18,19 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int completedTasks;
-  List<Branch> branchList = [];
+  BranchBloc branchBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    branchBloc = BranchBloc();
+  }
+
+  @override
+  void dispose() {
+    branchBloc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,15 +72,22 @@ class _MainPageState extends State<MainPage> {
               )
             ],
           ),
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              children: [
-                for (int index = 0; index < branchList.length; index++)
-                  _branchTile(index),
-                _addBranchButton(),
-              ],
-            ),
+          StreamBuilder(
+            stream: branchBloc.getBranch,
+            builder: (context, snapshot) {
+              return Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  children: [
+                    for (int index = 0;
+                        index < BranchList.branchList.length;
+                        index++)
+                      _branchTile(index, snapshot),
+                    _addBranchButton(),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -75,58 +95,57 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _headerCard() {
-    double totalTasks = 0;
-    double totalCompletedTasks = 0;
-    for (var i = 0; i < branchList.length; i++) {
-      totalTasks += branchList[i].tasks.length;
-      totalCompletedTasks +=
-          branchList[i].tasks.where((task) => task.isComplete).length;
-    }
-    return Stack(
-      children: [
-        Align(
-          alignment: Alignment.topLeft,
-          child: Text(
-            'Все задания',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomLeft,
-          child: totalTasks != 0
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Завершено ${totalCompletedTasks.toInt()} задач из ${totalTasks.toInt()}',
-                      style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold),
+    return StreamBuilder(
+      stream: branchBloc.getBranch,
+      builder: (context, snapshot) {
+        return Stack(
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                'Все задания',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: branchBloc.totalTasks() != 0
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Завершено ${branchBloc.totalCompletedTasks().toInt()} задач из ${branchBloc.totalTasks().toInt()}',
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 5),
+                          child: LinearProgressBar(
+                              branchBloc.totalCompletedTasks() /
+                                  branchBloc.totalTasks()),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      'На данный момент\nзадачи отсутствуют',
+                      style: TextStyle(fontSize: 16),
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 5),
-                      child:
-                          LinearProgressBar(totalCompletedTasks / totalTasks),
-                    ),
-                  ],
-                )
-              : Text(
-                  'На данный момент\nзадачи отсутствуют',
-                  style: TextStyle(fontSize: 16),
-                ),
-        ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: SvgPicture.asset(
-            Resources.mainLogo,
-          ),
-        ),
-      ],
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: SvgPicture.asset(
+                Resources.mainLogo,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -137,8 +156,7 @@ class _MainPageState extends State<MainPage> {
           context: context,
           builder: (context) {
             return CreateBranchDialog(
-              branchList: branchList,
-              onRefresh: () => setState(() {}),
+              branchBloc: branchBloc,
             );
           },
         );
@@ -164,16 +182,16 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _branchTile(index) {
+  Widget _branchTile(index, snapshot) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => TasksPage(
-              branchList[index],
+              snapshot.data[index],
               onRefresh: () {
-                setState(() {});
+                branchBloc.updateBranch();
               },
             ),
           ),
@@ -202,13 +220,13 @@ class _MainPageState extends State<MainPage> {
               children: [
                 Padding(
                   padding: EdgeInsets.only(bottom: 35, top: 20, left: 5),
-                  child: CircularProgressBar(branchList[index].tasks.length == 0
-                      ? 0
-                      : branchList[index]
-                              .tasks
-                              .where((task) => task.isComplete)
-                              .length /
-                          branchList[index].tasks.length),
+                  child: CircularProgressBar(
+                      snapshot.data[index].tasks.length == 0
+                          ? 0
+                          : snapshot.data[index].tasks
+                                  .where((Task task) => task.isComplete)
+                                  .length /
+                              snapshot.data[index].tasks.length),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -216,13 +234,8 @@ class _MainPageState extends State<MainPage> {
                         context: context,
                         builder: (context) {
                           return DeleteBranchDialog(
-                            branch: branchList[index],
-                            onDelete: () {
-                              setState(
-                                () => branchList.removeWhere((branch) =>
-                                    branch.id == branchList[index].id),
-                              );
-                            },
+                            index: index,
+                            branchBloc: branchBloc,
                           );
                         });
                   },
@@ -231,14 +244,14 @@ class _MainPageState extends State<MainPage> {
               ],
             ),
             Text(
-              branchList[index].title,
+              snapshot.data[index].title,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             SizedBox(
               height: 5,
             ),
             Text(
-              '${branchList[index].tasks.length} задач(и)',
+              '${snapshot.data[index].tasks.length} задач(и)',
               style: TextStyle(color: Colors.grey[700]),
             ),
             SizedBox(
@@ -254,10 +267,16 @@ class _MainPageState extends State<MainPage> {
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.green[100],
                   ),
-                  child: Text(
-                    '${completedTasks = branchList[index].tasks.where((task) => task.isComplete).length} сделано',
-                    style: TextStyle(color: Colors.green[800], fontSize: 12),
-                    textAlign: TextAlign.center,
+                  child: StreamBuilder(
+                    stream: branchBloc.getBranch,
+                    builder: (context, builder) {
+                      return Text(
+                        '${branchBloc.completedTasks(index)} сделано',
+                        style:
+                            TextStyle(color: Colors.green[800], fontSize: 12),
+                        textAlign: TextAlign.center,
+                      );
+                    },
                   ),
                 ),
                 Container(
@@ -266,10 +285,15 @@ class _MainPageState extends State<MainPage> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: Colors.red[100]),
-                  child: Text(
-                    '${branchList[index].tasks.length - completedTasks} осталось',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
-                    textAlign: TextAlign.center,
+                  child: StreamBuilder(
+                    stream: branchBloc.getBranch,
+                    builder: (context, builder) {
+                      return Text(
+                        '${branchBloc.uncompletedTasks(index)} осталось',
+                        style: TextStyle(color: Colors.red, fontSize: 12),
+                        textAlign: TextAlign.center,
+                      );
+                    },
                   ),
                 ),
               ],

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/models/branch.dart';
 
 class CreateBranchDialog extends StatefulWidget {
-  final List<Branch> branchList;
-  final VoidCallback onRefresh;
-  CreateBranchDialog({this.branchList, this.onRefresh});
+  final branchBloc;
+  CreateBranchDialog({this.branchBloc});
   @override
   _CreateBranchDialogState createState() => _CreateBranchDialogState();
 }
@@ -26,7 +24,7 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
         Container(
           child: TextField(
             maxLength: 30,
-            onEditingComplete: () => _complete(),
+            onEditingComplete: () => _complete(widget.branchBloc),
             controller: _titleController,
             decoration: InputDecoration(
                 hintText: 'Введите название списка', isDense: true),
@@ -52,7 +50,7 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
                 'Создать',
                 style: TextStyle(fontSize: 18),
               ),
-              onPressed: () => _complete(),
+              onPressed: () => _complete(widget.branchBloc),
             ),
           ],
         ),
@@ -60,12 +58,8 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
     );
   }
 
-  _complete() {
-    var lastTaskId = widget.branchList.isEmpty ? 0 : widget.branchList.last.id;
-    widget.branchList.add(
-      Branch(++lastTaskId, _titleController.text),
-    );
-    widget.onRefresh();
+  _complete(createBranchBloc) {
+    createBranchBloc.createBranch(_titleController.text);
     Navigator.pop(context);
   }
 }

@@ -64,6 +64,7 @@ class _TaskTileState extends State<TaskTile> {
                 activeColor: const Color(0xFF6202EE),
                 onChanged: (value) {
                   setState(() => widget.task.isComplete = value);
+
                   widget.onRefresh();
                 },
               ),

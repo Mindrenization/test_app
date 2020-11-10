@@ -49,7 +49,6 @@ class _TasksPageState extends State<TasksPage>
                       onTap: () {
                         _deleteCompletedTasks();
                         Navigator.pop(context);
-                        widget.onRefresh();
                       },
                     )),
                     PopupMenuItem(
@@ -110,7 +109,6 @@ class _TasksPageState extends State<TasksPage>
                   }
                 },
               );
-              widget.onRefresh();
             },
             onRefresh: () => widget.onRefresh(),
           ),
@@ -129,7 +127,6 @@ class _TasksPageState extends State<TasksPage>
           builder: (context) {
             return CreateTaskDialog(widget.branch.tasks, onRefresh: () {
               setState(() {});
-              widget.onRefresh();
             });
           },
         );
