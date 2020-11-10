@@ -247,35 +247,36 @@ class _MainPageState extends State<MainPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: 70,
-                  height: 15,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                _sticker(
+                    text:
+                        '${completedTasks = branchList[index].tasks.where((task) => task.isComplete).length} сделано',
                     color: Colors.green[100],
-                  ),
-                  child: Text(
-                    '${completedTasks = branchList[index].tasks.where((task) => task.isComplete).length} сделано',
-                    style: TextStyle(color: Colors.green[800], fontSize: 12),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Container(
-                  width: 75,
-                  height: 15,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.red[100]),
-                  child: Text(
-                    '${branchList[index].tasks.length - completedTasks} осталось',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                    textColor: Colors.green[800]),
+                _sticker(
+                    text:
+                        '${branchList[index].tasks.length - completedTasks} осталось',
+                    color: Colors.red[100],
+                    textColor: Colors.red),
               ],
             )
           ],
         ),
+      ),
+    );
+  }
+
+  _sticker({String text, Color color, Color textColor}) {
+    return Container(
+      width: 70,
+      height: 15,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: color,
+      ),
+      child: Text(
+        text,
+        style: TextStyle(color: textColor, fontSize: 12),
+        textAlign: TextAlign.center,
       ),
     );
   }

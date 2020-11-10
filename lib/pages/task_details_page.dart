@@ -177,6 +177,12 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
     );
   }
 
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
   Widget _topButton() {
     return GestureDetector(
       onTap: () {
