@@ -265,7 +265,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  _sticker({String text, Color color, Color textColor}) {
+  Widget _sticker({String text, Color color, Color textColor}) {
     return Container(
       width: 70,
       height: 15,
