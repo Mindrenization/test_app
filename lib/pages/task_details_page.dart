@@ -19,6 +19,15 @@ class TaskDetailsPage extends StatefulWidget {
 }
 
 class _TaskDetailsPageState extends State<TaskDetailsPage> {
+  TextEditingController _descriptionController = TextEditingController();
+  bool isText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _descriptionController.text = widget.task.description;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,6 +175,12 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   Widget _topButton() {

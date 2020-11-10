@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-// Модальное окно для удаления задачи
-class DeleteTaskDialog extends StatelessWidget {
-  final task;
+// Модал удаления ветки
+class DeleteBranchDialog extends StatelessWidget {
+  final branch;
   final VoidCallback onDelete;
-  DeleteTaskDialog({this.task, this.onDelete});
+  DeleteBranchDialog({this.branch, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
       contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       title: Text(
-        'Вы точно хотите удалить это задание?',
+        'Вы точно хотите удалить эту ветку?',
         style: TextStyle(fontSize: 16),
       ),
       children: [
