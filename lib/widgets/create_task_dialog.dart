@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_app/blocs/task_bloc.dart';
 import 'package:test_app/models/task.dart';
 import 'package:test_app/widgets/deadline_dialog.dart';
 import 'package:intl/intl.dart';
@@ -8,8 +9,9 @@ class CreateTaskDialog extends StatefulWidget {
   @override
   _CreateTaskDialogState createState() => _CreateTaskDialogState();
   final List<Task> taskList;
-  final VoidCallback onRefresh;
-  CreateTaskDialog(this.taskList, {this.onRefresh});
+  final TaskBloc taskBloc;
+
+  CreateTaskDialog(this.taskList, this.taskBloc);
 }
 
 class _CreateTaskDialogState extends State<CreateTaskDialog> {
@@ -32,8 +34,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
           child: TextField(
             maxLength: 30,
             onEditingComplete: () {
-              _complete();
-              widget.onRefresh();
+              _complete(widget.taskBloc, widget.taskList);
             },
             controller: _titleController,
             decoration: InputDecoration(
@@ -86,8 +87,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
                 style: TextStyle(fontSize: 18),
               ),
               onPressed: () {
-                _complete();
-                widget.onRefresh();
+                _complete(widget.taskBloc, widget.taskList);
               },
             ),
           ],
@@ -131,12 +131,8 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
     );
   }
 
-  _complete() {
-    var lastTaskId = widget.taskList.isEmpty ? 0 : widget.taskList.last.id;
-    widget.taskList.add(
-      Task(++lastTaskId, _titleController.text, deadline: _deadline),
-    );
-    widget.onRefresh();
+  _complete(taskBloc, taskList) {
+    taskBloc.createTask(taskList, _titleController.text, _deadline);
     Navigator.pop(context);
   }
 }

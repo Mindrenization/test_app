@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:test_app/blocs/task_bloc.dart';
 import 'package:test_app/models/branch.dart';
+import 'package:test_app/models/task.dart';
 import 'package:test_app/widgets/no_tasks_background.dart';
 import 'package:test_app/widgets/task_tile.dart';
 import 'package:test_app/widgets/popup_button.dart';
@@ -17,8 +19,20 @@ class TasksPage extends StatefulWidget {
 
 class _TasksPageState extends State<TasksPage>
     with SingleTickerProviderStateMixin {
-  List filteredTaskList = [];
+  List<Task> filteredTaskList = [];
   bool isFiltered = false;
+  TaskBloc taskBloc = TaskBloc();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    taskBloc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +51,8 @@ class _TasksPageState extends State<TasksPage>
                             : 'Скрыть завершенные',
                         icon: Icons.check_circle,
                         onTap: () {
-                          _filterTasks();
+                          isFiltered = taskBloc.filterTasks(widget.branch.tasks,
+                              filteredTaskList, isFiltered);
                           Navigator.pop(context);
                         },
                       ),
@@ -47,7 +62,9 @@ class _TasksPageState extends State<TasksPage>
                       text: 'Удалить завершенные',
                       icon: Icons.delete,
                       onTap: () {
-                        _deleteCompletedTasks();
+                        taskBloc.deleteCompletedTasks(widget.branch.tasks);
+                        isFiltered = false;
+                        widget.onRefresh();
                         Navigator.pop(context);
                       },
                     )),
@@ -78,37 +95,33 @@ class _TasksPageState extends State<TasksPage>
       ),
       body: Container(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: widget.branch.tasks.isEmpty ||
-                (filteredTaskList.isEmpty && isFiltered)
-            ? NoTasksBackground(isFiltered)
-            : taskListView(),
+        child: StreamBuilder(
+          stream: taskBloc.getTasks,
+          initialData: widget.branch.tasks,
+          builder: (context, snapshot) {
+            if (snapshot.data.isEmpty || (snapshot.data.isEmpty && isFiltered))
+              return NoTasksBackground(isFiltered);
+            else
+              return taskListView(snapshot.data);
+          },
+        ),
       ),
       floatingActionButton: addTaskButton(),
     );
   }
 
-  Widget taskListView() {
+  Widget taskListView(List<Task> taskList) {
     return ListView.builder(
-      itemCount:
-          isFiltered ? filteredTaskList.length : widget.branch.tasks.length,
+      itemCount: taskList.length,
       itemBuilder: (context, index) {
-        var task =
-            isFiltered ? filteredTaskList[index] : widget.branch.tasks[index];
         return Padding(
           padding: EdgeInsets.only(bottom: 5),
           child: TaskTile(
-            task: task,
+            task: taskList[index],
             onDelete: () {
-              setState(
-                () {
-                  widget.branch.tasks
-                      .removeWhere((element) => element.id == task.id);
-                  if (isFiltered) {
-                    filteredTaskList
-                        .removeWhere((element) => element.id == task.id);
-                  }
-                },
-              );
+              taskBloc.deleteTask(
+                  taskList, index, isFiltered, filteredTaskList);
+              widget.onRefresh();
             },
             onRefresh: () => widget.onRefresh(),
           ),
@@ -125,30 +138,13 @@ class _TasksPageState extends State<TasksPage>
         showDialog(
           context: context,
           builder: (context) {
-            return CreateTaskDialog(widget.branch.tasks, onRefresh: () {
-              setState(() {});
-            });
+            return CreateTaskDialog(
+              widget.branch.tasks,
+              taskBloc,
+            );
           },
         );
       },
     );
-  }
-
-  void _filterTasks() {
-    if (!isFiltered) {
-      if (widget.branch.tasks.any((task) => task.isComplete)) {
-        setState(() {
-          filteredTaskList =
-              widget.branch.tasks.where((task) => !task.isComplete).toList();
-          isFiltered = true;
-        });
-      }
-    } else {
-      setState(() => isFiltered = false);
-    }
-  }
-
-  void _deleteCompletedTasks() {
-    setState(() => widget.branch.tasks.removeWhere((task) => task.isComplete));
   }
 }

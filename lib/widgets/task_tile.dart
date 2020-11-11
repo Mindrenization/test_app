@@ -19,7 +19,7 @@ class _TaskTileState extends State<TaskTile> {
       key: UniqueKey(),
       onDismissed: (direction) {
         widget.onDelete();
-        widget.onRefresh();
+        // widget.onRefresh();
       },
       direction: DismissDirection.endToStart,
       background: Container(

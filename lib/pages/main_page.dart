@@ -18,12 +18,11 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  BranchBloc branchBloc;
+  BranchBloc branchBloc = BranchBloc();
 
   @override
   void initState() {
     super.initState();
-    branchBloc = BranchBloc();
   }
 
   @override
@@ -74,6 +73,7 @@ class _MainPageState extends State<MainPage> {
           ),
           StreamBuilder(
             stream: branchBloc.getBranch,
+            initialData: BranchList.branchList,
             builder: (context, snapshot) {
               return Expanded(
                 child: GridView.count(

@@ -58,8 +58,8 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
     );
   }
 
-  _complete(createBranchBloc) {
-    createBranchBloc.createBranch(_titleController.text);
+  _complete(branchBloc) {
+    branchBloc.createBranch(_titleController.text);
     Navigator.pop(context);
   }
 }
