@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:test_app/blocs/step_bloc.dart';
 import 'package:test_app/models/task.dart';
 import 'package:test_app/widgets/change_task_name_dialog.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
@@ -20,6 +21,7 @@ class TaskDetailsPage extends StatefulWidget {
 
 class _TaskDetailsPageState extends State<TaskDetailsPage> {
   TextEditingController _descriptionController = TextEditingController();
+  StepBloc stepBloc = StepBloc();
   bool isText = false;
 
   @override
@@ -114,10 +116,18 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 30),
-                child: StepList(
-                  widget.task,
-                  onRefresh: () {
-                    widget.onRefresh();
+                child: StreamBuilder(
+                  stream: stepBloc.getSteps,
+                  initialData: widget.task.steps,
+                  builder: (context, snapshot) {
+                    return StepList(
+                      widget.task,
+                      stepBloc,
+                      snapshot.data,
+                      onRefresh: () {
+                        widget.onRefresh();
+                      },
+                    );
                   },
                 ),
               ),
@@ -180,6 +190,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
   @override
   void dispose() {
     _descriptionController.dispose();
+    stepBloc.dispose();
     super.dispose();
   }
 

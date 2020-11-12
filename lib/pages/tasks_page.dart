@@ -117,14 +117,16 @@ class _TasksPageState extends State<TasksPage>
         return Padding(
           padding: EdgeInsets.only(bottom: 5),
           child: TaskTile(
-            task: taskList[index],
-            onDelete: () {
-              taskBloc.deleteTask(
-                  taskList, index, isFiltered, filteredTaskList);
-              widget.onRefresh();
-            },
-            onRefresh: () => widget.onRefresh(),
-          ),
+              task: taskList[index],
+              onDelete: () {
+                taskBloc.deleteTask(
+                    taskList, index, isFiltered, filteredTaskList);
+                widget.onRefresh();
+              },
+              onRefresh: () {
+                widget.onRefresh();
+                taskBloc.updateTasks(taskList);
+              }),
         );
       },
     );

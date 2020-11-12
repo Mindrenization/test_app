@@ -43,7 +43,6 @@ class _TaskTileState extends State<TaskTile> {
             builder: (context) => TaskDetailsPage(
               task: widget.task,
               onRefresh: () {
-                setState(() {});
                 widget.onRefresh();
               },
               onDelete: widget.onDelete,
