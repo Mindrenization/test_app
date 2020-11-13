@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:test_app/blocs/step_bloc.dart';
+import 'package:test_app/blocs/task_details_bloc.dart';
 import 'package:test_app/models/task.dart';
 import 'package:test_app/widgets/change_task_name_dialog.dart';
 import 'package:test_app/widgets/color_theme_dialog.dart';
@@ -22,7 +22,7 @@ class TaskDetailsPage extends StatefulWidget {
 
 class _TaskDetailsPageState extends State<TaskDetailsPage> {
   TextEditingController _descriptionController = TextEditingController();
-  StepBloc stepBloc = StepBloc();
+  TaskDetailsBloc stepBloc = TaskDetailsBloc();
   bool isText = false;
 
   @override
@@ -169,14 +169,20 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                             style: TextStyle(
                               color: snapshot.data.deadline == null
                                   ? Colors.black
-                                  : Colors.blue,
+                                  : snapshot.data.deadline.day <
+                                          DateTime.now().day
+                                      ? Colors.red
+                                      : Colors.blue,
                             ),
                           ),
                           icon: Icon(
                             Icons.calendar_today_outlined,
                             color: snapshot.data.deadline == null
                                 ? Colors.black
-                                : Colors.blue,
+                                : snapshot.data.deadline.day <
+                                        DateTime.now().day
+                                    ? Colors.red
+                                    : Colors.blue,
                           ),
                           onTap: () async {
                             DateTime _deadline = await showDialog(

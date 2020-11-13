@@ -8,7 +8,7 @@ import 'package:test_app/repository/branch_list.dart';
 class BranchBloc extends Bloc {
   StreamController<List<Branch>> _controller = StreamController.broadcast();
 
-  Stream<List<Branch>> get getBranch => _controller.stream;
+  Stream<List<Branch>> get getBranchList => _controller.stream;
   void createBranch(String value) {
     var lastTaskId =
         BranchList.branchList.isEmpty ? 0 : BranchList.branchList.last.id;
@@ -18,7 +18,7 @@ class BranchBloc extends Bloc {
     _controller.sink.add(BranchList.branchList);
   }
 
-  void updateBranch() {
+  void updateBranchList() {
     _controller.sink.add(BranchList.branchList);
   }
 
@@ -60,7 +60,7 @@ class BranchBloc extends Bloc {
     return _totalCompletedTasks;
   }
 
-  dispose() {
+  void dispose() {
     _controller.close();
   }
 }

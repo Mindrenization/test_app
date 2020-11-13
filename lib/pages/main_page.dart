@@ -62,7 +62,7 @@ class _MainPageState extends State<MainPage> {
             ],
           ),
           StreamBuilder(
-            stream: branchBloc.getBranch,
+            stream: branchBloc.getBranchList,
             initialData: BranchList.branchList,
             builder: (context, snapshot) {
               return Expanded(
@@ -92,7 +92,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget _headerCard() {
     return StreamBuilder(
-      stream: branchBloc.getBranch,
+      stream: branchBloc.getBranchList,
       builder: (context, snapshot) {
         return Stack(
           children: [
@@ -187,7 +187,7 @@ class _MainPageState extends State<MainPage> {
             builder: (context) => TasksPage(
               branchList[index],
               onRefresh: () {
-                branchBloc.updateBranch();
+                branchBloc.updateBranchList();
               },
             ),
           ),
@@ -281,7 +281,7 @@ class _MainPageState extends State<MainPage> {
         color: color,
       ),
       child: StreamBuilder(
-          stream: branchBloc.getBranch,
+          stream: branchBloc.getBranchList,
           builder: (context, builder) {
             return Text(
               text,

@@ -1,10 +1,10 @@
-import 'package:test_app/blocs/step_bloc.dart';
+import 'package:test_app/blocs/task_details_bloc.dart';
 import 'package:test_app/models/task.dart';
 import 'package:flutter/material.dart';
 
 class StepList extends StatefulWidget {
   final Task task;
-  final StepBloc stepBloc;
+  final TaskDetailsBloc stepBloc;
   final snapshot;
   final VoidCallback onRefresh;
   StepList(
