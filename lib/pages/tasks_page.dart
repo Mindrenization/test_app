@@ -62,17 +62,9 @@ class _TasksPageState extends State<TasksPage>
                       text: 'Удалить завершенные',
                       icon: Icons.delete,
                       onTap: () {
-                        taskBloc.deleteCompletedTasks(widget.branch.tasks);
-                        isFiltered = false;
+                        isFiltered =
+                            taskBloc.deleteCompletedTasks(widget.branch.tasks);
                         widget.onRefresh();
-                        Navigator.pop(context);
-                      },
-                    )),
-                    PopupMenuItem(
-                        child: PopupButton(
-                      text: 'Сначала новые',
-                      icon: Icons.graphic_eq,
-                      onTap: () {
                         Navigator.pop(context);
                       },
                     )),
@@ -117,16 +109,20 @@ class _TasksPageState extends State<TasksPage>
         return Padding(
           padding: EdgeInsets.only(bottom: 5),
           child: TaskTile(
-              task: taskList[index],
-              onDelete: () {
-                taskBloc.deleteTask(
-                    taskList, index, isFiltered, filteredTaskList);
-                widget.onRefresh();
-              },
-              onRefresh: () {
-                widget.onRefresh();
-                taskBloc.updateTasks(taskList);
-              }),
+            task: taskList[index],
+            onDelete: () {
+              taskBloc.deleteTask(
+                  taskList, index, isFiltered, filteredTaskList);
+              widget.onRefresh();
+            },
+            onRefresh: () {
+              widget.onRefresh();
+              taskBloc.updateTasks(taskList);
+            },
+            onComplete: () {
+              taskBloc.isComplete(taskList[index]);
+            },
+          ),
         );
       },
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Модал создания ветки
 class CreateBranchDialog extends StatefulWidget {
   final branchBloc;
   CreateBranchDialog({this.branchBloc});

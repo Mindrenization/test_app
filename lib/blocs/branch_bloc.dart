@@ -22,19 +22,19 @@ class BranchBloc extends Bloc {
     _controller.sink.add(BranchList.branchList);
   }
 
-  void deleteBranch(index) {
+  void deleteBranch(int index) {
     BranchList.branchList
         .removeWhere((branch) => branch.id == BranchList.branchList[index].id);
     _controller.sink.add(BranchList.branchList);
   }
 
-  int completedTasks(index) {
+  int completedTasks(int index) {
     return BranchList.branchList[index].tasks
         .where((Task task) => task.isComplete)
         .length;
   }
 
-  int uncompletedTasks(index) {
+  int uncompletedTasks(int index) {
     return BranchList.branchList[index].tasks
         .where((Task task) => !task.isComplete)
         .length;

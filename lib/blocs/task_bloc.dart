@@ -7,7 +7,7 @@ class TaskBloc extends Bloc {
 
   Stream<List<Task>> get getTasks => _controller.stream;
 
-  void createTask(List<Task> taskList, title, deadline) {
+  void createTask(List<Task> taskList, String title, DateTime deadline) {
     var lastTaskId = taskList.isEmpty ? 0 : taskList.last.id;
     taskList.add(
       Task(++lastTaskId, title, deadline: deadline),
@@ -45,12 +45,21 @@ class TaskBloc extends Bloc {
     }
   }
 
-  void deleteCompletedTasks(List<Task> taskList) {
+  bool deleteCompletedTasks(List<Task> taskList) {
     taskList.removeWhere((task) => task.isComplete);
     _controller.sink.add(taskList);
+    return false;
   }
 
-  dispose() {
+  void isComplete(Task task) {
+    if (task.isComplete) {
+      task.isComplete = false;
+    } else {
+      task.isComplete = true;
+    }
+  }
+
+  void dispose() {
     _controller.close();
   }
 }

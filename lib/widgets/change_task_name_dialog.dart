@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 // Модальное окно для изменения названия задачи
 class ChangeTaskTitleDialog extends StatefulWidget {
   final task;
-  final VoidCallback onRefresh;
-  ChangeTaskTitleDialog({this.task, this.onRefresh});
+  final onChange;
+  ChangeTaskTitleDialog(this.task, {this.onChange});
   @override
   _ChangeTaskTitleDialogState createState() => _ChangeTaskTitleDialogState();
 }
@@ -57,10 +57,10 @@ class _ChangeTaskTitleDialogState extends State<ChangeTaskTitleDialog> {
                 style: TextStyle(fontSize: 18),
               ),
               onPressed: () {
-                setState(() {
-                  widget.task.title = _titleController.text;
-                });
-                widget.onRefresh();
+                // setState(() {
+                //   widget.task.title = _titleController.text;
+                // });
+                widget.onChange(_titleController.text);
                 Navigator.pop(context);
               },
             ),

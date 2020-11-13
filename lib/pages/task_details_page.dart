@@ -14,7 +14,8 @@ class TaskDetailsPage extends StatefulWidget {
   final Task task;
   final VoidCallback onRefresh;
   final VoidCallback onDelete;
-  TaskDetailsPage({this.task, this.onRefresh, this.onDelete});
+  final VoidCallback onComplete;
+  TaskDetailsPage({this.task, this.onRefresh, this.onDelete, this.onComplete});
   @override
   _TaskDetailsPageState createState() => _TaskDetailsPageState();
 }
@@ -46,9 +47,15 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
               flexibleSpace: FlexibleSpaceBar(
                 centerTitle: true,
                 titlePadding: EdgeInsets.only(left: 80, right: 40, bottom: 20),
-                title: Text(
-                  widget.task.title,
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                title: StreamBuilder(
+                  stream: stepBloc.getSteps,
+                  initialData: widget.task,
+                  builder: (context, snapshot) {
+                    return Text(
+                      snapshot.data.title,
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    );
+                  },
                 ),
               ),
               actions: [
@@ -64,9 +71,9 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                             context: context,
                             builder: (context) {
                               return ChangeTaskTitleDialog(
-                                task: widget.task,
-                                onRefresh: () {
-                                  setState(() {});
+                                widget.task,
+                                onChange: (title) {
+                                  stepBloc.changeTitle(widget.task, title);
                                   widget.onRefresh();
                                 },
                               );
@@ -118,7 +125,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                 padding: EdgeInsets.symmetric(vertical: 30),
                 child: StreamBuilder(
                   stream: stepBloc.getSteps,
-                  initialData: widget.task.steps,
+                  initialData: widget.task,
                   builder: (context, snapshot) {
                     return StepList(
                       widget.task,
@@ -149,34 +156,40 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                       height: 1,
                       color: Colors.black,
                     ),
-                    _deadlineButton(
-                      text: Text(
-                        widget.task.deadline == null
-                            ? 'Добавить дату выполнения'
-                            : '${DateFormat('dd.MM.yyyy').format(widget.task.deadline)}',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                            color: widget.task.deadline == null
+                    StreamBuilder(
+                      stream: stepBloc.getSteps,
+                      initialData: widget.task,
+                      builder: (context, snapshot) {
+                        return _deadlineButton(
+                          text: Text(
+                            snapshot.data.deadline == null
+                                ? 'Добавить дату выполнения'
+                                : '${DateFormat('dd.MM.yyyy').format(snapshot.data.deadline)}',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              color: snapshot.data.deadline == null
+                                  ? Colors.black
+                                  : Colors.blue,
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.calendar_today_outlined,
+                            color: snapshot.data.deadline == null
                                 ? Colors.black
-                                : Colors.blue),
-                      ),
-                      icon: Icon(
-                        Icons.calendar_today_outlined,
-                        color: widget.task.deadline == null
-                            ? Colors.black
-                            : Colors.blue,
-                      ),
-                      onTap: () async {
-                        DateTime _deadline = await showDialog(
-                          context: context,
-                          builder: (context) {
-                            return DeadlineDialog();
+                                : Colors.blue,
+                          ),
+                          onTap: () async {
+                            DateTime _deadline = await showDialog(
+                              context: context,
+                              builder: (context) {
+                                return DeadlineDialog();
+                              },
+                            );
+                            stepBloc.setDeadline(widget.task, _deadline);
                           },
                         );
-                        widget.task.deadline = _deadline;
-                        setState(() {});
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -195,36 +208,38 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
   }
 
   Widget _topButton() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (widget.task.isComplete) {
-            widget.task.isComplete = false;
-          } else {
-            widget.task.isComplete = true;
-          }
-        });
-        widget.onRefresh();
+    return StreamBuilder(
+      stream: stepBloc.getSteps,
+      initialData: widget.task,
+      builder: (context, snapshot) {
+        return GestureDetector(
+          onTap: () {
+            widget.onComplete();
+            widget.onRefresh();
+            stepBloc.updateSteps(widget.task);
+          },
+          child: Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              color: Colors.cyan[600],
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                    offset: Offset.zero,
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    color: Colors.black38)
+              ],
+            ),
+            child: Icon(
+              snapshot.data.isComplete ? Icons.close : Icons.check,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+        );
       },
-      child: Container(
-        height: 60,
-        width: 60,
-        decoration: BoxDecoration(
-            color: Colors.cyan[600],
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                  offset: Offset.zero,
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                  color: Colors.black38)
-            ]),
-        child: Icon(
-          widget.task.isComplete ? Icons.close : Icons.check,
-          color: Colors.white,
-          size: 30,
-        ),
-      ),
     );
   }
 

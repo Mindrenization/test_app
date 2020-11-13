@@ -24,12 +24,6 @@ class _NoTasksBackgroundState extends State<NoTasksBackground>
   }
 
   @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     _animation = Tween(begin: -200.0, end: 0.0).animate(controller)
       ..addListener(() {
@@ -74,5 +68,11 @@ class _NoTasksBackgroundState extends State<NoTasksBackground>
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }

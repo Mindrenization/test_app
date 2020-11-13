@@ -37,7 +37,7 @@ class _StepListState extends State<StepList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (int index = 0; index < widget.snapshot.length; index++)
+          for (int index = 0; index < widget.snapshot.steps.length; index++)
             _stepTile(widget.snapshot, widget.task, index, widget.stepBloc),
           Padding(
             padding: EdgeInsets.all(10),
@@ -130,7 +130,7 @@ class _StepListState extends State<StepList> {
     return Row(
       children: [
         Checkbox(
-          value: snapshot[index].isComplete,
+          value: snapshot.steps[index].isComplete,
           activeColor: const Color(0xFF6202EE),
           onChanged: (value) {
             widget.onRefresh();
@@ -139,7 +139,7 @@ class _StepListState extends State<StepList> {
         ),
         Expanded(
           child: Text(
-            snapshot[index].title,
+            snapshot.steps[index].title,
             maxLines: null,
           ),
         ),
@@ -151,8 +151,8 @@ class _StepListState extends State<StepList> {
               color: Colors.grey[700],
             ),
             onPressed: () {
-              widget.onRefresh();
               widget.stepBloc.deleteStep(task, index);
+              widget.onRefresh();
             },
           ),
         ),

@@ -68,18 +68,28 @@ class LinearPainter extends CustomPainter {
     final endProgressLine = Offset(size.width * value, size.height / 2);
 
     final foregroundPaint = Paint()
-      ..color = value == 0.0 ? Colors.white : Color(0xFF01A39D)
+      ..color = value == 0.0 ? Colors.white : const Color(0xFF01A39D)
       ..strokeWidth = 14
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
     final backgroundPaint = Paint()
       ..color = Colors.white
-      ..strokeWidth = 14
+      ..strokeWidth = 13
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
+
+    final edgePaint = Paint()
+      ..color = const Color(0xFF01A39D)
+      ..strokeWidth = 16
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    canvas.drawLine(start, end, edgePaint);
     canvas.drawLine(start, end, backgroundPaint);
-    canvas.drawLine(start, endProgressLine, foregroundPaint);
+    if (value != 0) {
+      canvas.drawLine(start, endProgressLine, foregroundPaint);
+    }
   }
 
   @override

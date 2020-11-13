@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:test_app/blocs/branch_bloc.dart';
+import 'package:test_app/models/branch.dart';
 import 'package:test_app/models/task.dart';
 import 'package:test_app/pages/tasks_page.dart';
 import 'package:test_app/widgets/circular_progress_bar.dart';
@@ -19,17 +20,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   BranchBloc branchBloc = BranchBloc();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    branchBloc.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +53,7 @@ class _MainPageState extends State<MainPage> {
           Row(
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                padding: EdgeInsets.only(left: 15, top: 15),
                 child: Text(
                   'Ветки задач',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -82,7 +72,7 @@ class _MainPageState extends State<MainPage> {
                     for (int index = 0;
                         index < BranchList.branchList.length;
                         index++)
-                      _branchTile(index, snapshot),
+                      _branchTile(index, snapshot.data),
                     _addBranchButton(),
                   ],
                 ),
@@ -92,6 +82,12 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    branchBloc.dispose();
+    super.dispose();
   }
 
   Widget _headerCard() {
@@ -182,14 +178,14 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _branchTile(index, snapshot) {
+  Widget _branchTile(int index, List<Branch> branchList) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => TasksPage(
-              snapshot.data[index],
+              branchList[index],
               onRefresh: () {
                 branchBloc.updateBranch();
               },
@@ -220,13 +216,13 @@ class _MainPageState extends State<MainPage> {
               children: [
                 Padding(
                   padding: EdgeInsets.only(bottom: 35, top: 20, left: 5),
-                  child: CircularProgressBar(
-                      snapshot.data[index].tasks.length == 0
-                          ? 0
-                          : snapshot.data[index].tasks
-                                  .where((Task task) => task.isComplete)
-                                  .length /
-                              snapshot.data[index].tasks.length),
+                  child: CircularProgressBar(branchList[index].tasks.length == 0
+                      ? 0
+                      : branchList[index]
+                              .tasks
+                              .where((Task task) => task.isComplete)
+                              .length /
+                          branchList[index].tasks.length),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -244,14 +240,14 @@ class _MainPageState extends State<MainPage> {
               ],
             ),
             Text(
-              snapshot.data[index].title,
+              branchList[index].title,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             SizedBox(
               height: 5,
             ),
             Text(
-              '${snapshot.data[index].tasks.length} задач(и)',
+              '${branchList[index].tasks.length} задач(и)',
               style: TextStyle(color: Colors.grey[700]),
             ),
             SizedBox(

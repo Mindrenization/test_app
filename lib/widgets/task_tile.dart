@@ -6,7 +6,8 @@ class TaskTile extends StatefulWidget {
   final task;
   final VoidCallback onDelete;
   final VoidCallback onRefresh;
-  TaskTile({this.task, this.onDelete, this.onRefresh});
+  final VoidCallback onComplete;
+  TaskTile({this.task, this.onDelete, this.onRefresh, this.onComplete});
 
   @override
   _TaskTileState createState() => _TaskTileState();
@@ -19,7 +20,6 @@ class _TaskTileState extends State<TaskTile> {
       key: UniqueKey(),
       onDismissed: (direction) {
         widget.onDelete();
-        // widget.onRefresh();
       },
       direction: DismissDirection.endToStart,
       background: Container(
@@ -46,6 +46,9 @@ class _TaskTileState extends State<TaskTile> {
                 widget.onRefresh();
               },
               onDelete: widget.onDelete,
+              onComplete: () {
+                widget.onComplete();
+              },
             ),
           ),
         ),
@@ -62,8 +65,7 @@ class _TaskTileState extends State<TaskTile> {
                 value: widget.task.isComplete,
                 activeColor: const Color(0xFF6202EE),
                 onChanged: (value) {
-                  setState(() => widget.task.isComplete = value);
-
+                  widget.onComplete();
                   widget.onRefresh();
                 },
               ),
