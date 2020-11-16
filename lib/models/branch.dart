@@ -5,6 +5,7 @@ class Branch {
   final int id;
   final String title;
   List<Task> tasks = [];
+  List<Task> filteredTasks = [];
   CustomColorTheme customColorTheme = CustomColorTheme();
 
   Branch(this.id, this.title);

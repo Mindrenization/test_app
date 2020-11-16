@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:test_app/blocs/task_details_bloc.dart';
 import 'package:test_app/models/task.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,13 @@ class _StepListState extends State<StepList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: EdgeInsets.only(left: 10, top: 10),
+            child: Text(
+              'Создано: ${DateFormat('dd.MM.yyyy').format(widget.task.createDate)}',
+              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+            ),
+          ),
           for (int index = 0; index < widget.snapshot.steps.length; index++)
             _stepTile(widget.snapshot, widget.task, index, widget.stepBloc),
           Padding(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/blocs/task_bloc.dart';
 import 'package:test_app/models/branch.dart';
-import 'package:test_app/models/task.dart';
 import 'package:test_app/widgets/no_tasks_background.dart';
 import 'package:test_app/widgets/task_tile.dart';
 import 'package:test_app/widgets/popup_button.dart';
@@ -19,7 +18,6 @@ class TasksPage extends StatefulWidget {
 
 class _TasksPageState extends State<TasksPage>
     with SingleTickerProviderStateMixin {
-  List<Task> filteredTaskList = [];
   bool isFiltered = false;
   TaskBloc taskBloc = TaskBloc();
 
@@ -36,96 +34,102 @@ class _TasksPageState extends State<TasksPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: widget.branch.customColorTheme.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: widget.branch.customColorTheme.mainColor,
-        title: Text('Задачи', style: TextStyle(color: Colors.white)),
-        actions: [
-          PopupMenuButton(
-              itemBuilder: (context) => [
-                    PopupMenuItem(
-                      child: PopupButton(
-                        text: isFiltered
-                            ? 'Показать завершенные'
-                            : 'Скрыть завершенные',
-                        icon: Icons.check_circle,
-                        onTap: () {
-                          isFiltered = taskBloc.filterTasks(widget.branch.tasks,
-                              filteredTaskList, isFiltered);
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    PopupMenuItem(
-                        child: PopupButton(
-                      text: 'Удалить завершенные',
-                      icon: Icons.delete,
-                      onTap: () {
-                        isFiltered =
-                            taskBloc.deleteCompletedTasks(widget.branch.tasks);
-                        widget.onRefresh();
-                        Navigator.pop(context);
-                      },
-                    )),
-                    PopupMenuItem(
-                        child: PopupButton(
-                      text: 'Изменить тему',
-                      icon: Icons.brush,
-                      onTap: () {
-                        showBottomSheet(
-                          context: context,
-                          builder: (context) => ColorThemeDialog(
-                              branch: widget.branch,
-                              onChange: () {
-                                widget.onRefresh();
-                                taskBloc.updateTasks(widget.branch.tasks);
-                                // setState(() {});
-                              }),
-                        );
-                        Navigator.pop(context);
-                      },
-                    )),
-                  ])
-        ],
-      ),
-      body: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: StreamBuilder(
-          stream: taskBloc.getTasks,
-          initialData: widget.branch.tasks,
-          builder: (context, snapshot) {
-            if (snapshot.data.isEmpty || (snapshot.data.isEmpty && isFiltered))
-              return NoTasksBackground(isFiltered);
-            else
-              return taskListView(snapshot.data);
-          },
-        ),
-      ),
-      floatingActionButton: addTaskButton(),
+    return StreamBuilder(
+      stream: taskBloc.getBranch,
+      initialData: widget.branch,
+      builder: (context, snapshot) {
+        return Scaffold(
+          backgroundColor: snapshot.data.customColorTheme.backgroundColor,
+          appBar: AppBar(
+            backgroundColor: snapshot.data.customColorTheme.mainColor,
+            title: Text('Задачи', style: TextStyle(color: Colors.white)),
+            actions: [
+              PopupMenuButton(
+                  itemBuilder: (context) => [
+                        PopupMenuItem(
+                          child: PopupButton(
+                            text: isFiltered
+                                ? 'Показать завершенные'
+                                : 'Скрыть завершенные',
+                            icon: Icons.check_circle,
+                            onTap: () {
+                              isFiltered = taskBloc.filterTasks(
+                                  widget.branch, isFiltered);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                        PopupMenuItem(
+                            child: PopupButton(
+                          text: 'Удалить завершенные',
+                          icon: Icons.delete,
+                          onTap: () {
+                            isFiltered =
+                                taskBloc.deleteCompletedTasks(widget.branch);
+                            widget.onRefresh();
+                            Navigator.pop(context);
+                          },
+                        )),
+                        PopupMenuItem(
+                            child: PopupButton(
+                          text: 'Изменить тему',
+                          icon: Icons.brush,
+                          onTap: () {
+                            showBottomSheet(
+                              context: context,
+                              builder: (context) => ColorThemeDialog(
+                                  branch: widget.branch,
+                                  onChange: () {
+                                    widget.onRefresh();
+                                    taskBloc.updateTasks(widget.branch);
+                                  }),
+                            );
+                            Navigator.pop(context);
+                          },
+                        )),
+                      ])
+            ],
+          ),
+          body: Container(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            child: StreamBuilder(
+              stream: taskBloc.getBranch,
+              initialData: widget.branch,
+              builder: (context, snapshot) {
+                if (snapshot.data.tasks.isEmpty ||
+                    (snapshot.data.tasks.isEmpty && isFiltered))
+                  return NoTasksBackground(isFiltered);
+                else
+                  return taskListView(snapshot.data);
+              },
+            ),
+          ),
+          floatingActionButton: addTaskButton(),
+        );
+      },
     );
   }
 
-  Widget taskListView(List<Task> taskList) {
+  Widget taskListView(Branch branch) {
     return ListView.builder(
-      itemCount: taskList.length,
+      itemCount: isFiltered ? branch.filteredTasks.length : branch.tasks.length,
       itemBuilder: (context, index) {
         return Padding(
           padding: EdgeInsets.only(bottom: 5),
           child: TaskTile(
-            task: taskList[index],
+            task:
+                isFiltered ? branch.filteredTasks[index] : branch.tasks[index],
             customColorTheme: widget.branch.customColorTheme,
             onDelete: () {
-              taskBloc.deleteTask(
-                  taskList, index, isFiltered, filteredTaskList);
+              taskBloc.deleteTask(widget.branch, index, isFiltered);
               widget.onRefresh();
             },
             onRefresh: () {
               widget.onRefresh();
-              taskBloc.updateTasks(taskList);
+              taskBloc.updateTasks(widget.branch);
             },
             onComplete: () {
-              taskBloc.isComplete(taskList[index]);
+              taskBloc.isComplete(branch.tasks[index]);
             },
           ),
         );
@@ -142,7 +146,7 @@ class _TasksPageState extends State<TasksPage>
           context: context,
           builder: (context) {
             return CreateTaskDialog(
-              widget.branch.tasks,
+              widget.branch,
               taskBloc,
             );
           },
