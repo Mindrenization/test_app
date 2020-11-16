@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/pages/task_details_page.dart';
+import 'package:test_app/resources/custom_color_theme.dart';
 
 // Карточка задачи в списке
 class TaskTile extends StatefulWidget {
   final task;
+  final CustomColorTheme customColorTheme;
   final VoidCallback onDelete;
   final VoidCallback onRefresh;
   final VoidCallback onComplete;
-  TaskTile({this.task, this.onDelete, this.onRefresh, this.onComplete});
+  TaskTile(
+      {this.task,
+      this.customColorTheme,
+      this.onDelete,
+      this.onRefresh,
+      this.onComplete});
 
   @override
   _TaskTileState createState() => _TaskTileState();
@@ -42,6 +49,7 @@ class _TaskTileState extends State<TaskTile> {
           MaterialPageRoute(
             builder: (context) => TaskDetailsPage(
               task: widget.task,
+              customColorTheme: widget.customColorTheme,
               onRefresh: () {
                 widget.onRefresh();
               },

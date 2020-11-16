@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:test_app/blocs/task_details_bloc.dart';
 import 'package:test_app/models/task.dart';
+import 'package:test_app/resources/custom_color_theme.dart';
 import 'package:test_app/widgets/change_task_name_dialog.dart';
-import 'package:test_app/widgets/color_theme_dialog.dart';
 import 'package:test_app/widgets/deadline_dialog.dart';
 import 'package:test_app/widgets/delete_task_dialog.dart';
 import 'package:test_app/widgets/popup_button.dart';
@@ -12,10 +12,16 @@ import 'package:test_app/widgets/step_list.dart';
 // Страница детализации задачи
 class TaskDetailsPage extends StatefulWidget {
   final Task task;
+  final CustomColorTheme customColorTheme;
   final VoidCallback onRefresh;
   final VoidCallback onDelete;
   final VoidCallback onComplete;
-  TaskDetailsPage({this.task, this.onRefresh, this.onDelete, this.onComplete});
+  TaskDetailsPage(
+      {this.task,
+      this.customColorTheme,
+      this.onRefresh,
+      this.onDelete,
+      this.onComplete});
   @override
   _TaskDetailsPageState createState() => _TaskDetailsPageState();
 }
@@ -34,7 +40,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorThemeDialog.backgroundColor,
+      backgroundColor: widget.customColorTheme.backgroundColor,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -42,7 +48,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
               floating: true,
               snap: true,
               centerTitle: true,
-              backgroundColor: ColorThemeDialog.mainColor,
+              backgroundColor: widget.customColorTheme.mainColor,
               expandedHeight: 100,
               flexibleSpace: FlexibleSpaceBar(
                 centerTitle: true,

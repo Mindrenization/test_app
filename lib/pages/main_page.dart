@@ -5,7 +5,6 @@ import 'package:test_app/models/branch.dart';
 import 'package:test_app/models/task.dart';
 import 'package:test_app/pages/tasks_page.dart';
 import 'package:test_app/widgets/circular_progress_bar.dart';
-import 'package:test_app/widgets/color_theme_dialog.dart';
 import 'package:test_app/widgets/create_branch_dialog.dart';
 import 'package:test_app/widgets/delete_branch_dialog.dart';
 import 'package:test_app/widgets/linear_progress_bar.dart';
@@ -24,9 +23,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorThemeDialog.backgroundColor,
+      backgroundColor: const Color.fromRGBO(181, 201, 253, 1),
       appBar: AppBar(
-        backgroundColor: ColorThemeDialog.mainColor,
+        backgroundColor: const Color(0xFF6202EE),
         title: Text(
           'Оторвись от дивана!',
           style: TextStyle(color: Colors.white),
@@ -216,13 +215,15 @@ class _MainPageState extends State<MainPage> {
               children: [
                 Padding(
                   padding: EdgeInsets.only(bottom: 35, top: 20, left: 5),
-                  child: CircularProgressBar(branchList[index].tasks.length == 0
-                      ? 0
-                      : branchList[index]
-                              .tasks
-                              .where((Task task) => task.isComplete)
-                              .length /
-                          branchList[index].tasks.length),
+                  child: CircularProgressBar(
+                      branchList[index].tasks.length == 0
+                          ? 0
+                          : branchList[index]
+                                  .tasks
+                                  .where((Task task) => task.isComplete)
+                                  .length /
+                              branchList[index].tasks.length,
+                      branchList[index].customColorTheme.mainColor),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -258,8 +259,8 @@ class _MainPageState extends State<MainPage> {
               children: [
                 _sticker(
                     text: '${branchBloc.completedTasks(index)} сделано',
-                    color: Colors.green[100],
-                    textColor: Colors.green[800]),
+                    color: branchList[index].customColorTheme.backgroundColor,
+                    textColor: branchList[index].customColorTheme.mainColor),
                 _sticker(
                     text: '${branchBloc.uncompletedTasks(index)} осталось',
                     color: Colors.red[100],

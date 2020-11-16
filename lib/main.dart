@@ -8,13 +8,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryIconTheme: IconThemeData(color: Colors.white),
-        appBarTheme: AppBarTheme(
-          color: const Color(0xFF6202EE),
-        ),
-        primaryColor: const Color.fromRGBO(181, 201, 253, 1),
-      ),
       home: MainPage(),
     );
   }

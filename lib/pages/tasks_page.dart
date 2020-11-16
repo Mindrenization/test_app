@@ -37,9 +37,9 @@ class _TasksPageState extends State<TasksPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorThemeDialog.backgroundColor,
+      backgroundColor: widget.branch.customColorTheme.backgroundColor,
       appBar: AppBar(
-        backgroundColor: ColorThemeDialog.mainColor,
+        backgroundColor: widget.branch.customColorTheme.mainColor,
         title: Text('Задачи', style: TextStyle(color: Colors.white)),
         actions: [
           PopupMenuButton(
@@ -75,9 +75,13 @@ class _TasksPageState extends State<TasksPage>
                       onTap: () {
                         showBottomSheet(
                           context: context,
-                          builder: (context) => ColorThemeDialog(onChange: () {
-                            setState(() {});
-                          }),
+                          builder: (context) => ColorThemeDialog(
+                              branch: widget.branch,
+                              onChange: () {
+                                widget.onRefresh();
+                                taskBloc.updateTasks(widget.branch.tasks);
+                                // setState(() {});
+                              }),
                         );
                         Navigator.pop(context);
                       },
@@ -110,6 +114,7 @@ class _TasksPageState extends State<TasksPage>
           padding: EdgeInsets.only(bottom: 5),
           child: TaskTile(
             task: taskList[index],
+            customColorTheme: widget.branch.customColorTheme,
             onDelete: () {
               taskBloc.deleteTask(
                   taskList, index, isFiltered, filteredTaskList);

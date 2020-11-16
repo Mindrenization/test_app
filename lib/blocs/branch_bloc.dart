@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:test_app/blocs/bloc.dart';
 import 'package:test_app/models/branch.dart';
 import 'package:test_app/models/task.dart';

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:test_app/models/branch.dart';
 
 // Модальное окно для выбора цветовой темы
 class ColorThemeDialog extends StatefulWidget {
-  static Color mainColor = const Color(0xFF6202EE);
-  static Color backgroundColor = const Color.fromRGBO(181, 201, 253, 1);
+  final Branch branch;
   final VoidCallback onChange;
-  ColorThemeDialog({this.onChange});
+  ColorThemeDialog({this.branch, this.onChange});
 
   @override
   _ColorThemeDialogState createState() => _ColorThemeDialogState();
@@ -34,23 +34,15 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                _radioTheme(Colors.red),
+                _radioTheme(Colors.orange[700]),
                 Container(
                   width: 10,
                 ),
-                _radioTheme(Colors.orange),
+                _radioTheme(Colors.green[700]),
                 Container(
                   width: 10,
                 ),
-                _radioTheme(Colors.yellow),
-                Container(
-                  width: 10,
-                ),
-                _radioTheme(Colors.green),
-                Container(
-                  width: 10,
-                ),
-                _radioTheme(Colors.blue),
+                _radioTheme(Colors.cyan[800]),
                 Container(
                   width: 10,
                 ),
@@ -71,7 +63,7 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
       child: Radio(
         activeColor: Colors.black,
         value: color,
-        groupValue: ColorThemeDialog.mainColor,
+        groupValue: widget.branch.customColorTheme.mainColor,
         onChanged: (value) {
           _onTap(value);
         },
@@ -80,22 +72,24 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
   }
 
   void _onTap(value) {
-    setState(() {
-      ColorThemeDialog.mainColor = value;
-      if (value == Colors.red) {
-        ColorThemeDialog.backgroundColor = Colors.red[100];
-      } else if (value == Colors.orange) {
-        ColorThemeDialog.backgroundColor = Colors.orange[100];
-      } else if (value == Colors.yellow) {
-        ColorThemeDialog.backgroundColor = Colors.yellow[100];
-      } else if (value == Colors.green) {
-        ColorThemeDialog.backgroundColor = Colors.green[100];
-      } else if (value == Colors.blue) {
-        ColorThemeDialog.backgroundColor = Colors.blue[100];
-      } else if (value == const Color(0xFF6202EE)) {
-        ColorThemeDialog.backgroundColor = Color.fromRGBO(181, 201, 253, 1);
-      }
-    });
+    setState(
+      () {
+        if (value == Colors.orange[700]) {
+          widget.branch.customColorTheme.mainColor = value;
+          widget.branch.customColorTheme.backgroundColor = Colors.orange[100];
+        } else if (value == Colors.green[700]) {
+          widget.branch.customColorTheme.mainColor = value;
+          widget.branch.customColorTheme.backgroundColor = Colors.green[100];
+        } else if (value == Colors.cyan[800]) {
+          widget.branch.customColorTheme.mainColor = value;
+          widget.branch.customColorTheme.backgroundColor = Colors.cyan[100];
+        } else if (value == const Color(0xFF6202EE)) {
+          widget.branch.customColorTheme.mainColor = value;
+          widget.branch.customColorTheme.backgroundColor =
+              const Color.fromRGBO(181, 201, 253, 1);
+        }
+      },
+    );
     widget.onChange();
   }
 }
