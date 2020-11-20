@@ -1,17 +1,19 @@
 import 'package:intl/intl.dart';
-import 'package:test_app/blocs/task_details_bloc.dart';
 import 'package:test_app/models/task.dart';
 import 'package:flutter/material.dart';
+import 'package:test_app/models/task_step.dart';
 
 class StepList extends StatefulWidget {
   final Task task;
-  final TaskDetailsBloc stepBloc;
-  final snapshot;
+  final state;
+  final onCreate;
+  final onDelete;
   final VoidCallback onRefresh;
   StepList(
     this.task,
-    this.stepBloc,
-    this.snapshot, {
+    this.state, {
+    this.onCreate,
+    this.onDelete,
     this.onRefresh,
   });
   @override
@@ -41,12 +43,12 @@ class _StepListState extends State<StepList> {
           Padding(
             padding: EdgeInsets.only(left: 10, top: 10),
             child: Text(
-              'Создано: ${DateFormat('dd.MM.yyyy').format(widget.task.createDate)}',
+              'Создано: ${DateFormat('dd.MM.yyyy').format(widget.state.createDate)}',
               style: TextStyle(fontSize: 12, color: Colors.grey[700]),
             ),
           ),
-          for (int index = 0; index < widget.snapshot.steps.length; index++)
-            _stepTile(widget.snapshot, widget.task, index, widget.stepBloc),
+          for (int index = 0; index < widget.state.steps.length; index++)
+            _stepTile(widget.task, index),
           Padding(
             padding: EdgeInsets.all(10),
             child: _addStepButton(widget.task),
@@ -106,7 +108,7 @@ class _StepListState extends State<StepList> {
           border: InputBorder.none,
         ),
         onEditingComplete: () {
-          widget.stepBloc.createStep(task, _stepController.text);
+          widget.onCreate(_stepController.text);
           _stepController.text = '';
           widget.onRefresh();
         },
@@ -134,20 +136,25 @@ class _StepListState extends State<StepList> {
     );
   }
 
-  Widget _stepTile(snapshot, task, index, stepBloc) {
+  Widget _stepTile(task, index) {
     return Row(
       children: [
         Checkbox(
-          value: snapshot.steps[index].isComplete,
+          value: widget.state.steps[index].isComplete,
           activeColor: const Color(0xFF6202EE),
           onChanged: (value) {
+            setState(() {
+              task.steps[index].isComplete = value;
+              task.completedSteps = task.steps
+                  .where((TaskStep element) => element.isComplete)
+                  .length;
+            });
             widget.onRefresh();
-            widget.stepBloc.isComplete(task, index, value);
           },
         ),
         Expanded(
           child: Text(
-            snapshot.steps[index].title,
+            task.steps[index].title,
             maxLines: null,
           ),
         ),
@@ -159,7 +166,7 @@ class _StepListState extends State<StepList> {
               color: Colors.grey[700],
             ),
             onPressed: () {
-              widget.stepBloc.deleteStep(task, index);
+              widget.onDelete(index);
               widget.onRefresh();
             },
           ),

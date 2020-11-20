@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_app/blocs/task_bloc.dart';
+import 'package:test_app/blocs/task_event.dart';
+import 'package:test_app/blocs/task_state.dart';
 import 'package:test_app/models/branch.dart';
+import 'package:test_app/pages/task_details_page.dart';
 import 'package:test_app/widgets/no_tasks_background.dart';
 import 'package:test_app/widgets/task_tile.dart';
 import 'package:test_app/widgets/popup_button.dart';
@@ -18,8 +22,7 @@ class TasksPage extends StatefulWidget {
 
 class _TasksPageState extends State<TasksPage>
     with SingleTickerProviderStateMixin {
-  bool isFiltered = false;
-  TaskBloc taskBloc = TaskBloc();
+  var taskBlocSink;
 
   @override
   void initState() {
@@ -28,89 +31,102 @@ class _TasksPageState extends State<TasksPage>
 
   @override
   void dispose() {
-    taskBloc.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: taskBloc.getBranch,
-      initialData: widget.branch,
-      builder: (context, snapshot) {
-        return Scaffold(
-          backgroundColor: snapshot.data.customColorTheme.backgroundColor,
-          appBar: AppBar(
-            backgroundColor: snapshot.data.customColorTheme.mainColor,
-            title: Text('Задачи', style: TextStyle(color: Colors.white)),
-            actions: [
-              PopupMenuButton(
-                  itemBuilder: (context) => [
-                        PopupMenuItem(
-                          child: PopupButton(
-                            text: isFiltered
-                                ? 'Показать завершенные'
-                                : 'Скрыть завершенные',
-                            icon: Icons.check_circle,
-                            onTap: () {
-                              isFiltered = taskBloc.filterTasks(
-                                  widget.branch, isFiltered);
-                              Navigator.pop(context);
-                            },
+    return BlocProvider(
+      create: (context) => TaskBloc(TaskEmpty()),
+      child: BlocBuilder<TaskBloc, TaskState>(builder: (context, state) {
+        taskBlocSink = BlocProvider.of<TaskBloc>(context);
+        if (state is TaskEmpty) {
+          taskBlocSink.add(FetchTaskList(widget.branch));
+        }
+        if (state is TaskError) {
+          return Center(
+            child: Text('Failed to load page'),
+          );
+        }
+        if (state is TaskLoaded) {
+          return Scaffold(
+            backgroundColor: state.branch.customColorTheme.backgroundColor,
+            appBar: AppBar(
+              backgroundColor: state.branch.customColorTheme.mainColor,
+              title: Text('Задачи', style: TextStyle(color: Colors.white)),
+              actions: [
+                PopupMenuButton(
+                    itemBuilder: (context) => [
+                          PopupMenuItem(
+                            child: PopupButton(
+                              text: state.isFiltered
+                                  ? 'Показать завершенные'
+                                  : 'Скрыть завершенные',
+                              icon: Icons.check_circle,
+                              onTap: () {
+                                taskBlocSink.add(
+                                  FilterTaskList(widget.branch,
+                                      isFiltered: state.isFiltered),
+                                );
+                                Navigator.pop(context);
+                              },
+                            ),
                           ),
-                        ),
-                        PopupMenuItem(
+                          PopupMenuItem(
                             child: PopupButton(
-                          text: 'Удалить завершенные',
-                          icon: Icons.delete,
-                          onTap: () {
-                            isFiltered =
-                                taskBloc.deleteCompletedTasks(widget.branch);
-                            widget.onRefresh();
-                            Navigator.pop(context);
-                          },
-                        )),
-                        PopupMenuItem(
+                              text: 'Удалить завершенные',
+                              icon: Icons.delete,
+                              onTap: () {
+                                taskBlocSink.add(
+                                  DeletedCompletedTasks(
+                                    widget.branch,
+                                  ),
+                                );
+                                widget.onRefresh();
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          PopupMenuItem(
                             child: PopupButton(
-                          text: 'Изменить тему',
-                          icon: Icons.brush,
-                          onTap: () {
-                            showBottomSheet(
-                              context: context,
-                              builder: (context) => ColorThemeDialog(
-                                  branch: widget.branch,
-                                  onChange: () {
-                                    widget.onRefresh();
-                                    taskBloc.updateTasks(widget.branch);
-                                  }),
-                            );
-                            Navigator.pop(context);
-                          },
-                        )),
-                      ])
-            ],
-          ),
-          body: Container(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            child: StreamBuilder(
-              stream: taskBloc.getBranch,
-              initialData: widget.branch,
-              builder: (context, snapshot) {
-                if (snapshot.data.tasks.isEmpty ||
-                    (snapshot.data.tasks.isEmpty && isFiltered))
-                  return NoTasksBackground(isFiltered);
-                else
-                  return taskListView(snapshot.data);
-              },
+                              text: 'Изменить тему',
+                              icon: Icons.brush,
+                              onTap: () {
+                                showBottomSheet(
+                                  context: context,
+                                  builder: (context) => ColorThemeDialog(
+                                      branch: widget.branch,
+                                      onChange: () {
+                                        widget.onRefresh();
+                                        taskBlocSink
+                                            .add(FetchTaskList(widget.branch));
+                                      }),
+                                );
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                        ])
+              ],
             ),
-          ),
-          floatingActionButton: addTaskButton(),
+            body: Container(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: state.branch.tasks.isEmpty ||
+                      (state.branch.tasks.isEmpty && state.isFiltered)
+                  ? NoTasksBackground(state.isFiltered)
+                  : taskListView(state.branch, state.isFiltered),
+            ),
+            floatingActionButton: addTaskButton(),
+          );
+        }
+        return Center(
+          child: CircularProgressIndicator(),
         );
-      },
+      }),
     );
   }
 
-  Widget taskListView(Branch branch) {
+  Widget taskListView(Branch branch, bool isFiltered) {
     return ListView.builder(
       itemCount: isFiltered ? branch.filteredTasks.length : branch.tasks.length,
       itemBuilder: (context, index) {
@@ -119,17 +135,43 @@ class _TasksPageState extends State<TasksPage>
           child: TaskTile(
             task:
                 isFiltered ? branch.filteredTasks[index] : branch.tasks[index],
-            customColorTheme: widget.branch.customColorTheme,
             onDelete: () {
-              taskBloc.deleteTask(widget.branch, index, isFiltered);
+              taskBlocSink.add(DeleteTask(
+                  branch: widget.branch, index: index, isFiltered: isFiltered));
               widget.onRefresh();
             },
             onRefresh: () {
+              taskBlocSink.add(FetchTaskList(widget.branch));
               widget.onRefresh();
-              taskBloc.updateTasks(widget.branch);
             },
-            onComplete: () {
-              taskBloc.isComplete(branch.tasks[index]);
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TaskDetailsPage(
+                    task: isFiltered
+                        ? branch.filteredTasks[index]
+                        : branch.tasks[index],
+                    customColorTheme: branch.customColorTheme,
+                    onRefresh: () {
+                      taskBlocSink.add(FetchTaskList(widget.branch));
+                      widget.onRefresh();
+                    },
+                    onDelete: () {
+                      taskBlocSink.add(DeleteTask(
+                          branch: widget.branch,
+                          index: index,
+                          isFiltered: isFiltered));
+                      widget.onRefresh();
+                    },
+                    onComplete: () {
+                      taskBlocSink.add(CompleteTask(
+                          task: branch.tasks[index], branch: widget.branch));
+                      widget.onRefresh();
+                    },
+                  ),
+                ),
+              );
             },
           ),
         );
@@ -141,16 +183,17 @@ class _TasksPageState extends State<TasksPage>
     return FloatingActionButton(
       backgroundColor: Colors.cyan[600],
       child: Icon(Icons.add),
-      onPressed: () {
-        showDialog(
+      onPressed: () async {
+        await showDialog(
           context: context,
           builder: (context) {
-            return CreateTaskDialog(
-              widget.branch,
-              taskBloc,
-            );
+            return CreateTaskDialog((title, deadline) {
+              taskBlocSink.add(CreateTask(
+                  branch: widget.branch, title: title, deadline: deadline));
+            });
           },
         );
+        widget.onRefresh();
       },
     );
   }

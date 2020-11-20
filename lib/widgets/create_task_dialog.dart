@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/blocs/task_bloc.dart';
-import 'package:test_app/models/branch.dart';
 import 'package:test_app/widgets/deadline_dialog.dart';
 import 'package:intl/intl.dart';
 
@@ -8,10 +6,9 @@ import 'package:intl/intl.dart';
 class CreateTaskDialog extends StatefulWidget {
   @override
   _CreateTaskDialogState createState() => _CreateTaskDialogState();
-  final Branch branch;
-  final TaskBloc taskBloc;
+  final onCreate;
 
-  CreateTaskDialog(this.branch, this.taskBloc);
+  CreateTaskDialog(this.onCreate);
 }
 
 class _CreateTaskDialogState extends State<CreateTaskDialog> {
@@ -34,7 +31,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
           child: TextField(
             maxLength: 30,
             onEditingComplete: () {
-              _complete(widget.taskBloc, widget.branch);
+              _complete();
             },
             controller: _titleController,
             decoration: InputDecoration(
@@ -88,7 +85,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
                 style: TextStyle(fontSize: 18),
               ),
               onPressed: () {
-                _complete(widget.taskBloc, widget.branch);
+                _complete();
               },
             ),
           ],
@@ -132,8 +129,8 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
     );
   }
 
-  _complete(taskBloc, branch) {
-    taskBloc.createTask(branch, _titleController.text, _deadline);
+  _complete() {
+    widget.onCreate(_titleController.text, _deadline);
     Navigator.pop(context);
   }
 }

@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/pages/task_details_page.dart';
-import 'package:test_app/resources/custom_color_theme.dart';
 
 // Карточка задачи в списке
 class TaskTile extends StatefulWidget {
   final task;
-  final CustomColorTheme customColorTheme;
   final VoidCallback onDelete;
   final VoidCallback onRefresh;
-  final VoidCallback onComplete;
-  TaskTile(
-      {this.task,
-      this.customColorTheme,
-      this.onDelete,
-      this.onRefresh,
-      this.onComplete});
+  final VoidCallback onTap;
+  TaskTile({this.task, this.onDelete, this.onRefresh, this.onTap});
 
   @override
   _TaskTileState createState() => _TaskTileState();
@@ -44,22 +36,7 @@ class _TaskTileState extends State<TaskTile> {
         ),
       ),
       child: GestureDetector(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TaskDetailsPage(
-              task: widget.task,
-              customColorTheme: widget.customColorTheme,
-              onRefresh: () {
-                widget.onRefresh();
-              },
-              onDelete: widget.onDelete,
-              onComplete: () {
-                widget.onComplete();
-              },
-            ),
-          ),
-        ),
+        onTap: widget.onTap,
         child: Container(
           padding: EdgeInsets.all(10),
           width: MediaQuery.of(context).size.width,
@@ -73,7 +50,7 @@ class _TaskTileState extends State<TaskTile> {
                 value: widget.task.isComplete,
                 activeColor: const Color(0xFF6202EE),
                 onChanged: (value) {
-                  widget.onComplete();
+                  widget.task.isComplete = value;
                   widget.onRefresh();
                 },
               ),

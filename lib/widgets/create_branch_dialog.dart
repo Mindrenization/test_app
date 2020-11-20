@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 // Модал создания ветки
 class CreateBranchDialog extends StatefulWidget {
-  final branchBloc;
-  CreateBranchDialog({this.branchBloc});
+  final onCreate;
+  CreateBranchDialog({this.onCreate});
   @override
   _CreateBranchDialogState createState() => _CreateBranchDialogState();
 }
@@ -25,7 +25,7 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
         Container(
           child: TextField(
             maxLength: 30,
-            onEditingComplete: () => _complete(widget.branchBloc),
+            onEditingComplete: () => _complete(_titleController.text),
             controller: _titleController,
             decoration: InputDecoration(
                 hintText: 'Введите название списка', isDense: true),
@@ -51,7 +51,7 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
                 'Создать',
                 style: TextStyle(fontSize: 18),
               ),
-              onPressed: () => _complete(widget.branchBloc),
+              onPressed: () => _complete(_titleController.text),
             ),
           ],
         ),
@@ -59,8 +59,8 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
     );
   }
 
-  _complete(branchBloc) {
-    branchBloc.createBranch(_titleController.text);
+  _complete(String text) {
+    widget.onCreate(text);
     Navigator.pop(context);
   }
 }
