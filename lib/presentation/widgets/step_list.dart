@@ -32,7 +32,7 @@ class _StepListState extends State<StepList> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal: 10),
       color: Colors.white,
       elevation: 5,
       child: Column(

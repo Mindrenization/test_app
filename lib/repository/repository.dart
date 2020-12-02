@@ -1,3 +1,4 @@
+import 'package:test_app/data/database/db_branch_wrapper.dart';
 import 'package:test_app/data/models/branch.dart';
 import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
@@ -6,12 +7,10 @@ class Repository {
   static final instance = Repository();
   List<Branch> _branchList;
 
-  void setBranchList(List<Branch> branchList) {
-    Repository.instance._branchList = branchList;
-  }
-
-  List<Branch> getBranchList() {
-    return Repository.instance._branchList;
+  Future<List<Branch>> getBranchList() async {
+    DbBranchWrapper _dbBranchWrapper = DbBranchWrapper();
+    return Repository.instance._branchList =
+        _branchList ?? await _dbBranchWrapper.getBranchList();
   }
 
   Branch getBranch(String id) {

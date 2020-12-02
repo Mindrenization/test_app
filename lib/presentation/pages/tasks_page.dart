@@ -116,13 +116,28 @@ class _TasksPageState extends State<TasksPage>
                         ])
               ],
             ),
-            body: Padding(
-              padding: EdgeInsets.all(10),
-              child: state.taskList.isEmpty ||
-                      (state.taskList.isEmpty && state.isFiltered)
-                  ? NoTasksBackground(state.isFiltered)
-                  : taskListView(state.taskList, state.isFiltered),
-            ),
+            body: state.taskList.isEmpty ||
+                    (state.taskList.isEmpty && state.isFiltered)
+                ? NoTasksBackground(state.isFiltered)
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      state.isFiltered
+                          ? Padding(
+                              padding: EdgeInsets.only(left: 15, top: 5),
+                              child: Text(
+                                'Фильтр: скрыть завершенные задачи',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.grey[800]),
+                              ),
+                            )
+                          : Container(),
+                      for (int index = 0;
+                          index < state.taskList.length;
+                          index++)
+                        taskListView(state.taskList[index], state.isFiltered),
+                    ],
+                  ),
             floatingActionButton: addTaskButton(),
           );
         }
@@ -133,77 +148,72 @@ class _TasksPageState extends State<TasksPage>
     );
   }
 
-  Widget taskListView(List<Task> taskList, bool isFiltered) {
-    return ListView.builder(
-      itemCount: taskList.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: 10),
-          child: TaskTile(
-            task: taskList[index],
-            color: widget.customColorTheme.mainColor,
-            onDelete: () {
-              taskBlocSink.add(
-                DeleteTask(
-                  branchId: widget.branchId,
-                  taskId: taskList[index].id,
-                  isFiltered: isFiltered,
-                  onRefresh: widget.onRefresh,
-                ),
-              );
-            },
-            onCheck: () {
-              taskBlocSink.add(
-                CompleteTask(
-                  taskId: taskList[index].id,
-                  branchId: widget.branchId,
-                  isFiltered: isFiltered,
-                  onRefresh: widget.onRefresh,
-                ),
-              );
-            },
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TaskDetailsPage(
-                    branchId: widget.branchId,
-                    taskId: taskList[index].id,
-                    customColorTheme: widget.customColorTheme,
-                    onRefresh: () {
-                      taskBlocSink.add(
-                        UpdateTask(
-                          branchId: widget.branchId,
-                          taskId: taskList[index].id,
-                        ),
-                      );
-                      widget.onRefresh();
-                    },
-                    onDelete: () {
-                      taskBlocSink.add(
-                        DeleteTask(
-                          branchId: widget.branchId,
-                          taskId: taskList[index].id,
-                          onRefresh: widget.onRefresh,
-                        ),
-                      );
-                    },
-                    onComplete: () {
-                      taskBlocSink.add(
-                        CompleteTask(
-                          taskId: taskList[index].id,
-                          branchId: widget.branchId,
-                          onRefresh: widget.onRefresh,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
+  Widget taskListView(Task task, bool isFiltered) {
+    return Padding(
+      padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+      child: TaskTile(
+        task: task,
+        color: widget.customColorTheme.mainColor,
+        onDelete: () {
+          taskBlocSink.add(
+            DeleteTask(
+              branchId: widget.branchId,
+              taskId: task.id,
+              isFiltered: isFiltered,
+              onRefresh: widget.onRefresh,
+            ),
+          );
+        },
+        onCheck: () {
+          taskBlocSink.add(
+            CompleteTask(
+              taskId: task.id,
+              branchId: widget.branchId,
+              isFiltered: isFiltered,
+              onRefresh: widget.onRefresh,
+            ),
+          );
+        },
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TaskDetailsPage(
+                branchId: widget.branchId,
+                taskId: task.id,
+                customColorTheme: widget.customColorTheme,
+                onRefresh: () {
+                  taskBlocSink.add(
+                    UpdateTask(
+                      branchId: widget.branchId,
+                      taskId: task.id,
+                    ),
+                  );
+                  widget.onRefresh();
+                },
+                onDelete: () {
+                  taskBlocSink.add(
+                    DeleteTask(
+                      branchId: widget.branchId,
+                      taskId: task.id,
+                      onRefresh: widget.onRefresh,
+                    ),
+                  );
+                },
+                onComplete: () {
+                  taskBlocSink.add(
+                    CompleteTask(
+                      taskId: task.id,
+                      branchId: widget.branchId,
+                      onRefresh: widget.onRefresh,
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
