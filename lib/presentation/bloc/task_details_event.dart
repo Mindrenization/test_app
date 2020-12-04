@@ -18,7 +18,7 @@ class CreateStep extends TaskDetailsEvent {
   final String branchId;
   final String taskId;
   final String title;
-  final onRefresh;
+  final Function onRefresh;
   const CreateStep({this.title, this.taskId, this.branchId, this.onRefresh});
 }
 
@@ -26,7 +26,7 @@ class DeleteStep extends TaskDetailsEvent {
   final String branchId;
   final String taskId;
   final String stepId;
-  final onRefresh;
+  final Function onRefresh;
   const DeleteStep({this.branchId, this.taskId, this.stepId, this.onRefresh});
 }
 
@@ -34,7 +34,7 @@ class CompleteStep extends TaskDetailsEvent {
   final String branchId;
   final String taskId;
   final String stepId;
-  final onRefresh;
+  final Function onRefresh;
   CompleteStep({this.branchId, this.taskId, this.stepId, this.onRefresh});
 }
 

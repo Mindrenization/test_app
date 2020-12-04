@@ -43,31 +43,34 @@ class _NoTasksBackgroundState extends State<NoTasksBackground>
               )
             : Container(),
         Center(
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Stack(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(Resources.emptyTasksBackground),
-              Positioned(
-                bottom: logoHight,
-                child: SvgPicture.asset(Resources.emptyTasksLogo),
+              Stack(
+                children: [
+                  SvgPicture.asset(Resources.emptyTasksBackground),
+                  Positioned(
+                    bottom: logoHight,
+                    child: SvgPicture.asset(Resources.emptyTasksLogo),
+                  ),
+                ],
+              ),
+              Container(
+                height: 20,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 90),
+                child: Text(
+                  widget.isFiltered
+                      ? 'У вас нет невыполненных задач'
+                      : 'На данный момент в этой ветке нет задач',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 22, color: Colors.grey[700]),
+                ),
               ),
             ],
           ),
-          Container(
-            height: 20,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 90),
-            child: Text(
-              widget.isFiltered
-                  ? 'У вас нет невыполненных задач'
-                  : 'На данный момент в этой ветке нет задач',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 22, color: Colors.grey[700]),
-            ),
-          ),
-        ]))
+        )
       ],
     );
   }

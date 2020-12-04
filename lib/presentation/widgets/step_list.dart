@@ -22,6 +22,7 @@ class _StepListState extends State<StepList> {
   TextEditingController _stepController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   bool isText = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -98,18 +99,29 @@ class _StepListState extends State<StepList> {
         ),
       );
     } else {
-      return TextField(
-        autofocus: true,
-        controller: _stepController,
-        decoration: InputDecoration(
-          isDense: true,
-          border: InputBorder.none,
+      return Form(
+        key: _formKey,
+        child: TextFormField(
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Зачем?';
+            }
+            return null;
+          },
+          autofocus: true,
+          controller: _stepController,
+          decoration: InputDecoration(
+            isDense: true,
+            border: InputBorder.none,
+          ),
+          onEditingComplete: () {
+            if (_formKey.currentState.validate()) {
+              widget.onCreate(_stepController.text);
+              _stepController.text = '';
+              widget.onRefresh();
+            }
+          },
         ),
-        onEditingComplete: () {
-          widget.onCreate(_stepController.text);
-          _stepController.text = '';
-          widget.onRefresh();
-        },
       );
     }
   }

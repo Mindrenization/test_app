@@ -16,11 +16,15 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  var branchBlocSink;
+  BranchBloc branchBlocSink;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
-    branchBlocSink.dispose();
     super.dispose();
   }
 

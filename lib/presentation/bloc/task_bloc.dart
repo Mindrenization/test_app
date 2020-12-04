@@ -140,6 +140,11 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   Future<List<Task>> _deleteCompletedTasks(branchId) async {
     List<Task> _taskList = Repository.instance.getTaskList(branchId);
+    List<Task> _completedTasks =
+        _taskList.where((task) => task.isComplete).toList();
+    for (int i = 0; i < _completedTasks.length; i++) {
+      await _dbTaskWrapper.deleteAllSteps(_completedTasks[i]);
+    }
     _taskList.removeWhere((task) => task.isComplete);
     await _dbTaskWrapper.deleteCompletedTasks(branchId);
     return _taskList;

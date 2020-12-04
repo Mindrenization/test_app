@@ -33,8 +33,12 @@ class TaskDetailsPage extends StatefulWidget {
 }
 
 class _TaskDetailsPageState extends State<TaskDetailsPage> {
-  var stepBlocSink;
-  bool isText = false;
+  TaskDetailsBloc stepBlocSink;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -72,6 +76,8 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                       backgroundColor: widget.customColorTheme.mainColor,
                       expandedHeight: 100,
                       flexibleSpace: FlexibleSpaceBar(
+                        titlePadding:
+                            EdgeInsets.symmetric(horizontal: 100, vertical: 10),
                         centerTitle: true,
                         title: Text(
                           state.task.title,
@@ -235,11 +241,12 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                               ),
                               onTap: () async {
                                 DateTime _deadline = await showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return DeadlineDialog();
-                                  },
-                                );
+                                      context: context,
+                                      builder: (context) {
+                                        return DeadlineDialog();
+                                      },
+                                    ) ??
+                                    state.task.deadline;
                                 stepBlocSink.add(SetDeadline(
                                     branchId: widget.branchId,
                                     taskId: widget.taskId,
@@ -270,45 +277,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                               Padding(
                                 padding: EdgeInsets.all(10),
                                 child: CachedNetworkImage(
-                                  imageUrl: 'https://picsum.photos/200?image=1',
-                                  placeholder: (context, url) {
-                                    return Icon(
-                                      Icons.panorama,
-                                      size: 50,
-                                      color: Colors.grey[700],
-                                    );
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(10),
-                                child: CachedNetworkImage(
-                                  imageUrl: 'https://picsum.photos/200?image=2',
-                                  placeholder: (context, url) {
-                                    return Icon(
-                                      Icons.panorama,
-                                      size: 50,
-                                      color: Colors.grey[700],
-                                    );
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(10),
-                                child: CachedNetworkImage(
-                                  imageUrl: 'https://picsum.photos/200?image=3',
-                                  placeholder: (context, url) {
-                                    return Icon(
-                                      Icons.panorama,
-                                      size: 50,
-                                      color: Colors.grey[700],
-                                    );
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(10),
-                                child: CachedNetworkImage(
+                                  fit: BoxFit.fill,
                                   imageUrl: 'https://picsum.photos/200?image=4',
                                   placeholder: (context, url) {
                                     return Icon(
@@ -319,7 +288,6 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                   },
                                 ),
                               ),
-                              // массив картинок
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -410,7 +378,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
               padding: EdgeInsets.only(right: 15),
               child: icon,
             ),
-            text
+            Expanded(child: text),
           ],
         ),
       ),

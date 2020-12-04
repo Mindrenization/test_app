@@ -24,7 +24,7 @@ class TasksPage extends StatefulWidget {
 
 class _TasksPageState extends State<TasksPage>
     with SingleTickerProviderStateMixin {
-  var taskBlocSink;
+  TaskBloc _taskBlocSink;
 
   @override
   void initState() {
@@ -41,9 +41,9 @@ class _TasksPageState extends State<TasksPage>
     return BlocProvider(
       create: (context) => TaskBloc(TaskEmpty()),
       child: BlocBuilder<TaskBloc, TaskState>(builder: (context, state) {
-        taskBlocSink = BlocProvider.of<TaskBloc>(context);
+        _taskBlocSink = BlocProvider.of<TaskBloc>(context);
         if (state is TaskEmpty) {
-          taskBlocSink.add(FetchTaskList(widget.branchId));
+          _taskBlocSink.add(FetchTaskList(widget.branchId));
         }
         if (state is TaskError) {
           return Center(
@@ -66,7 +66,7 @@ class _TasksPageState extends State<TasksPage>
                                   : 'Скрыть завершенные',
                               icon: Icons.check_circle,
                               onTap: () {
-                                taskBlocSink.add(
+                                _taskBlocSink.add(
                                   FilterTaskList(
                                     branchId: widget.branchId,
                                     isFiltered: state.isFiltered,
@@ -81,7 +81,7 @@ class _TasksPageState extends State<TasksPage>
                               text: 'Удалить завершенные',
                               icon: Icons.delete,
                               onTap: () {
-                                taskBlocSink.add(
+                                _taskBlocSink.add(
                                   DeleteCompletedTasks(
                                     branchId: widget.branchId,
                                     onRefresh: widget.onRefresh,
@@ -102,7 +102,7 @@ class _TasksPageState extends State<TasksPage>
                                       customColorTheme: widget.customColorTheme,
                                       onChange: () {
                                         widget.onRefresh();
-                                        taskBlocSink.add(
+                                        _taskBlocSink.add(
                                           ChangeColorTheme(
                                             branchId: widget.branchId,
                                           ),
@@ -155,7 +155,7 @@ class _TasksPageState extends State<TasksPage>
         task: task,
         color: widget.customColorTheme.mainColor,
         onDelete: () {
-          taskBlocSink.add(
+          _taskBlocSink.add(
             DeleteTask(
               branchId: widget.branchId,
               taskId: task.id,
@@ -165,7 +165,7 @@ class _TasksPageState extends State<TasksPage>
           );
         },
         onCheck: () {
-          taskBlocSink.add(
+          _taskBlocSink.add(
             CompleteTask(
               taskId: task.id,
               branchId: widget.branchId,
@@ -183,7 +183,7 @@ class _TasksPageState extends State<TasksPage>
                 taskId: task.id,
                 customColorTheme: widget.customColorTheme,
                 onRefresh: () {
-                  taskBlocSink.add(
+                  _taskBlocSink.add(
                     UpdateTask(
                       branchId: widget.branchId,
                       taskId: task.id,
@@ -192,7 +192,7 @@ class _TasksPageState extends State<TasksPage>
                   widget.onRefresh();
                 },
                 onDelete: () {
-                  taskBlocSink.add(
+                  _taskBlocSink.add(
                     DeleteTask(
                       branchId: widget.branchId,
                       taskId: task.id,
@@ -201,7 +201,7 @@ class _TasksPageState extends State<TasksPage>
                   );
                 },
                 onComplete: () {
-                  taskBlocSink.add(
+                  _taskBlocSink.add(
                     CompleteTask(
                       taskId: task.id,
                       branchId: widget.branchId,
@@ -226,7 +226,7 @@ class _TasksPageState extends State<TasksPage>
           context: context,
           builder: (context) {
             return CreateTaskDialog(onCreate: (title, deadline) {
-              taskBlocSink.add(
+              _taskBlocSink.add(
                 CreateTask(
                   branchId: widget.branchId,
                   title: title,

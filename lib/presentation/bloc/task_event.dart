@@ -11,7 +11,7 @@ class CreateTask extends TaskEvent {
   final String branchId;
   final String title;
   final DateTime deadline;
-  final onRefresh;
+  final Function onRefresh;
   const CreateTask({this.branchId, this.title, this.deadline, this.onRefresh});
 }
 
@@ -30,7 +30,7 @@ class DeleteTask extends TaskEvent {
   final String branchId;
   final String taskId;
   final bool isFiltered;
-  final onRefresh;
+  final Function onRefresh;
   const DeleteTask(
       {this.branchId, this.taskId, this.isFiltered = false, this.onRefresh});
 }
@@ -39,7 +39,7 @@ class CompleteTask extends TaskEvent {
   final String branchId;
   final String taskId;
   final bool isFiltered;
-  final onRefresh;
+  final Function onRefresh;
   const CompleteTask(
       {this.branchId, this.taskId, this.isFiltered = false, this.onRefresh});
 }
@@ -52,6 +52,6 @@ class FilterTaskList extends TaskEvent {
 
 class DeleteCompletedTasks extends TaskEvent {
   final String branchId;
-  final onRefresh;
+  final Function onRefresh;
   const DeleteCompletedTasks({this.branchId, this.onRefresh});
 }
