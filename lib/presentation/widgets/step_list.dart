@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 
 class StepList extends StatefulWidget {
   final task;
+  final color;
   final onCreate;
   final onDelete;
   final onRefresh;
   final onComplete;
   final onSaveDescription;
-  StepList(this.task,
+  StepList(this.task, this.color,
       {this.onCreate,
       this.onDelete,
       this.onRefresh,
@@ -151,7 +152,7 @@ class _StepListState extends State<StepList> {
       children: [
         Checkbox(
           value: widget.task.steps[index].isComplete,
-          activeColor: const Color(0xFF6202EE),
+          activeColor: widget.color,
           onChanged: (value) {
             widget.onComplete(index);
             widget.onRefresh();

@@ -1,17 +1,15 @@
 class Image {
   final String id;
-  final String secret;
-  final String server;
-  final int farm;
+  final String parentId;
+  final String path;
 
-  Image({this.id, this.farm, this.secret, this.server});
+  Image(this.id, this.parentId, this.path);
 
-  factory Image.fromJson(Map<String, dynamic> json) {
-    return Image(
-      id: json['id'],
-      farm: json['farm'],
-      server: json['server'],
-      secret: json['secret'],
-    );
+  Map<String, dynamic> toMap() {
+    return {
+      'ID': id,
+      'parentID': parentId,
+      'path': path,
+    };
   }
 }

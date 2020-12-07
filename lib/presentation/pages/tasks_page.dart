@@ -51,6 +51,7 @@ class _TasksPageState extends State<TasksPage>
           );
         }
         if (state is TaskLoaded) {
+          widget.onRefresh();
           return Scaffold(
             backgroundColor: widget.customColorTheme.backgroundColor,
             appBar: AppBar(
@@ -84,7 +85,6 @@ class _TasksPageState extends State<TasksPage>
                                 _taskBlocSink.add(
                                   DeleteCompletedTasks(
                                     branchId: widget.branchId,
-                                    onRefresh: widget.onRefresh,
                                   ),
                                 );
                                 Navigator.pop(context);
@@ -160,7 +160,6 @@ class _TasksPageState extends State<TasksPage>
               branchId: widget.branchId,
               taskId: task.id,
               isFiltered: isFiltered,
-              onRefresh: widget.onRefresh,
             ),
           );
         },
@@ -170,7 +169,6 @@ class _TasksPageState extends State<TasksPage>
               taskId: task.id,
               branchId: widget.branchId,
               isFiltered: isFiltered,
-              onRefresh: widget.onRefresh,
             ),
           );
         },
@@ -196,7 +194,6 @@ class _TasksPageState extends State<TasksPage>
                     DeleteTask(
                       branchId: widget.branchId,
                       taskId: task.id,
-                      onRefresh: widget.onRefresh,
                     ),
                   );
                 },
@@ -205,7 +202,6 @@ class _TasksPageState extends State<TasksPage>
                     CompleteTask(
                       taskId: task.id,
                       branchId: widget.branchId,
-                      onRefresh: widget.onRefresh,
                     ),
                   );
                 },
@@ -231,7 +227,6 @@ class _TasksPageState extends State<TasksPage>
                   branchId: widget.branchId,
                   title: title,
                   deadline: deadline,
-                  onRefresh: widget.onRefresh,
                 ),
               );
             });

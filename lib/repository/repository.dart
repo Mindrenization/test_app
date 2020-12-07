@@ -1,5 +1,6 @@
 import 'package:test_app/data/database/db_branch_wrapper.dart';
 import 'package:test_app/data/models/branch.dart';
+import 'package:test_app/data/models/image.dart';
 import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
 
@@ -25,6 +26,12 @@ class Repository {
     return getBranch(branchId)
         .tasks
         .firstWhere((element) => taskId == element.id);
+  }
+
+  Image getImage(branchId, taskId, imageId) {
+    return getTask(branchId, taskId)
+        .images
+        .firstWhere((element) => imageId == element.id);
   }
 
   List<TaskStep> getStepList(String branchId, String taskId) {

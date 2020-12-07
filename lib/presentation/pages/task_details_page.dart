@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -63,6 +63,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
           );
         }
         if (state is TaskDetailsLoaded) {
+          widget.onRefresh();
           return SafeArea(
             child: Scaffold(
               backgroundColor: widget.customColorTheme.backgroundColor,
@@ -153,13 +154,13 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                         padding: EdgeInsets.symmetric(vertical: 30),
                         child: StepList(
                           state.task,
+                          widget.customColorTheme.mainColor,
                           onCreate: (title) {
                             stepBlocSink.add(
                               CreateStep(
                                 title: title,
                                 taskId: widget.taskId,
                                 branchId: widget.branchId,
-                                onRefresh: widget.onRefresh,
                               ),
                             );
                           },
@@ -168,7 +169,6 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                               branchId: widget.branchId,
                               taskId: widget.taskId,
                               stepId: state.task.steps[index].id,
-                              onRefresh: widget.onRefresh,
                             ));
                           },
                           onSaveDescription: (text) {
@@ -184,7 +184,6 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                 branchId: widget.branchId,
                                 taskId: widget.taskId,
                                 stepId: state.task.steps[index].id,
-                                onRefresh: widget.onRefresh,
                               ),
                             );
                           },
@@ -258,67 +257,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 30),
-                        child: Container(
-                          height: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                offset: Offset.fromDirection(1.5, 3),
-                                color: Colors.black26,
-                                spreadRadius: 0.1,
-                                blurRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.all(10),
-                                child: CachedNetworkImage(
-                                  fit: BoxFit.fill,
-                                  imageUrl: 'https://picsum.photos/200?image=4',
-                                  placeholder: (context, url) {
-                                    return Icon(
-                                      Icons.panorama,
-                                      size: 50,
-                                      color: Colors.grey[700],
-                                    );
-                                  },
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => FlickrPage()));
-                                },
-                                child: Container(
-                                  height: 80,
-                                  width: 60,
-                                  margin: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: const Color(0xFF01A39D),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          offset: Offset.fromDirection(1.5, 3),
-                                          color: Colors.black26,
-                                          spreadRadius: 0.1,
-                                          blurRadius: 3),
-                                    ],
-                                  ),
-                                  child: Icon(
-                                    Icons.attach_file,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        child: _gallery(state),
                       )
                     ],
                   ),
@@ -383,6 +322,113 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
         ),
       ),
       onTap: onTap,
+    );
+  }
+
+  Widget _gallery(state) {
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            offset: Offset.fromDirection(1.5, 3),
+            color: Colors.black26,
+            spreadRadius: 0.1,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          for (int i = 0; i < state.task.images.length; i++)
+            Container(
+              width: 120,
+              padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+              child: Stack(
+                children: [
+                  Image.file(
+                    File(state.task.images[i].path),
+                    height: 120,
+                    width: 120,
+                    fit: BoxFit.fill,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      stepBlocSink.add(
+                        DeleteImage(
+                          taskId: widget.taskId,
+                          branchId: widget.branchId,
+                          imageId: state.task.images[i].id,
+                        ),
+                      );
+                    },
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 5, right: 5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFF01A39D),
+                          ),
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FlickrPage(
+                    widget.branchId,
+                    widget.taskId,
+                    widget.customColorTheme,
+                    onSave: () {
+                      stepBlocSink.add(
+                        UpdateTask(
+                          branchId: widget.branchId,
+                          taskId: widget.taskId,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              height: 80,
+              width: 60,
+              margin: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: const Color(0xFF01A39D),
+                boxShadow: [
+                  BoxShadow(
+                      offset: Offset.fromDirection(1.5, 3),
+                      color: Colors.black26,
+                      spreadRadius: 0.1,
+                      blurRadius: 3),
+                ],
+              ),
+              child: Icon(
+                Icons.attach_file,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

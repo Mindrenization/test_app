@@ -5,6 +5,7 @@ import 'package:test_app/data/models/task.dart';
 
 const tableTask = 'task';
 const tableStep = 'step';
+const tableImages = 'images';
 
 class DbTask {
   Future<Database> database = Db.sharedInstance.database;
@@ -33,6 +34,16 @@ class DbTask {
   Future<void> deleteAllSteps(Task task) async {
     final db = await database;
     await db.delete(tableStep, where: 'parentID="${task.id}"');
+  }
+
+  Future<void> deleteImage(String imageId) async {
+    final db = await database;
+    await db.delete(tableImages, where: 'ID="$imageId"');
+  }
+
+  Future<void> deleteAllImages(String taskId) async {
+    final db = await database;
+    await db.delete(tableImages, where: 'parentID="$taskId"');
   }
 
   Future<List<Task>> fetchTaskList(Branch branch) async {

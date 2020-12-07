@@ -18,24 +18,22 @@ class CreateStep extends TaskDetailsEvent {
   final String branchId;
   final String taskId;
   final String title;
-  final Function onRefresh;
-  const CreateStep({this.title, this.taskId, this.branchId, this.onRefresh});
+  const CreateStep({this.title, this.taskId, this.branchId});
 }
 
 class DeleteStep extends TaskDetailsEvent {
   final String branchId;
   final String taskId;
   final String stepId;
-  final Function onRefresh;
-  const DeleteStep({this.branchId, this.taskId, this.stepId, this.onRefresh});
+
+  const DeleteStep({this.branchId, this.taskId, this.stepId});
 }
 
 class CompleteStep extends TaskDetailsEvent {
   final String branchId;
   final String taskId;
   final String stepId;
-  final Function onRefresh;
-  CompleteStep({this.branchId, this.taskId, this.stepId, this.onRefresh});
+  CompleteStep({this.branchId, this.taskId, this.stepId});
 }
 
 class SetDeadline extends TaskDetailsEvent {
@@ -57,4 +55,11 @@ class SaveDescription extends TaskDetailsEvent {
   final String taskId;
   final String text;
   const SaveDescription({this.branchId, this.taskId, this.text});
+}
+
+class DeleteImage extends TaskDetailsEvent {
+  final String branchId;
+  final String taskId;
+  final String imageId;
+  const DeleteImage({this.branchId, this.taskId, this.imageId});
 }

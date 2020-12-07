@@ -4,17 +4,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_app/presentation/bloc/flickr_bloc.dart';
 import 'package:test_app/presentation/bloc/flickr_event.dart';
 import 'package:test_app/presentation/bloc/flickr_state.dart';
+import 'package:test_app/presentation/widgets/save_image_dialog.dart';
+import 'package:test_app/presentation/widgets/search_appbar.dart';
+import 'package:test_app/resources/custom_color_theme.dart';
 
 // Страница работы с flickr
 class FlickrPage extends StatefulWidget {
+  final String branchId;
+  final String taskId;
+  final CustomColorTheme customColorTheme;
+  final VoidCallback onSave;
+  FlickrPage(this.branchId, this.taskId, this.customColorTheme, {this.onSave});
   @override
   _FlickrPageState createState() => _FlickrPageState();
 }
 
 class _FlickrPageState extends State<FlickrPage> {
-  final TextEditingController _searchController = TextEditingController();
-  FlickrBloc flickrBlocSink;
-  bool _isActiveSearch = false;
+  FlickrBloc _flickrBlocSink;
   ScrollController _scrollController;
   List<String> _imageList = [];
   String _search;
@@ -23,9 +29,11 @@ class _FlickrPageState extends State<FlickrPage> {
     if (_scrollController.offset >=
             _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
-      flickrBlocSink.add(
-        FetchFlickr(imageList: _imageList, page: ++_page),
-      );
+      if (_search == null)
+        _flickrBlocSink.add(FetchFlickr(imageList: _imageList, page: ++_page));
+      else
+        _flickrBlocSink.add(
+            FetchFlickr(imageList: _imageList, page: ++_page, search: _search));
     }
   }
 
@@ -38,122 +46,114 @@ class _FlickrPageState extends State<FlickrPage> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(181, 201, 253, 1),
-      appBar: _isActiveSearch
-          ? AppBar(
-              automaticallyImplyLeading: false,
-              backgroundColor: const Color(0xFF6202EE),
-              title: TextField(
-                controller: _searchController,
-                style: TextStyle(fontSize: 14),
-                onSubmitted: (String _search) {
-                  if (_search != '') {
-                    _page = 1;
-                    flickrBlocSink.add(
-                      SearchFlickr(search: _search),
-                    );
-                  }
-                },
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Waterfall',
-                  isDense: true,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(15),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(15),
-                    ),
-                  ),
-                  prefixIcon: IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: () {
-                      FocusScope.of(context).canRequestFocus = false;
-                      setState(() {
-                        _isActiveSearch = false;
-                      });
-                      Future.delayed(Duration(milliseconds: 1), () {
-                        FocusScope.of(context).canRequestFocus = true;
-                      });
-                    },
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.clear),
-                    onPressed: () {
-                      _searchController.text = '';
-                    },
-                  ),
-                ),
-              ),
-            )
-          : AppBar(
-              backgroundColor: const Color(0xFF6202EE),
-              title: Text(
-                'Flickr',
-                style: TextStyle(color: Colors.white),
-              ),
-              actions: [
-                IconButton(
-                    icon: Icon(
-                      Icons.search,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isActiveSearch = true;
-                      });
-                    }),
-              ],
-            ),
+      backgroundColor: widget.customColorTheme.backgroundColor,
+      appBar: PreferredSize(
+        preferredSize: Size(0, 55),
+        child: SearchAppBar(
+          customColorTheme: widget.customColorTheme,
+          onSearch: (_value) {
+            _page = 1;
+            _search = _value;
+            _flickrBlocSink.add(
+              SearchFlickr(search: _value),
+            );
+          },
+        ),
+      ),
       body: BlocProvider(
         create: (context) => FlickrBloc(FlickrEmpty()),
         child: BlocBuilder<FlickrBloc, FlickrState>(
           builder: (context, state) {
-            flickrBlocSink = BlocProvider.of<FlickrBloc>(context);
+            _flickrBlocSink = BlocProvider.of<FlickrBloc>(context);
             if (state is FlickrEmpty) {
-              flickrBlocSink.add(
+              _flickrBlocSink.add(
                 FetchFlickr(imageList: _imageList, page: _page),
               );
             }
+            if (state is FlickrError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.signal_wifi_off,
+                      size: 70,
+                    ),
+                    Text(
+                      'Нет соединения с интернетом',
+                    ),
+                    FlatButton(
+                      onPressed: () {
+                        _flickrBlocSink.add(
+                          FetchFlickr(imageList: _imageList, page: _page),
+                        );
+                      },
+                      child: Text(
+                        'Попробовать снова',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: widget.customColorTheme.mainColor,
+                    )
+                  ],
+                ),
+              );
+            }
             if (state is FlickrLoaded) {
-              _search = state.search;
               _imageList = state.imageList;
               return CustomScrollView(
                 controller: _scrollController,
                 slivers: [
                   SliverGrid(
                     delegate: SliverChildBuilderDelegate(
-                      (c, i) => Padding(
+                      (context, i) => Padding(
                         padding: EdgeInsets.all(10),
-                        child: CachedNetworkImage(
-                          errorWidget: (context, url, error) {
-                            return Icon(
-                              Icons.error,
-                              size: 100,
-                              color: Colors.grey[700],
+                        child: GestureDetector(
+                          onTap: () async {
+                            await showDialog(
+                              context: context,
+                              builder: (context) {
+                                return SaveImageDialog(
+                                  onSave: () {
+                                    _flickrBlocSink.add(
+                                      SaveImage(
+                                        imageUrl: state.imageList[i],
+                                        branchId: widget.branchId,
+                                        taskId: widget.taskId,
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             );
+                            widget.onSave();
+                            // не всегда срабатывает своевременно
+                            // узнать, как можно исправить
                           },
-                          imageUrl: state.imageList[i],
-                          fit: BoxFit.fill,
-                          placeholder: (context, url) {
-                            return Icon(
-                              Icons.image,
-                              size: 100,
-                              color: Colors.grey[700],
-                            );
-                          },
+                          child: CachedNetworkImage(
+                            imageUrl: state.imageList[i],
+                            fit: BoxFit.fill,
+                            errorWidget: (context, url, error) {
+                              return Icon(
+                                Icons.error,
+                                size: 100,
+                                color: Colors.grey[700],
+                              );
+                            },
+                            placeholder: (context, url) {
+                              return Icon(
+                                Icons.image,
+                                size: 100,
+                                color: Colors.grey[700],
+                              );
+                            },
+                          ),
                         ),
                       ),
                       childCount: state.imageList.length,
@@ -173,9 +173,7 @@ class _FlickrPageState extends State<FlickrPage> {
                 ],
               );
             }
-            if (state is FlickrError) {
-              return Text('Что-то пошло не так');
-            }
+
             return Center(
               child: CircularProgressIndicator(),
             );

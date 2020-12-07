@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:test_app/data/database/db_step_wrapper.dart';
 import 'package:test_app/data/database/db_task_wrapper.dart';
+import 'package:test_app/data/models/image.dart';
 import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
 import 'package:test_app/presentation/bloc/task_details_event.dart';
@@ -25,19 +26,21 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
     }
     if (event is CreateStep) {
       Task _task = await _createStep(event.branchId, event.taskId, event.title);
-      event.onRefresh();
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is DeleteStep) {
       Task _task =
           await _deleteStep(event.branchId, event.taskId, event.stepId);
-      event.onRefresh();
+      yield TaskDetailsLoaded(task: _task);
+    }
+    if (event is DeleteImage) {
+      Task _task =
+          await _deleteImage(event.branchId, event.taskId, event.imageId);
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is CompleteStep) {
       Task _task =
           await _completeStep(event.branchId, event.taskId, event.stepId);
-      event.onRefresh();
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is SetDeadline) {
@@ -77,6 +80,17 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
     TaskStep _step = Repository.instance.getStep(branchId, taskId, stepId);
     await _dbStepWrapper.deleteStep(_step);
     _task.steps.removeWhere((element) => _step.id == element.id);
+    return _task;
+  }
+
+  Future<Task> _deleteImage(branchId, taskId, imageId) async {
+    Task _task = Repository.instance.getTask(
+      branchId,
+      taskId,
+    );
+    Image _image = Repository.instance.getImage(branchId, taskId, imageId);
+    await _dbTaskWrapper.deleteImage(_image.id);
+    _task.images.removeWhere((element) => _image.id == element.id);
     return _task;
   }
 

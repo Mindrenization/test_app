@@ -86,7 +86,7 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
   }
 
   Future<List<Branch>> _deleteBranch(branch) async {
-    _dbBranchWrapper.deleteBranch(branch);
+    _dbBranchWrapper.deleteBranch(branch.id);
     List<Branch> _branchList = await Repository.instance.getBranchList();
     _branchList.removeWhere((element) => branch.id == element.id);
     return _branchList;

@@ -13,14 +13,14 @@ class DbBranch {
     await db.insert(tableBranch, branch.toMap());
   }
 
-  Future<void> deleteBranch(Branch branch) async {
+  Future<void> deleteBranch(String branchId) async {
     final db = await database;
-    await db.delete(tableBranch, where: 'ID="${branch.id}"');
+    await db.delete(tableBranch, where: 'ID="$branchId"');
   }
 
-  Future<void> deleteAllTasks(Branch branch) async {
+  Future<void> deleteAllTasks(String branchId) async {
     final db = await database;
-    await db.delete(tableTask, where: 'parentID="${branch.id}"');
+    await db.delete(tableTask, where: 'parentID="$branchId"');
   }
 
   Future<List<Branch>> fetchBranchList() async {

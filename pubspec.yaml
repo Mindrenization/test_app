@@ -37,6 +37,7 @@ dependencies:
   uuid: ^2.2.2
   http: ^0.12.2
   cached_network_image: ^2.4.1
+  flutter_cache_manager: ^2.0.0
 
 dev_dependencies:
   flutter_test:

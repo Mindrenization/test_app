@@ -1,4 +1,5 @@
 abstract class TaskEvent {
+  // final String branchId;
   const TaskEvent();
 }
 
@@ -11,8 +12,11 @@ class CreateTask extends TaskEvent {
   final String branchId;
   final String title;
   final DateTime deadline;
-  final Function onRefresh;
-  const CreateTask({this.branchId, this.title, this.deadline, this.onRefresh});
+  const CreateTask({
+    this.branchId,
+    this.title,
+    this.deadline,
+  });
 }
 
 class UpdateTask extends TaskEvent {
@@ -30,18 +34,14 @@ class DeleteTask extends TaskEvent {
   final String branchId;
   final String taskId;
   final bool isFiltered;
-  final Function onRefresh;
-  const DeleteTask(
-      {this.branchId, this.taskId, this.isFiltered = false, this.onRefresh});
+  const DeleteTask({this.branchId, this.taskId, this.isFiltered = false});
 }
 
 class CompleteTask extends TaskEvent {
   final String branchId;
   final String taskId;
   final bool isFiltered;
-  final Function onRefresh;
-  const CompleteTask(
-      {this.branchId, this.taskId, this.isFiltered = false, this.onRefresh});
+  const CompleteTask({this.branchId, this.taskId, this.isFiltered = false});
 }
 
 class FilterTaskList extends TaskEvent {
@@ -52,6 +52,5 @@ class FilterTaskList extends TaskEvent {
 
 class DeleteCompletedTasks extends TaskEvent {
   final String branchId;
-  final Function onRefresh;
-  const DeleteCompletedTasks({this.branchId, this.onRefresh});
+  const DeleteCompletedTasks({this.branchId});
 }

@@ -20,7 +20,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     if (event is CreateTask) {
       List<Task> _taskList =
           await _createTask(event.title, event.branchId, event.deadline);
-      event.onRefresh();
       yield TaskLoaded(taskList: _taskList);
     }
     if (event is ChangeColorTheme) {
@@ -34,13 +33,11 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     if (event is DeleteTask) {
       List<Task> _taskList =
           await _deleteTask(event.branchId, event.taskId, event.isFiltered);
-      event.onRefresh();
       yield TaskLoaded(taskList: _taskList, isFiltered: event.isFiltered);
     }
     if (event is CompleteTask) {
       List<Task> _taskList =
           await _completeTask(event.branchId, event.taskId, event.isFiltered);
-      event.onRefresh();
       yield TaskLoaded(taskList: _taskList, isFiltered: event.isFiltered);
     }
     if (event is FilterTaskList) {
@@ -70,7 +67,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     }
     if (event is DeleteCompletedTasks) {
       List<Task> _taskList = await _deleteCompletedTasks(event.branchId);
-      event.onRefresh();
       yield TaskLoaded(taskList: _taskList, isFiltered: false);
     }
   }
@@ -105,6 +101,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     Task _task = Repository.instance.getTask(branchId, taskId);
     await _dbTaskWrapper.deleteTask(_task);
     await _dbTaskWrapper.deleteAllSteps(_task);
+    await _dbTaskWrapper.deleteAllImages(_task.id);
     _taskList.removeWhere((element) => _task.id == element.id);
     if (isFiltered) {
       _taskList = Repository.instance
