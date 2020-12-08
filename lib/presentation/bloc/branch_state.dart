@@ -4,8 +4,6 @@ abstract class BranchState {
   const BranchState();
 }
 
-class BranchEmpty extends BranchState {}
-
 class BranchLoading extends BranchState {}
 
 class BranchLoaded extends BranchState {

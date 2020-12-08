@@ -6,7 +6,7 @@ import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/network/flickr_api.dart';
 import 'package:test_app/presentation/bloc/flickr_event.dart';
 import 'package:test_app/presentation/bloc/flickr_state.dart';
-import 'package:test_app/repository/repository.dart';
+import 'package:test_app/domain/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class FlickrBloc extends Bloc<FlickrEvent, FlickrState> {

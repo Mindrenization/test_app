@@ -4,7 +4,7 @@ abstract class TaskState {
   const TaskState();
 }
 
-class TaskEmpty extends TaskState {}
+class TaskLoading extends TaskState {}
 
 class TaskLoaded extends TaskState {
   final bool isFiltered;

@@ -1,14 +1,15 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:test_app/data/models/task.dart';
 
 class StepList extends StatefulWidget {
-  final task;
-  final color;
-  final onCreate;
-  final onDelete;
-  final onRefresh;
-  final onComplete;
-  final onSaveDescription;
+  final Task task;
+  final Color color;
+  final Function onCreate;
+  final Function onDelete;
+  final VoidCallback onRefresh;
+  final Function onComplete;
+  final Function onSaveDescription;
   StepList(this.task, this.color,
       {this.onCreate,
       this.onDelete,
@@ -119,6 +120,7 @@ class _StepListState extends State<StepList> {
             if (_formKey.currentState.validate()) {
               widget.onCreate(_stepController.text);
               _stepController.text = '';
+              FocusScope.of(context).unfocus();
               widget.onRefresh();
             }
           },

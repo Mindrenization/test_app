@@ -52,9 +52,9 @@ class DbTask {
         await db.query(tableTask, where: 'parentID="${branch.id}"');
     return List.generate(maps.length, (i) {
       return Task(
+        maps[i]['ID'],
+        maps[i]['parentID'],
         maps[i]['title'],
-        id: maps[i]['ID'],
-        parentId: maps[i]['parentID'],
         isComplete: maps[i]['complete'] == 'true' ? true : false,
         description: maps[i]['description'],
         createDate: DateTime.fromMillisecondsSinceEpoch(maps[i]['createDate']),

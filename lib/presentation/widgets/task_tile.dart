@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:test_app/data/models/task.dart';
 
 // Карточка задачи в списке
 class TaskTile extends StatefulWidget {
-  final task;
-  final color;
+  final Task task;
+  final Color color;
   final VoidCallback onDelete;
   final VoidCallback onTap;
   final VoidCallback onCheck;

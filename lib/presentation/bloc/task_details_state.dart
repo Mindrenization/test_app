@@ -4,8 +4,6 @@ abstract class TaskDetailsState {
   const TaskDetailsState();
 }
 
-class TaskDetailsEmpty extends TaskDetailsState {}
-
 class TaskDetailsLoading extends TaskDetailsState {}
 
 class TaskDetailsLoaded extends TaskDetailsState {

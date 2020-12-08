@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 class CreateTaskDialog extends StatefulWidget {
   @override
   _CreateTaskDialogState createState() => _CreateTaskDialogState();
-  final onCreate;
+  final Function onCreate;
 
   CreateTaskDialog({this.onCreate});
 }

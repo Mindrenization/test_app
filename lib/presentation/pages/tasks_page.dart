@@ -39,11 +39,14 @@ class _TasksPageState extends State<TasksPage>
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TaskBloc(TaskEmpty()),
+      create: (context) => TaskBloc(TaskLoading()),
       child: BlocBuilder<TaskBloc, TaskState>(builder: (context, state) {
         _taskBlocSink = BlocProvider.of<TaskBloc>(context);
-        if (state is TaskEmpty) {
+        if (state is TaskLoading) {
           _taskBlocSink.add(FetchTaskList(widget.branchId));
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         }
         if (state is TaskError) {
           return Center(

@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:test_app/domain/interactors/task_interactor.dart';
 import 'package:test_app/presentation/bloc/task_event.dart';
 import 'package:test_app/presentation/bloc/task_state.dart';
 import 'package:test_app/data/database/db_task_wrapper.dart';
 import 'package:test_app/data/models/task.dart';
-import 'package:test_app/repository/repository.dart';
+import 'package:test_app/domain/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   TaskBloc(TaskState initialState) : super(initialState);
   DbTaskWrapper _dbTaskWrapper = DbTaskWrapper();
+  TaskInteractor _taskInteractor = TaskInteractor();
 
   @override
   Stream<TaskState> mapEventToState(TaskEvent event) async* {
@@ -73,16 +75,14 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   Future<List<Task>> _createTask(
       String title, String branchId, DateTime deadline) async {
-    List<Task> _taskList = Repository.instance.getTaskList(branchId);
     Task _task = Task(
+      Uuid().v1(),
+      branchId,
       title,
-      id: Uuid().v1(),
-      parentId: branchId,
       deadline: deadline,
       createDate: DateTime.now(),
     );
-    await _dbTaskWrapper.createTask(_task);
-    _taskList.add(_task);
+    List<Task> _taskList = await _taskInteractor.createTask(_task, branchId);
     return _taskList;
   }
 
@@ -97,12 +97,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   Future<List<Task>> _deleteTask(
       String branchId, String taskId, bool isFiltered) async {
-    List<Task> _taskList = Repository.instance.getTaskList(branchId);
-    Task _task = Repository.instance.getTask(branchId, taskId);
-    await _dbTaskWrapper.deleteTask(_task);
-    await _dbTaskWrapper.deleteAllSteps(_task);
-    await _dbTaskWrapper.deleteAllImages(_task.id);
-    _taskList.removeWhere((element) => _task.id == element.id);
+    List<Task> _taskList = await _taskInteractor.deleteTask(branchId, taskId);
     if (isFiltered) {
       _taskList = Repository.instance
           .getTaskList(branchId)

@@ -48,13 +48,16 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TaskDetailsBloc(TaskDetailsEmpty()),
+      create: (context) => TaskDetailsBloc(TaskDetailsLoading()),
       child: BlocBuilder<TaskDetailsBloc, TaskDetailsState>(
           builder: (context, state) {
         stepBlocSink = BlocProvider.of<TaskDetailsBloc>(context);
-        if (state is TaskDetailsEmpty) {
+        if (state is TaskDetailsLoading) {
           stepBlocSink.add(
             FetchTask(taskId: widget.taskId, branchId: widget.branchId),
+          );
+          return Center(
+            child: CircularProgressIndicator(),
           );
         }
         if (state is TaskDetailsError) {
@@ -305,7 +308,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
     );
   }
 
-  Widget _deadlineButton({Text text, Icon icon, onTap()}) {
+  Widget _deadlineButton({Text text, Icon icon, VoidCallback onTap}) {
     return GestureDetector(
       child: Container(
         margin: EdgeInsets.all(10),
