@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:test_app/data/models/branch.dart';
-import 'package:test_app/domain/interactors/branch_interactor.dart';
+import 'package:test_app/data/repository/branch_repository.dart';
 import 'package:test_app/presentation/bloc/branch_event.dart';
 import 'package:test_app/presentation/bloc/branch_state.dart';
 import 'package:test_app/data/models/task.dart';
-import 'package:test_app/domain/repository/repository.dart';
+import 'package:test_app/data/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class BranchBloc extends Bloc<BranchEvent, BranchState> {

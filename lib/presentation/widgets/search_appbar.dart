@@ -27,73 +27,72 @@ class _SearchAppBarState extends State<SearchAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isActiveSearch)
-      return AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: widget.customColorTheme.mainColor,
-        title: TextField(
-          controller: _searchController,
-          style: TextStyle(fontSize: 14),
-          onSubmitted: (String _value) {
-            if (_value != '') {
-              widget.onSearch(_value);
-            }
-          },
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            hintText: 'Waterfall',
-            isDense: true,
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-              borderRadius: BorderRadius.all(
-                Radius.circular(15),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-              borderRadius: BorderRadius.all(
-                Radius.circular(15),
-              ),
-            ),
-            prefixIcon: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                FocusScope.of(context).canRequestFocus = false;
-                setState(() => _isActiveSearch = false);
-                Future.delayed(Duration(milliseconds: 1), () {
-                  FocusScope.of(context).canRequestFocus = true;
-                });
+    return _isActiveSearch
+        ? AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: widget.customColorTheme.mainColor,
+            title: TextField(
+              controller: _searchController,
+              style: TextStyle(fontSize: 14),
+              onSubmitted: (String _value) {
+                if (_value != '') {
+                  widget.onSearch(_value);
+                }
               },
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(Icons.clear),
-              onPressed: () {
-                _searchController.text = '';
-              },
-            ),
-          ),
-        ),
-      );
-    else
-      return AppBar(
-        backgroundColor: widget.customColorTheme.mainColor,
-        title: Text(
-          'Flickr',
-          style: TextStyle(color: Colors.white),
-        ),
-        actions: [
-          IconButton(
-              icon: Icon(
-                Icons.search,
-                color: Colors.white,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                hintText: 'Waterfall',
+                isDense: true,
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(15),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(15),
+                  ),
+                ),
+                prefixIcon: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    FocusScope.of(context).canRequestFocus = false;
+                    setState(() => _isActiveSearch = false);
+                    Future.delayed(Duration(milliseconds: 1), () {
+                      FocusScope.of(context).canRequestFocus = true;
+                    });
+                  },
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.text = '';
+                  },
+                ),
               ),
-              onPressed: () {
-                setState(() {
-                  _isActiveSearch = true;
-                });
-              }),
-        ],
-      );
+            ),
+          )
+        : AppBar(
+            backgroundColor: widget.customColorTheme.mainColor,
+            title: Text(
+              'Flickr',
+              style: TextStyle(color: Colors.white),
+            ),
+            actions: [
+              IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isActiveSearch = true;
+                    });
+                  }),
+            ],
+          );
   }
 }

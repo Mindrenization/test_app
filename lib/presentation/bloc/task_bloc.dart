@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:test_app/domain/interactors/task_interactor.dart';
+import 'package:test_app/data/repository/task_repository.dart';
 import 'package:test_app/presentation/bloc/task_event.dart';
 import 'package:test_app/presentation/bloc/task_state.dart';
 import 'package:test_app/data/database/db_task_wrapper.dart';
 import 'package:test_app/data/models/task.dart';
-import 'package:test_app/domain/repository/repository.dart';
+import 'package:test_app/data/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskBloc extends Bloc<TaskEvent, TaskState> {

@@ -4,8 +4,8 @@ import 'package:test_app/presentation/widgets/circular_progress_bar.dart';
 
 class BranchTile extends StatelessWidget {
   final Branch branch;
-  final onTap;
-  final onDelete;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
   BranchTile(this.branch, {this.onTap, this.onDelete});
 
   @override

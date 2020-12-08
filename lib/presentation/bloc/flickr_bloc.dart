@@ -3,10 +3,10 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:test_app/data/database/db_flickr.dart';
 import 'package:test_app/data/models/image.dart';
 import 'package:test_app/data/models/task.dart';
-import 'package:test_app/data/network/flickr_api.dart';
+import 'package:test_app/data/network/flickr_api_wrapper.dart';
 import 'package:test_app/presentation/bloc/flickr_event.dart';
 import 'package:test_app/presentation/bloc/flickr_state.dart';
-import 'package:test_app/domain/repository/repository.dart';
+import 'package:test_app/data/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class FlickrBloc extends Bloc<FlickrEvent, FlickrState> {
@@ -19,11 +19,11 @@ class FlickrBloc extends Bloc<FlickrEvent, FlickrState> {
       List<String> _imageList = event.imageList;
       var response;
       if (event.search == null)
-        response = await FlickrApi().fetchImages(page: event.page);
+        response = await FlickrApiWrapper().fetchImages(page: event.page);
       else
-        response = await FlickrApi()
+        response = await FlickrApiWrapper()
             .fetchImages(search: event.search, page: event.page);
-      if (response == 'error') {
+      if (response == 1) {
         yield FlickrError();
       } else {
         _imageList.addAll(response);
@@ -33,7 +33,7 @@ class FlickrBloc extends Bloc<FlickrEvent, FlickrState> {
     if (event is SearchFlickr) {
       yield FlickrLoading();
       List<String> _imageList =
-          await FlickrApi().fetchImages(search: event.search);
+          await FlickrApiWrapper().fetchImages(search: event.search);
       yield FlickrLoaded(imageList: _imageList);
     }
     if (event is SaveImage) {

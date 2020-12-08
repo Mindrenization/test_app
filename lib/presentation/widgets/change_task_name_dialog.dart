@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // Модальное окно для изменения названия задачи
 class ChangeTaskTitleDialog extends StatefulWidget {
   final String oldTitle;
-  final onChange;
+  final Function onChange;
   ChangeTaskTitleDialog(this.oldTitle, {this.onChange});
   @override
   _ChangeTaskTitleDialogState createState() => _ChangeTaskTitleDialogState();

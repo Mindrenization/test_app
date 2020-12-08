@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 // Модальное окно для создания задачи
 class SaveImageDialog extends StatelessWidget {
-  final onSave;
+  final VoidCallback onSave;
 
   SaveImageDialog({this.onSave});
 

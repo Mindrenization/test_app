@@ -1,7 +1,7 @@
 import 'package:test_app/data/database/db_step_wrapper.dart';
 import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
-import 'package:test_app/domain/repository/repository.dart';
+import 'package:test_app/data/repository/repository.dart';
 
 class StepInteractor {
   DbStepWrapper _dbStepWrapper = DbStepWrapper();
