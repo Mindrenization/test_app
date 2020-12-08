@@ -1,60 +1,46 @@
 abstract class TaskDetailsEvent {
-  const TaskDetailsEvent();
+  final String branchId;
+  final String taskId;
+  const TaskDetailsEvent(this.branchId, this.taskId);
 }
 
 class FetchTask extends TaskDetailsEvent {
-  final String branchId;
-  final String taskId;
-  const FetchTask({this.taskId, this.branchId});
+  const FetchTask({branchId, taskId}) : super(branchId, taskId);
 }
 
 class UpdateTask extends TaskDetailsEvent {
-  final String branchId;
-  final String taskId;
-  const UpdateTask({this.taskId, this.branchId});
+  const UpdateTask({branchId, taskId}) : super(branchId, taskId);
 }
 
 class CreateStep extends TaskDetailsEvent {
-  final String branchId;
-  final String taskId;
   final String title;
-  final onRefresh;
-  const CreateStep({this.title, this.taskId, this.branchId, this.onRefresh});
+  const CreateStep({this.title, taskId, branchId}) : super(branchId, taskId);
 }
 
 class DeleteStep extends TaskDetailsEvent {
-  final String branchId;
-  final String taskId;
   final String stepId;
-  final onRefresh;
-  const DeleteStep({this.branchId, this.taskId, this.stepId, this.onRefresh});
+  const DeleteStep({branchId, taskId, this.stepId}) : super(branchId, taskId);
 }
 
 class CompleteStep extends TaskDetailsEvent {
-  final String branchId;
-  final String taskId;
   final String stepId;
-  final onRefresh;
-  CompleteStep({this.branchId, this.taskId, this.stepId, this.onRefresh});
+  CompleteStep({branchId, taskId, this.stepId}) : super(branchId, taskId);
 }
 
 class SetDeadline extends TaskDetailsEvent {
-  final String branchId;
-  final String taskId;
   final DateTime deadline;
-  const SetDeadline({this.taskId, this.branchId, this.deadline});
+  const SetDeadline({taskId, branchId, this.deadline})
+      : super(branchId, taskId);
 }
 
 class ChangeTaskTitle extends TaskDetailsEvent {
-  final String branchId;
-  final String taskId;
   final String title;
-  const ChangeTaskTitle({this.branchId, this.taskId, this.title});
+  const ChangeTaskTitle({branchId, taskId, this.title})
+      : super(branchId, taskId);
 }
 
 class SaveDescription extends TaskDetailsEvent {
-  final String branchId;
-  final String taskId;
   final String text;
-  const SaveDescription({this.branchId, this.taskId, this.text});
+  const SaveDescription({branchId, taskId, this.text})
+      : super(branchId, taskId);
 }

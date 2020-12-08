@@ -3,7 +3,7 @@ import 'package:test_app/resources/resources.dart';
 import 'package:flutter_svg/svg.dart';
 
 class NoTasksBackground extends StatefulWidget {
-  final isFiltered;
+  final bool isFiltered;
   NoTasksBackground(this.isFiltered);
   @override
   _NoTasksBackgroundState createState() => _NoTasksBackgroundState();

@@ -1,20 +1,21 @@
 import 'package:bloc/bloc.dart';
 import 'package:test_app/data/models/branch.dart';
+import 'package:test_app/domain/interactors/branch_interactor.dart';
 import 'package:test_app/presentation/bloc/branch_event.dart';
 import 'package:test_app/presentation/bloc/branch_state.dart';
 import 'package:test_app/data/database/db_branch_wrapper.dart';
 import 'package:test_app/data/models/task.dart';
-import 'package:test_app/repository/repository.dart';
+import 'package:test_app/domain/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class BranchBloc extends Bloc<BranchEvent, BranchState> {
   BranchBloc(BranchState initialState) : super(initialState);
   DbBranchWrapper _dbBranchWrapper = DbBranchWrapper();
+  BranchInteractor _branchInteractor = BranchInteractor();
 
   @override
   Stream<BranchState> mapEventToState(BranchEvent event) async* {
     if (event is FetchBranchList) {
-      yield BranchLoading();
       try {
         List<Branch> _branchList = await _fetchAllDataFromDb();
         double _totalTasksCount = _totalTasks(_branchList);
@@ -46,16 +47,18 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
         double _totalTasksCount = _totalTasks(_branchList);
         double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
         yield BranchLoaded(
-            branchList: _branchList,
-            totalTasks: _totalTasksCount,
-            totalCompletedTasks: _totalCompletedTasksCount);
+          branchList: _branchList,
+          totalTasks: _totalTasksCount,
+          totalCompletedTasks: _totalCompletedTasksCount,
+        );
       } catch (_) {
         yield BranchError();
       }
     }
     if (event is DeleteBranch) {
       try {
-        List<Branch> _branchList = await _deleteBranch(event.branch);
+        List<Branch> _branchList =
+            await _branchInteractor.deleteBranch(event.branch);
         double _totalTasksCount = _totalTasks(_branchList);
         double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
         yield BranchLoaded(
@@ -86,18 +89,9 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
 
   Future<List<Branch>> _createBranch(String title) async {
     Branch _branch = Branch(Uuid().v1(), title);
-    await _dbBranchWrapper.createBranch(_branch);
-    List<Branch> _branchList = Repository.instance.getBranchList();
-    _branchList.add(_branch);
+    List<Branch> _branchList = await _branchInteractor.createBranch(_branch);
     _completedTasks(_branchList);
     _uncompletedTasks(_branchList);
-    return _branchList;
-  }
-
-  Future<List<Branch>> _deleteBranch(branch) async {
-    _dbBranchWrapper.deleteBranch(branch);
-    List<Branch> _branchList = Repository.instance.getBranchList();
-    _branchList.removeWhere((element) => branch.id == element.id);
     return _branchList;
   }
 

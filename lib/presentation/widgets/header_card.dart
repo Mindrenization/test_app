@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:test_app/presentation/bloc/branch_state.dart';
 import 'package:test_app/presentation/widgets/linear_progress_bar.dart';
 import 'package:test_app/resources/resources.dart';
 
 class HeaderCard extends StatelessWidget {
-  final state;
+  final BranchLoaded state;
   HeaderCard(this.state);
 
   @override

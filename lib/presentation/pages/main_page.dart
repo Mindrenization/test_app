@@ -27,7 +27,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => BranchBloc(BranchEmpty()),
+      create: (context) => BranchBloc(BranchLoading()),
       child: Scaffold(
         backgroundColor: const Color.fromRGBO(181, 201, 253, 1),
         appBar: AppBar(
@@ -40,12 +40,15 @@ class _MainPageState extends State<MainPage> {
         body: BlocBuilder<BranchBloc, BranchState>(
           builder: (context, state) {
             branchBlocSink = BlocProvider.of<BranchBloc>(context);
-            if (state is BranchEmpty) {
-              branchBlocSink.add(FetchBranchList());
-            }
             if (state is BranchError) {
               return Center(
                 child: Text('Failed to load page'),
+              );
+            }
+            if (state is BranchLoading) {
+              branchBlocSink.add(FetchBranchList());
+              return Center(
+                child: CircularProgressIndicator(),
               );
             }
             if (state is BranchLoaded) {
@@ -90,8 +93,7 @@ class _MainPageState extends State<MainPage> {
                             index < state.branchList.length;
                             index++)
                           BranchTile(
-                            state.branchList,
-                            index,
+                            state.branchList[index],
                             onTap: () {
                               Navigator.push(
                                 context,

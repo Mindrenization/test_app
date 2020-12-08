@@ -1,13 +1,14 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:test_app/data/models/task.dart';
 
 class StepList extends StatefulWidget {
-  final task;
-  final onCreate;
-  final onDelete;
-  final onRefresh;
-  final onComplete;
-  final onSaveDescription;
+  final Task task;
+  final Function onCreate;
+  final Function onDelete;
+  final VoidCallback onRefresh;
+  final Function onComplete;
+  final Function onSaveDescription;
   StepList(this.task,
       {this.onCreate,
       this.onDelete,
@@ -121,6 +122,7 @@ class _StepListState extends State<StepList> {
       textInputAction: TextInputAction.done,
       onEditingComplete: () {
         widget.onSaveDescription(_descriptionController.text);
+        FocusScope.of(context).unfocus();
         widget.onRefresh();
       },
       decoration: InputDecoration(

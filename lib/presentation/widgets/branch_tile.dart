@@ -3,11 +3,10 @@ import 'package:test_app/data/models/branch.dart';
 import 'package:test_app/presentation/widgets/circular_progress_bar.dart';
 
 class BranchTile extends StatelessWidget {
-  final List<Branch> branchList;
-  final int index;
+  final Branch branch;
   final onTap;
   final onDelete;
-  BranchTile(this.branchList, this.index, {this.onTap, this.onDelete});
+  BranchTile(this.branch, {this.onTap, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +36,10 @@ class BranchTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CircularProgressBar(
-                  branchList[index].tasks.length == 0
+                  branch.tasks.length == 0
                       ? 0
-                      : branchList[index].completedTasks /
-                          branchList[index].tasks.length,
-                  branchList[index].customColorTheme.mainColor,
+                      : branch.completedTasks / branch.tasks.length,
+                  branch.customColorTheme.mainColor,
                 ),
                 GestureDetector(
                   onTap: onDelete,
@@ -49,32 +47,35 @@ class BranchTile extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height / 90,
+            Expanded(
+              child: SizedBox(),
             ),
             Text(
-              branchList[index].title,
+              branch.title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            Text(
-              '${branchList[index].tasks.length} задач(и)',
-              maxLines: 1,
-              style: TextStyle(color: Colors.grey[700]),
+            Padding(
+              padding: EdgeInsets.only(top: 3, bottom: 3),
+              child: Text(
+                '${branch.tasks.length} задач(и)',
+                maxLines: 1,
+                style: TextStyle(color: Colors.grey[700]),
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 _sticker(
-                  text: '${branchList[index].completedTasks} сделано',
-                  color: branchList[index].customColorTheme.backgroundColor,
-                  textColor: branchList[index].customColorTheme.mainColor,
+                  text: '${branch.completedTasks} сделано',
+                  color: branch.customColorTheme.backgroundColor,
+                  textColor: branch.customColorTheme.mainColor,
                   context: context,
                 ),
                 _sticker(
-                  text: '${branchList[index].uncompletedTasks} осталось',
+                  text: '${branch.uncompletedTasks} осталось',
                   color: Colors.red[100],
                   textColor: Colors.red,
                   context: context,

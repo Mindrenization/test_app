@@ -12,10 +12,8 @@ class Task {
   DateTime deadline;
   List<TaskStep> steps = [];
 
-  Task(this.title,
-      {this.id,
-      this.parentId,
-      this.deadline,
+  Task(this.id, this.parentId, this.title,
+      {this.deadline,
       this.isComplete = false,
       this.completedSteps = 0,
       this.maxSteps = 0,

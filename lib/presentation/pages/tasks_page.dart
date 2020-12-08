@@ -39,11 +39,14 @@ class _TasksPageState extends State<TasksPage>
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TaskBloc(TaskEmpty()),
+      create: (context) => TaskBloc(TaskLoading()),
       child: BlocBuilder<TaskBloc, TaskState>(builder: (context, state) {
         taskBlocSink = BlocProvider.of<TaskBloc>(context);
-        if (state is TaskEmpty) {
+        if (state is TaskLoading) {
           taskBlocSink.add(FetchTaskList(widget.branchId));
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         }
         if (state is TaskError) {
           return Center(
@@ -51,6 +54,7 @@ class _TasksPageState extends State<TasksPage>
           );
         }
         if (state is TaskLoaded) {
+          widget.onRefresh();
           return Scaffold(
             backgroundColor: widget.customColorTheme.backgroundColor,
             appBar: AppBar(
@@ -84,7 +88,6 @@ class _TasksPageState extends State<TasksPage>
                                 taskBlocSink.add(
                                   DeleteCompletedTasks(
                                     branchId: widget.branchId,
-                                    onRefresh: widget.onRefresh,
                                   ),
                                 );
                                 Navigator.pop(context);
@@ -148,7 +151,6 @@ class _TasksPageState extends State<TasksPage>
                   branchId: widget.branchId,
                   taskId: taskList[index].id,
                   isFiltered: isFiltered,
-                  onRefresh: widget.onRefresh,
                 ),
               );
             },
@@ -158,7 +160,6 @@ class _TasksPageState extends State<TasksPage>
                   taskId: taskList[index].id,
                   branchId: widget.branchId,
                   isFiltered: isFiltered,
-                  onRefresh: widget.onRefresh,
                 ),
               );
             },
@@ -184,7 +185,6 @@ class _TasksPageState extends State<TasksPage>
                         DeleteTask(
                           branchId: widget.branchId,
                           taskId: taskList[index].id,
-                          onRefresh: widget.onRefresh,
                         ),
                       );
                     },
@@ -193,7 +193,6 @@ class _TasksPageState extends State<TasksPage>
                         CompleteTask(
                           taskId: taskList[index].id,
                           branchId: widget.branchId,
-                          onRefresh: widget.onRefresh,
                         ),
                       );
                     },
@@ -221,7 +220,6 @@ class _TasksPageState extends State<TasksPage>
                   branchId: widget.branchId,
                   title: title,
                   deadline: deadline,
-                  onRefresh: widget.onRefresh,
                 ),
               );
             });

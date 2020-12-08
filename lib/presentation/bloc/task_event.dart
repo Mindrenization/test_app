@@ -1,57 +1,46 @@
 abstract class TaskEvent {
-  const TaskEvent();
+  final String branchId;
+  const TaskEvent(this.branchId);
 }
 
 class FetchTaskList extends TaskEvent {
-  final String branchId;
-  const FetchTaskList(this.branchId);
+  const FetchTaskList(branchId) : super(branchId);
 }
 
 class CreateTask extends TaskEvent {
-  final String branchId;
   final String title;
   final DateTime deadline;
-  final onRefresh;
-  const CreateTask({this.branchId, this.title, this.deadline, this.onRefresh});
+  const CreateTask({branchId, this.title, this.deadline}) : super(branchId);
 }
 
 class UpdateTask extends TaskEvent {
-  final String branchId;
   final String taskId;
-  const UpdateTask({this.branchId, this.taskId});
+  const UpdateTask({branchId, this.taskId}) : super(branchId);
 }
 
 class ChangeColorTheme extends TaskEvent {
-  final String branchId;
-  const ChangeColorTheme({this.branchId});
+  const ChangeColorTheme({branchId}) : super(branchId);
 }
 
 class DeleteTask extends TaskEvent {
-  final String branchId;
   final String taskId;
   final bool isFiltered;
-  final onRefresh;
-  const DeleteTask(
-      {this.branchId, this.taskId, this.isFiltered = false, this.onRefresh});
+  const DeleteTask({branchId, this.taskId, this.isFiltered = false})
+      : super(branchId);
 }
 
 class CompleteTask extends TaskEvent {
-  final String branchId;
   final String taskId;
   final bool isFiltered;
-  final onRefresh;
-  const CompleteTask(
-      {this.branchId, this.taskId, this.isFiltered = false, this.onRefresh});
+  const CompleteTask({branchId, this.taskId, this.isFiltered = false})
+      : super(branchId);
 }
 
 class FilterTaskList extends TaskEvent {
-  final String branchId;
   final bool isFiltered;
-  const FilterTaskList({this.isFiltered, this.branchId});
+  const FilterTaskList({branchId, this.isFiltered}) : super(branchId);
 }
 
 class DeleteCompletedTasks extends TaskEvent {
-  final String branchId;
-  final onRefresh;
-  const DeleteCompletedTasks({this.branchId, this.onRefresh});
+  const DeleteCompletedTasks({branchId}) : super(branchId);
 }

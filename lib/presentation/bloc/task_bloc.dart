@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:test_app/domain/interactors/task_interactor.dart';
 import 'package:test_app/presentation/bloc/task_event.dart';
 import 'package:test_app/presentation/bloc/task_state.dart';
 import 'package:test_app/data/database/db_task_wrapper.dart';
 import 'package:test_app/data/models/task.dart';
-import 'package:test_app/repository/repository.dart';
+import 'package:test_app/domain/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   TaskBloc(TaskState initialState) : super(initialState);
   DbTaskWrapper _dbTaskWrapper = DbTaskWrapper();
+  TaskInteractor _taskInteractor = TaskInteractor();
 
   @override
   Stream<TaskState> mapEventToState(TaskEvent event) async* {
@@ -20,7 +22,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     if (event is CreateTask) {
       List<Task> _taskList =
           await _createTask(event.title, event.branchId, event.deadline);
-      event.onRefresh();
       yield TaskLoaded(taskList: _taskList);
     }
     if (event is ChangeColorTheme) {
@@ -34,13 +35,11 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     if (event is DeleteTask) {
       List<Task> _taskList =
           await _deleteTask(event.branchId, event.taskId, event.isFiltered);
-      event.onRefresh();
       yield TaskLoaded(taskList: _taskList, isFiltered: event.isFiltered);
     }
     if (event is CompleteTask) {
       List<Task> _taskList =
           await _completeTask(event.branchId, event.taskId, event.isFiltered);
-      event.onRefresh();
       yield TaskLoaded(taskList: _taskList, isFiltered: event.isFiltered);
     }
     if (event is FilterTaskList) {
@@ -70,23 +69,20 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     }
     if (event is DeleteCompletedTasks) {
       List<Task> _taskList = await _deleteCompletedTasks(event.branchId);
-      event.onRefresh();
       yield TaskLoaded(taskList: _taskList, isFiltered: false);
     }
   }
 
   Future<List<Task>> _createTask(
-      String title, String branchId, DateTime deadline) async {
-    List<Task> _taskList = Repository.instance.getTaskList(branchId);
+      String _title, String _branchId, DateTime _deadline) async {
     Task _task = Task(
-      title,
-      id: Uuid().v1(),
-      parentId: branchId,
-      deadline: deadline,
+      Uuid().v1(),
+      _branchId,
+      _title,
+      deadline: _deadline,
       createDate: DateTime.now(),
     );
-    await _dbTaskWrapper.createTask(_task);
-    _taskList.add(_task);
+    List<Task> _taskList = await _taskInteractor.createTask(_task, _branchId);
     return _taskList;
   }
 
@@ -100,15 +96,11 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   Future<List<Task>> _deleteTask(
-      String branchId, String taskId, bool isFiltered) async {
-    List<Task> _taskList = Repository.instance.getTaskList(branchId);
-    Task _task = Repository.instance.getTask(branchId, taskId);
-    await _dbTaskWrapper.deleteTask(_task);
-    await _dbTaskWrapper.deleteAllSteps(_task);
-    _taskList.removeWhere((element) => _task.id == element.id);
-    if (isFiltered) {
+      String _branchId, String _taskId, bool _isFiltered) async {
+    List<Task> _taskList = await _taskInteractor.deleteTask(_branchId, _taskId);
+    if (_isFiltered) {
       _taskList = Repository.instance
-          .getTaskList(branchId)
+          .getTaskList(_branchId)
           .where((element) => !element.isComplete)
           .toList();
     }

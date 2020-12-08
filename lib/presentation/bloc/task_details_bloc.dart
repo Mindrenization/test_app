@@ -3,15 +3,17 @@ import 'package:test_app/data/database/db_step_wrapper.dart';
 import 'package:test_app/data/database/db_task_wrapper.dart';
 import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
+import 'package:test_app/domain/interactors/step_interactor.dart';
 import 'package:test_app/presentation/bloc/task_details_event.dart';
 import 'package:test_app/presentation/bloc/task_details_state.dart';
-import 'package:test_app/repository/repository.dart';
+import 'package:test_app/domain/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
   TaskDetailsBloc(TaskDetailsState initialState) : super(initialState);
   DbStepWrapper _dbStepWrapper = DbStepWrapper();
   DbTaskWrapper _dbTaskWrapper = DbTaskWrapper();
+  StepInteractor _stepInteractor = StepInteractor();
 
   @override
   Stream<TaskDetailsState> mapEventToState(TaskDetailsEvent event) async* {
@@ -25,19 +27,16 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
     }
     if (event is CreateStep) {
       Task _task = await _createStep(event.branchId, event.taskId, event.title);
-      event.onRefresh();
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is DeleteStep) {
       Task _task =
           await _deleteStep(event.branchId, event.taskId, event.stepId);
-      event.onRefresh();
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is CompleteStep) {
       Task _task =
           await _completeStep(event.branchId, event.taskId, event.stepId);
-      event.onRefresh();
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is SetDeadline) {
@@ -60,23 +59,16 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
     }
   }
 
-  Future<Task> _createStep(String branchId, String taskId, String title) async {
-    Task _task = Repository.instance.getTask(branchId, taskId);
-    TaskStep _step = TaskStep(title, id: Uuid().v1(), parentId: taskId);
-    await _dbStepWrapper.createStep(_step);
-    _task.steps.add(_step);
+  Future<Task> _createStep(
+      String _branchId, String _taskId, String _title) async {
+    TaskStep _step = TaskStep(_title, id: Uuid().v1(), parentId: _taskId);
+    Task _task = await _stepInteractor.createStep(_branchId, _taskId, _step);
     return _task;
   }
 
   Future<Task> _deleteStep(
-      String branchId, String taskId, String stepId) async {
-    Task _task = Repository.instance.getTask(
-      branchId,
-      taskId,
-    );
-    TaskStep _step = Repository.instance.getStep(branchId, taskId, stepId);
-    await _dbStepWrapper.deleteStep(_step);
-    _task.steps.removeWhere((element) => _step.id == element.id);
+      String _branchId, String _taskId, String _stepId) async {
+    Task _task = await _stepInteractor.deleteStep(_branchId, _taskId, _stepId);
     return _task;
   }
 

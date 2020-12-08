@@ -31,13 +31,10 @@ class DbTaskWrapper {
 
   Future<void> deleteTask(Task task) async {
     await _dbTask.deleteTask(task);
+    await _dbTask.deleteAllSteps(task);
   }
 
   Future<void> deleteCompletedTasks(String branchId) async {
     await _dbTask.deleteCompletedTasks(branchId);
-  }
-
-  Future<void> deleteAllSteps(Task task) async {
-    await _dbTask.deleteAllSteps(task);
   }
 }
