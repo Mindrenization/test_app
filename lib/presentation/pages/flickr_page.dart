@@ -13,7 +13,7 @@ class FlickrPage extends StatefulWidget {
   final String branchId;
   final String taskId;
   final CustomColorTheme customColorTheme;
-  final VoidCallback onSave;
+  final Function onSave;
   FlickrPage(this.branchId, this.taskId, this.customColorTheme, {this.onSave});
   @override
   _FlickrPageState createState() => _FlickrPageState();
@@ -115,26 +115,16 @@ class _FlickrPageState extends State<FlickrPage> {
                       (context, i) => Padding(
                         padding: EdgeInsets.all(10),
                         child: GestureDetector(
-                          onTap: () async {
-                            await showDialog(
+                          onTap: () {
+                            showDialog(
                               context: context,
                               builder: (context) {
                                 return SaveImageDialog(
-                                  onSave: () {
-                                    _flickrBlocSink.add(
-                                      SaveImage(
-                                        imageUrl: state.imageList[i],
-                                        branchId: widget.branchId,
-                                        taskId: widget.taskId,
-                                      ),
-                                    );
-                                  },
+                                  state.imageList[i],
+                                  onSave: widget.onSave,
                                 );
                               },
                             );
-                            widget.onSave();
-                            // не всегда срабатывает своевременно
-                            // узнать, как можно исправить
                           },
                           child: CachedNetworkImage(
                             imageUrl: state.imageList[i],

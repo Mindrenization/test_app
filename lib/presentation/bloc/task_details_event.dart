@@ -49,3 +49,8 @@ class DeleteImage extends TaskDetailsEvent {
   final String imageId;
   const DeleteImage({branchId, taskId, this.imageId}) : super(branchId, taskId);
 }
+
+class SaveImage extends TaskDetailsEvent {
+  final imageUrl;
+  const SaveImage({this.imageUrl, branchId, taskId}) : super(branchId, taskId);
+}

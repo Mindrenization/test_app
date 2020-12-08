@@ -13,10 +13,3 @@ class SearchFlickr extends FlickrEvent {
   final String search;
   const SearchFlickr({this.search});
 }
-
-class SaveImage extends FlickrEvent {
-  final imageUrl;
-  final branchId;
-  final taskId;
-  const SaveImage({this.imageUrl, this.branchId, this.taskId});
-}

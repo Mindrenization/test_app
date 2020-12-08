@@ -397,11 +397,12 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                     widget.branchId,
                     widget.taskId,
                     widget.customColorTheme,
-                    onSave: () {
+                    onSave: (imageUrl) {
                       stepBlocSink.add(
-                        UpdateTask(
+                        SaveImage(
                           branchId: widget.branchId,
                           taskId: widget.taskId,
+                          imageUrl: imageUrl,
                         ),
                       );
                     },

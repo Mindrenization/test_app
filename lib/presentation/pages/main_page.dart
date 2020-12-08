@@ -116,13 +116,15 @@ class _MainPageState extends State<MainPage> {
                               showDialog(
                                   context: context,
                                   builder: (context) {
-                                    return DeleteBranchDialog(onDelete: () {
-                                      branchBlocSink.add(
-                                        DeleteBranch(
-                                          state.branchList[index],
-                                        ),
-                                      );
-                                    });
+                                    return DeleteBranchDialog(
+                                      onDelete: () {
+                                        branchBlocSink.add(
+                                          DeleteBranch(
+                                            state.branchList[index],
+                                          ),
+                                        );
+                                      },
+                                    );
                                   });
                             },
                           ),

@@ -1,4 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:test_app/data/database/db_flickr.dart';
 import 'package:test_app/data/database/db_step_wrapper.dart';
 import 'package:test_app/data/database/db_task_wrapper.dart';
 import 'package:test_app/data/models/image.dart';
@@ -15,6 +17,7 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
   DbStepWrapper _dbStepWrapper = DbStepWrapper();
   DbTaskWrapper _dbTaskWrapper = DbTaskWrapper();
   StepInteractor _stepInteractor = StepInteractor();
+  DbFlickr _dbFlickr = DbFlickr();
 
   @override
   Stream<TaskDetailsState> mapEventToState(TaskDetailsEvent event) async* {
@@ -62,6 +65,14 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
       Task _task = Repository.instance.getTask(event.branchId, event.taskId);
       _task.description = event.text;
       await _dbTaskWrapper.updateTask(_task);
+      yield TaskDetailsLoaded(task: _task);
+    }
+    if (event is SaveImage) {
+      var _file = await DefaultCacheManager().getSingleFile(event.imageUrl);
+      Task _task = Repository.instance.getTask(event.branchId, event.taskId);
+      Image _newImage = Image(Uuid().v1(), event.taskId, _file.path);
+      _task.images.add(_newImage);
+      _dbFlickr.createImage(_newImage);
       yield TaskDetailsLoaded(task: _task);
     }
   }

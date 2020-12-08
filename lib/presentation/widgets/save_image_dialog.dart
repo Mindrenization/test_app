@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-// Модальное окно для создания задачи
 class SaveImageDialog extends StatelessWidget {
-  final VoidCallback onSave;
-
-  SaveImageDialog({this.onSave});
+  final Function onSave;
+  final imageUrl;
+  SaveImageDialog(this.imageUrl, {this.onSave});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +35,7 @@ class SaveImageDialog extends StatelessWidget {
                 style: TextStyle(fontSize: 18),
               ),
               onPressed: () {
-                onSave();
+                onSave(imageUrl);
                 Navigator.pop(context);
               },
             ),
