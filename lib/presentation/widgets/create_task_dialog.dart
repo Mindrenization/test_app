@@ -29,7 +29,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
         ),
         Container(
           child: TextField(
-            maxLength: 30,
+            // maxLength: 30,
             onEditingComplete: () {
               _complete();
             },

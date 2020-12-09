@@ -122,24 +122,30 @@ class _TasksPageState extends State<TasksPage>
             body: state.taskList.isEmpty ||
                     (state.taskList.isEmpty && state.isFiltered)
                 ? NoTasksBackground(state.isFiltered)
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      state.isFiltered
-                          ? Padding(
-                              padding: EdgeInsets.only(left: 15, top: 5),
-                              child: Text(
-                                'Фильтр: скрыть завершенные задачи',
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.grey[800]),
-                              ),
-                            )
-                          : Container(),
-                      for (int index = 0;
-                          index < state.taskList.length;
-                          index++)
-                        taskListView(state.taskList[index], state.isFiltered),
-                    ],
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          state.isFiltered
+                              ? Padding(
+                                  padding: EdgeInsets.only(left: 15, top: 5),
+                                  child: Text(
+                                    'Фильтр: скрыть завершенные задачи',
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey[800]),
+                                  ),
+                                )
+                              : Container(),
+                          for (int index = 0;
+                              index < state.taskList.length;
+                              index++)
+                            taskListView(
+                                state.taskList[index], state.isFiltered),
+                        ],
+                      ),
+                    ),
                   ),
             floatingActionButton: addTaskButton(),
           );
@@ -153,7 +159,7 @@ class _TasksPageState extends State<TasksPage>
 
   Widget taskListView(Task task, bool isFiltered) {
     return Padding(
-      padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+      padding: EdgeInsets.only(bottom: 10),
       child: TaskTile(
         task: task,
         color: widget.customColorTheme.mainColor,

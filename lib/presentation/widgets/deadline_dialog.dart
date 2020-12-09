@@ -34,8 +34,9 @@ class DeadlineDialog extends StatelessWidget {
               firstDate: now,
               lastDate: DateTime(futureYear, now.month, now.day),
             );
-            _deadline = DateTime(
-                _deadline.year, _deadline.month, _deadline.day, 23, 59, 59);
+            if (_deadline != null)
+              _deadline = DateTime(
+                  _deadline.year, _deadline.month, _deadline.day, 23, 59, 59);
             Navigator.pop(context, _deadline);
           },
         ),

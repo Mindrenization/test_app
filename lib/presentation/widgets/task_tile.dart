@@ -41,7 +41,6 @@ class _TaskTileState extends State<TaskTile> {
         onTap: widget.onTap,
         child: Container(
           padding: EdgeInsets.all(10),
-          width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -55,21 +54,23 @@ class _TaskTileState extends State<TaskTile> {
                   widget.onCheck();
                 },
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.task.title,
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  widget.task.maxSteps == 0
-                      ? Container()
-                      : Text(
-                          '${widget.task.completedSteps} из ${widget.task.maxSteps}',
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.grey[600]),
-                        ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.task.title,
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    widget.task.maxSteps == 0
+                        ? Container()
+                        : Text(
+                            '${widget.task.completedSteps} из ${widget.task.maxSteps}',
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.grey[600]),
+                          ),
+                  ],
+                ),
               ),
             ],
           ),

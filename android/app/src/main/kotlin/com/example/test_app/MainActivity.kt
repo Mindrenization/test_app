@@ -15,19 +15,28 @@ import android.content.Intent
 // import android.os.Build.VERSION_CODES
 
 class MainActivity: FlutterActivity() {
-  private val CHANNEL = "notifications"
-  override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-    super.configureFlutterEngine(flutterEngine)
-    MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
-      call, result ->   
-      if (call.method == "getNotification") {
-        val notification = getNotification()
-      } else {
-        result.notImplemented()
-      }
-    }
-  }
-  private fun getNotification(){
+//   private val CHANNEL = "notifications"
+//   override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+//     super.configureFlutterEngine(flutterEngine)
+//     MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
+//       call, result ->   
+//         when (call.method) {
+//          "scheduleNotification" -> {
+//              val taskId = call.argument<String>("task_id")
+//              val title = call.argument<String>("title")
+//              val time = call.argument<Long>("time_millis")
+//              val notification = getNotification(title, time)
+//              val id = taskId.hashCode()
+//              scheduleNotification(notification, id, time)
+//              return@setMethodCallHandler result.success(true)
+//          }
+//          else -> {
+//              return@setMethodCallHandler result.notImplemented()
+//          }
+//       }
+//     }
+//   }
+//   private fun scheduleNotification(){}
 
-    }
+//   private fun getNotification(){}
 }
