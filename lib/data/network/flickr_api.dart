@@ -6,7 +6,7 @@ class FlickrApi {
   Future<List<String>> fetchImages({String search, int page}) async {
     List<String> _imageList = [];
     String url =
-        'https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=940ad88c904a4e8889192733bc94e5e4&tags=$search&per_page=20&page=$page&format=json&nojsoncallback=1';
+        'https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=5750a56ca9958c60044e816bb5e24757&tags=$search&per_page=20&page=$page&format=json&nojsoncallback=1';
     final response = await http.get(url);
     final parsed = await jsonDecode(response.body);
     if (parsed["stat"] == 'ok') {
