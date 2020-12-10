@@ -230,12 +230,13 @@ class _TasksPageState extends State<TasksPage>
         await showDialog(
           context: context,
           builder: (context) {
-            return CreateTaskDialog(onCreate: (title, deadline) {
+            return CreateTaskDialog(onCreate: (title, deadline, notification) {
               _taskBlocSink.add(
                 CreateTask(
                   branchId: widget.branchId,
                   title: title,
                   deadline: deadline,
+                  notification: notification,
                 ),
               );
             });

@@ -33,6 +33,20 @@ class SetDeadline extends TaskDetailsEvent {
       : super(branchId, taskId);
 }
 
+class SetNotification extends TaskDetailsEvent {
+  final DateTime notification;
+  const SetNotification({branchId, taskId, this.notification})
+      : super(branchId, taskId);
+}
+
+class DeleteDeadline extends TaskDetailsEvent {
+  const DeleteDeadline({taskId, branchId}) : super(branchId, taskId);
+}
+
+class DeleteNotification extends TaskDetailsEvent {
+  const DeleteNotification({branchId, taskId}) : super(branchId, taskId);
+}
+
 class ChangeTaskTitle extends TaskDetailsEvent {
   final String title;
   const ChangeTaskTitle({branchId, taskId, this.title})

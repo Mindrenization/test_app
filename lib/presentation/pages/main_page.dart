@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_app/presentation/bloc/branch_bloc.dart';
 import 'package:test_app/presentation/bloc/branch_event.dart';
@@ -18,7 +17,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   BranchBloc branchBlocSink;
-  // static const platform = const MethodChannel('notifications');
 
   @override
   void initState() {
@@ -89,14 +87,6 @@ class _MainPageState extends State<MainPage> {
                           ),
                         ),
                       ),
-                      // FlatButton(
-                      //   onPressed: () async {
-                      //     final int result =
-                      //         await platform.invokeMethod('getNotification');
-                      //     print('Battery level: $result');
-                      //   },
-                      //   child: Text('123'),
-                      // ),
                     ],
                   ),
                   Expanded(

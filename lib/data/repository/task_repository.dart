@@ -1,5 +1,6 @@
 import 'package:test_app/data/database/db_task_wrapper.dart';
 import 'package:test_app/data/models/task.dart';
+import 'package:test_app/data/notification_service.dart';
 import 'package:test_app/data/repository/repository.dart';
 
 class TaskInteractor {
@@ -15,6 +16,7 @@ class TaskInteractor {
   Future<List<Task>> deleteTask(String _branchId, String _taskId) async {
     List<Task> _taskList = Repository.instance.getTaskList(_branchId);
     Task _task = Repository.instance.getTask(_branchId, _taskId);
+    await NotificationService().cancelNotification(_task);
     await _dbTaskWrapper.deleteTask(_task);
     _taskList.removeWhere((element) => _task.id == element.id);
     return _taskList;

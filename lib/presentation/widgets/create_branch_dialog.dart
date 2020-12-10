@@ -24,7 +24,6 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
         ),
         Container(
           child: TextField(
-            maxLength: 30,
             onEditingComplete: () => _complete(_titleController.text),
             controller: _titleController,
             decoration: InputDecoration(

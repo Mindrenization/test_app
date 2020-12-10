@@ -20,8 +20,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       yield TaskLoaded(taskList: _taskList);
     }
     if (event is CreateTask) {
-      List<Task> _taskList =
-          await _createTask(event.title, event.branchId, event.deadline);
+      List<Task> _taskList = await _createTask(
+          event.title, event.branchId, event.deadline, event.notification);
       yield TaskLoaded(taskList: _taskList);
     }
     if (event is ChangeColorTheme) {
@@ -74,12 +74,17 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   Future<List<Task>> _createTask(
-      String title, String branchId, DateTime deadline) async {
+    String title,
+    String branchId,
+    DateTime deadline,
+    DateTime notification,
+  ) async {
     Task _task = Task(
       Uuid().v1(),
       branchId,
       title,
       deadline: deadline,
+      notification: notification,
       createDate: DateTime.now(),
     );
     List<Task> _taskList = await _taskInteractor.createTask(_task, branchId);

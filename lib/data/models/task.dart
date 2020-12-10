@@ -11,11 +11,13 @@ class Task {
   int maxSteps;
   DateTime createDate = DateTime.now();
   DateTime deadline;
+  DateTime notification;
   List<TaskStep> steps = [];
   List<Image> images = [];
 
   Task(this.id, this.parentId, this.title,
       {this.deadline,
+      this.notification,
       this.isComplete = false,
       this.completedSteps = 0,
       this.maxSteps = 0,
@@ -30,7 +32,10 @@ class Task {
       'complete': isComplete.toString(),
       'description': description,
       'createDate': createDate.millisecondsSinceEpoch,
-      if (deadline != null) 'deadline': deadline.millisecondsSinceEpoch,
+      'deadline': deadline == null ? deadline : deadline.millisecondsSinceEpoch,
+      'notification': notification == null
+          ? notification
+          : notification.millisecondsSinceEpoch,
     };
   }
 }

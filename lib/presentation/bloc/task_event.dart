@@ -10,7 +10,9 @@ class FetchTaskList extends TaskEvent {
 class CreateTask extends TaskEvent {
   final String title;
   final DateTime deadline;
-  const CreateTask({branchId, this.title, this.deadline}) : super(branchId);
+  final DateTime notification;
+  const CreateTask({branchId, this.title, this.deadline, this.notification})
+      : super(branchId);
 }
 
 class UpdateTask extends TaskEvent {

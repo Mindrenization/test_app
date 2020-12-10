@@ -6,6 +6,7 @@ import 'package:test_app/presentation/bloc/task_details_bloc.dart';
 import 'package:test_app/presentation/bloc/task_details_event.dart';
 import 'package:test_app/presentation/bloc/task_details_state.dart';
 import 'package:test_app/presentation/pages/flickr_page.dart';
+import 'package:test_app/presentation/widgets/notification_dialog.dart';
 import 'package:test_app/resources/custom_color_theme.dart';
 import 'package:test_app/presentation/widgets/change_task_name_dialog.dart';
 import 'package:test_app/presentation/widgets/deadline_dialog.dart';
@@ -202,46 +203,50 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                         child: Column(
                           children: [
                             _deadlineButton(
-                                text: Text(
-                                  'Напомнить',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(color: Colors.grey[700]),
-                                ),
-                                icon: Icon(
-                                  Icons.notifications_on_outlined,
-                                  color: Colors.grey[700],
-                                ),
-                                onTap: () {}),
+                              state.task.notification == null
+                                  ? 'Напомнить'
+                                  : '${DateFormat('dd.MM.yyyy (HH:mm)').format(state.task.notification)}',
+                              Icons.notifications_on_outlined,
+                              state.task.notification == null ? false : true,
+                              onTap: () async {
+                                FocusScope.of(context).unfocus();
+                                DateTime _notification = await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return NotificationDialog();
+                                      },
+                                    ) ??
+                                    state.task.notification;
+                                stepBlocSink.add(
+                                  SetNotification(
+                                    branchId: widget.branchId,
+                                    taskId: widget.taskId,
+                                    notification: _notification,
+                                  ),
+                                );
+                              },
+                              onDelete: () {
+                                stepBlocSink.add(
+                                  DeleteNotification(
+                                    taskId: widget.taskId,
+                                    branchId: widget.branchId,
+                                  ),
+                                );
+                              },
+                            ),
                             Divider(
                               indent: 60,
                               height: 1,
                               color: Colors.black,
                             ),
                             _deadlineButton(
-                              text: Text(
-                                state.task.deadline == null
-                                    ? 'Добавить дату выполнения'
-                                    : '${DateFormat('dd.MM.yyyy').format(state.task.deadline)}',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  color: state.task.deadline == null
-                                      ? Colors.grey[700]
-                                      : state.task.deadline
-                                              .isBefore(DateTime.now())
-                                          ? Colors.red
-                                          : Colors.blue,
-                                ),
-                              ),
-                              icon: Icon(
-                                Icons.calendar_today_outlined,
-                                color: state.task.deadline == null
-                                    ? Colors.grey[700]
-                                    : state.task.deadline
-                                            .isBefore(DateTime.now())
-                                        ? Colors.red
-                                        : Colors.blue,
-                              ),
+                              state.task.deadline == null
+                                  ? 'Добавить дату выполнения'
+                                  : '${DateFormat('dd.MM.yyyy').format(state.task.deadline)}',
+                              Icons.calendar_today_outlined,
+                              state.task.deadline == null ? false : true,
                               onTap: () async {
+                                FocusScope.of(context).unfocus();
                                 DateTime _deadline = await showDialog(
                                       context: context,
                                       builder: (context) {
@@ -249,10 +254,21 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                       },
                                     ) ??
                                     state.task.deadline;
-                                stepBlocSink.add(SetDeadline(
+                                stepBlocSink.add(
+                                  SetDeadline(
                                     branchId: widget.branchId,
                                     taskId: widget.taskId,
-                                    deadline: _deadline));
+                                    deadline: _deadline,
+                                  ),
+                                );
+                              },
+                              onDelete: () {
+                                stepBlocSink.add(
+                                  DeleteDeadline(
+                                    taskId: widget.taskId,
+                                    branchId: widget.branchId,
+                                  ),
+                                );
                               },
                             ),
                           ],
@@ -282,7 +298,10 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
         widget.onComplete();
         widget.onRefresh();
         stepBlocSink.add(
-          UpdateTask(taskId: widget.taskId, branchId: widget.branchId),
+          UpdateTask(
+            taskId: widget.taskId,
+            branchId: widget.branchId,
+          ),
         );
       },
       child: Container(
@@ -293,10 +312,11 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-                offset: Offset.zero,
-                spreadRadius: 1,
-                blurRadius: 3,
-                color: Colors.black38)
+              offset: Offset.zero,
+              spreadRadius: 1,
+              blurRadius: 3,
+              color: Colors.black38,
+            )
           ],
         ),
         child: Icon(
@@ -308,7 +328,8 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
     );
   }
 
-  Widget _deadlineButton({Text text, Icon icon, VoidCallback onTap}) {
+  Widget _deadlineButton(String text, IconData icon, bool isHaveValue,
+      {VoidCallback onTap, VoidCallback onDelete}) {
     return GestureDetector(
       child: Container(
         margin: EdgeInsets.all(10),
@@ -318,9 +339,29 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
           children: [
             Padding(
               padding: EdgeInsets.only(right: 15),
-              child: icon,
+              child: Icon(
+                icon,
+                color: isHaveValue ? Colors.blue : Colors.grey[700],
+              ),
             ),
-            Expanded(child: text),
+            Expanded(
+              child: Text(
+                text,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: isHaveValue ? Colors.blue : Colors.grey[700],
+                ),
+              ),
+            ),
+            isHaveValue
+                ? InkWell(
+                    child: Icon(
+                      Icons.close,
+                      color: Colors.grey[700],
+                    ),
+                    onTap: onDelete,
+                  )
+                : Container(),
           ],
         ),
       ),

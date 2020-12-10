@@ -110,7 +110,6 @@ class _StepListState extends State<StepList> {
             }
             return null;
           },
-          autofocus: true,
           controller: _stepController,
           decoration: InputDecoration(
             isDense: true,
@@ -120,7 +119,6 @@ class _StepListState extends State<StepList> {
             if (_formKey.currentState.validate()) {
               widget.onCreate(_stepController.text);
               _stepController.text = '';
-              FocusScope.of(context).unfocus();
               widget.onRefresh();
             }
           },
@@ -130,20 +128,24 @@ class _StepListState extends State<StepList> {
   }
 
   Widget _descriptionField() {
-    return TextField(
-      controller: _descriptionController,
-      maxLines: null,
-      textInputAction: TextInputAction.done,
-      onEditingComplete: () {
-        widget.onSaveDescription(_descriptionController.text);
-        widget.onRefresh();
-      },
-      decoration: InputDecoration(
-        isDense: true,
-        border: InputBorder.none,
-        labelText: 'Заметки по задаче...',
-        labelStyle: TextStyle(
-          color: Colors.grey[700],
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: TextField(
+        controller: _descriptionController,
+        maxLines: null,
+        textInputAction: TextInputAction.done,
+        onEditingComplete: () {
+          widget.onSaveDescription(_descriptionController.text);
+          widget.onRefresh();
+          FocusScope.of(context).unfocus();
+        },
+        decoration: InputDecoration(
+          isDense: true,
+          border: InputBorder.none,
+          labelText: 'Заметки по задаче...',
+          labelStyle: TextStyle(
+            color: Colors.grey[700],
+          ),
         ),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:test_app/data/database/db_task_wrapper.dart';
 import 'package:test_app/data/models/image.dart';
 import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
+import 'package:test_app/data/notification_service.dart';
 import 'package:test_app/data/repository/step_repository.dart';
 import 'package:test_app/presentation/bloc/task_details_event.dart';
 import 'package:test_app/presentation/bloc/task_details_state.dart';
@@ -52,6 +53,28 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
     if (event is SetDeadline) {
       Task _task = Repository.instance.getTask(event.branchId, event.taskId);
       _task.deadline = event.deadline;
+      await _dbTaskWrapper.updateTask(_task);
+      yield TaskDetailsLoaded(task: _task);
+    }
+    if (event is SetNotification) {
+      Task _task = Repository.instance.getTask(event.branchId, event.taskId);
+      if (_task.notification != null)
+        await NotificationService().cancelNotification(_task);
+      _task.notification = event.notification;
+      await NotificationService().scheduleNotification(_task);
+      await _dbTaskWrapper.updateTask(_task);
+      yield TaskDetailsLoaded(task: _task);
+    }
+    if (event is DeleteDeadline) {
+      Task _task = Repository.instance.getTask(event.branchId, event.taskId);
+      _task.deadline = null;
+      await _dbTaskWrapper.updateTask(_task);
+      yield TaskDetailsLoaded(task: _task);
+    }
+    if (event is DeleteNotification) {
+      Task _task = Repository.instance.getTask(event.branchId, event.taskId);
+      await NotificationService().cancelNotification(_task);
+      _task.notification = null;
       await _dbTaskWrapper.updateTask(_task);
       yield TaskDetailsLoaded(task: _task);
     }
