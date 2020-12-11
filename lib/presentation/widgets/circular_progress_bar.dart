@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 
+// Круглый progress bar для визуализации статистики по задачам в ветке
 class CircularProgressBar extends StatefulWidget {
   final double value;
   final Color color;
-  CircularProgressBar(this.value, this.color);
+  CircularProgressBar(
+    this.value,
+    this.color,
+  );
   @override
   _CircularProgressBarState createState() => _CircularProgressBarState();
 }
 
-class _CircularProgressBarState extends State<CircularProgressBar>
-    with SingleTickerProviderStateMixin {
+class _CircularProgressBarState extends State<CircularProgressBar> with SingleTickerProviderStateMixin {
   Animation<double> _animation;
   AnimationController controller;
-  double value = 0.0;
 
   @override
   void initState() {
     super.initState();
-    controller =
-        AnimationController(duration: Duration(seconds: 2), vsync: this);
+    controller = AnimationController(duration: Duration(seconds: 2), vsync: this);
+    _animation = Tween(begin: 0.0, end: widget.value).animate(controller);
     controller.forward();
   }
 
@@ -34,29 +36,27 @@ class _CircularProgressBarState extends State<CircularProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    _animation = Tween(begin: 0.0, end: widget.value).animate(controller)
-      ..addListener(() {
-        setState(() {
-          value = _animation.value;
-        });
-      });
-
-    return Container(
-      width: 50,
-      padding: EdgeInsets.symmetric(vertical: 20),
-      child: CustomPaint(
-        child: Text(
-          '${(value * 100).toInt()}%',
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: widget.color,
-            fontSize: 14,
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Container(
+          width: 50,
+          padding: EdgeInsets.symmetric(vertical: 20),
+          child: CustomPaint(
+            child: Text(
+              '${(_animation.value * 100).toInt()}%',
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: widget.color,
+                fontSize: 14,
+              ),
+            ),
+            foregroundPainter: CircularPainter(_animation.value, widget.color),
           ),
-        ),
-        foregroundPainter: CircularPainter(value, widget.color),
-      ),
+        );
+      },
     );
   }
 

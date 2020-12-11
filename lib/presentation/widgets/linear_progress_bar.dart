@@ -1,32 +1,32 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// Горизонтальный progress bar для визуализации статистики по всем задачам
 class LinearProgressBar extends StatefulWidget {
   final double value;
 
-  LinearProgressBar(this.value);
+  LinearProgressBar(
+    this.value,
+  );
 
   _LinearProgressBarState createState() => _LinearProgressBarState();
 }
 
-class _LinearProgressBarState extends State<LinearProgressBar>
-    with SingleTickerProviderStateMixin {
+class _LinearProgressBarState extends State<LinearProgressBar> with SingleTickerProviderStateMixin {
   Animation<double> _animation;
   AnimationController controller;
-  double value = 0.0;
 
   @override
   void initState() {
     super.initState();
-    controller =
-        AnimationController(duration: Duration(seconds: 2), vsync: this);
+    controller = AnimationController(duration: Duration(seconds: 2), vsync: this);
+    _animation = Tween(begin: 0.0, end: widget.value).animate(controller);
     controller.forward();
   }
 
   @override
   void didUpdateWidget(covariant LinearProgressBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-
     if (widget.value != oldWidget.value) {
       controller
         ..value = 0
@@ -36,18 +36,17 @@ class _LinearProgressBarState extends State<LinearProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    _animation = Tween(begin: 0.0, end: widget.value).animate(controller)
-      ..addListener(() {
-        setState(() {
-          value = _animation.value;
-        });
-      });
-    return Container(
-      height: 10,
-      width: 150,
-      child: CustomPaint(
-        foregroundPainter: LinearPainter(value),
-      ),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Container(
+          height: 10,
+          width: 150,
+          child: CustomPaint(
+            foregroundPainter: LinearPainter(_animation.value),
+          ),
+        );
+      },
     );
   }
 

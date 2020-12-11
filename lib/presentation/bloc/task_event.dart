@@ -1,48 +1,51 @@
+import 'package:flutter/material.dart';
+
 abstract class TaskEvent {
-  final String branchId;
-  const TaskEvent(this.branchId);
+  const TaskEvent();
 }
 
 class FetchTaskList extends TaskEvent {
-  const FetchTaskList(branchId) : super(branchId);
+  const FetchTaskList();
 }
 
 class CreateTask extends TaskEvent {
   final String title;
   final DateTime deadline;
   final DateTime notification;
-  const CreateTask({branchId, this.title, this.deadline, this.notification})
-      : super(branchId);
+  const CreateTask({this.title, this.deadline, this.notification});
 }
 
 class UpdateTask extends TaskEvent {
   final String taskId;
-  const UpdateTask({branchId, this.taskId}) : super(branchId);
+  const UpdateTask({this.taskId});
 }
 
 class ChangeColorTheme extends TaskEvent {
-  const ChangeColorTheme({branchId}) : super(branchId);
+  final Color mainColor;
+  final Color backgroundColor;
+  const ChangeColorTheme({this.mainColor, this.backgroundColor});
 }
 
 class DeleteTask extends TaskEvent {
   final String taskId;
   final bool isFiltered;
-  const DeleteTask({branchId, this.taskId, this.isFiltered = false})
-      : super(branchId);
+  const DeleteTask({this.taskId, this.isFiltered = false});
 }
 
 class CompleteTask extends TaskEvent {
   final String taskId;
   final bool isFiltered;
-  const CompleteTask({branchId, this.taskId, this.isFiltered = false})
-      : super(branchId);
+  const CompleteTask({
+    this.taskId,
+    this.isFiltered = false,
+  });
 }
 
 class FilterTaskList extends TaskEvent {
   final bool isFiltered;
-  const FilterTaskList({branchId, this.isFiltered}) : super(branchId);
+  const FilterTaskList({this.isFiltered});
 }
 
 class DeleteCompletedTasks extends TaskEvent {
-  const DeleteCompletedTasks({branchId}) : super(branchId);
+  const DeleteCompletedTasks();
 }

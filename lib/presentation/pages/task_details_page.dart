@@ -7,7 +7,6 @@ import 'package:test_app/presentation/bloc/task_details_event.dart';
 import 'package:test_app/presentation/bloc/task_details_state.dart';
 import 'package:test_app/presentation/pages/flickr_page.dart';
 import 'package:test_app/presentation/widgets/notification_dialog.dart';
-import 'package:test_app/resources/custom_color_theme.dart';
 import 'package:test_app/presentation/widgets/change_task_name_dialog.dart';
 import 'package:test_app/presentation/widgets/deadline_dialog.dart';
 import 'package:test_app/presentation/widgets/delete_task_dialog.dart';
@@ -18,17 +17,20 @@ import 'package:test_app/presentation/widgets/step_list.dart';
 class TaskDetailsPage extends StatefulWidget {
   final String branchId;
   final String taskId;
-  final CustomColorTheme customColorTheme;
+  final Color mainColor;
+  final Color backgroundColor;
   final VoidCallback onRefresh;
   final VoidCallback onDelete;
   final VoidCallback onComplete;
-  TaskDetailsPage(
-      {this.branchId,
-      this.taskId,
-      this.customColorTheme,
-      this.onRefresh,
-      this.onDelete,
-      this.onComplete});
+  TaskDetailsPage({
+    this.branchId,
+    this.taskId,
+    this.mainColor,
+    this.backgroundColor,
+    this.onRefresh,
+    this.onDelete,
+    this.onComplete,
+  });
   @override
   _TaskDetailsPageState createState() => _TaskDetailsPageState();
 }
@@ -37,25 +39,18 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
   TaskDetailsBloc stepBlocSink;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TaskDetailsBloc(TaskDetailsLoading()),
-      child: BlocBuilder<TaskDetailsBloc, TaskDetailsState>(
-          builder: (context, state) {
+      create: (context) => TaskDetailsBloc(TaskDetailsLoading(), widget.branchId, widget.taskId),
+      child: BlocConsumer<TaskDetailsBloc, TaskDetailsState>(listener: (context, state) {
+        if (state is UpdateTasksPage) {
+          widget.onRefresh();
+        }
+      }, builder: (context, state) {
         stepBlocSink = BlocProvider.of<TaskDetailsBloc>(context);
         if (state is TaskDetailsLoading) {
           stepBlocSink.add(
-            FetchTask(taskId: widget.taskId, branchId: widget.branchId),
+            FetchTask(),
           );
           return Center(
             child: CircularProgressIndicator(),
@@ -67,10 +62,9 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
           );
         }
         if (state is TaskDetailsLoaded) {
-          widget.onRefresh();
           return SafeArea(
             child: Scaffold(
-              backgroundColor: widget.customColorTheme.backgroundColor,
+              backgroundColor: widget.backgroundColor,
               body: NestedScrollView(
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
@@ -78,11 +72,10 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                       floating: true,
                       snap: true,
                       centerTitle: true,
-                      backgroundColor: widget.customColorTheme.mainColor,
+                      backgroundColor: widget.mainColor,
                       expandedHeight: 100,
                       flexibleSpace: FlexibleSpaceBar(
-                        titlePadding:
-                            EdgeInsets.symmetric(horizontal: 100, vertical: 10),
+                        titlePadding: EdgeInsets.symmetric(horizontal: 100, vertical: 10),
                         centerTitle: true,
                         title: Text(
                           state.task.title,
@@ -104,10 +97,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                       return ChangeTaskTitleDialog(
                                         state.task.title,
                                         onChange: (title) {
-                                          stepBlocSink.add(ChangeTaskTitle(
-                                              taskId: widget.taskId,
-                                              branchId: widget.branchId,
-                                              title: title));
+                                          stepBlocSink.add(ChangeTaskTitle(title: title));
                                           widget.onRefresh();
                                         },
                                       );
@@ -158,35 +148,27 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                         padding: EdgeInsets.symmetric(vertical: 30),
                         child: StepList(
                           state.task,
-                          widget.customColorTheme.mainColor,
+                          widget.mainColor,
                           onCreate: (title) {
                             stepBlocSink.add(
                               CreateStep(
                                 title: title,
-                                taskId: widget.taskId,
-                                branchId: widget.branchId,
                               ),
                             );
                           },
                           onComplete: (index) {
                             stepBlocSink.add(CompleteStep(
-                              branchId: widget.branchId,
-                              taskId: widget.taskId,
                               stepId: state.task.steps[index].id,
                             ));
                           },
                           onSaveDescription: (text) {
                             stepBlocSink.add(SaveDescription(
-                              taskId: widget.taskId,
-                              branchId: widget.branchId,
                               text: text,
                             ));
                           },
                           onDelete: (index) {
                             stepBlocSink.add(
                               DeleteStep(
-                                branchId: widget.branchId,
-                                taskId: widget.taskId,
                                 stepId: state.task.steps[index].id,
                               ),
                             );
@@ -219,18 +201,13 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                     state.task.notification;
                                 stepBlocSink.add(
                                   SetNotification(
-                                    branchId: widget.branchId,
-                                    taskId: widget.taskId,
                                     notification: _notification,
                                   ),
                                 );
                               },
                               onDelete: () {
                                 stepBlocSink.add(
-                                  DeleteNotification(
-                                    taskId: widget.taskId,
-                                    branchId: widget.branchId,
-                                  ),
+                                  DeleteNotification(),
                                 );
                               },
                             ),
@@ -256,18 +233,13 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                     state.task.deadline;
                                 stepBlocSink.add(
                                   SetDeadline(
-                                    branchId: widget.branchId,
-                                    taskId: widget.taskId,
                                     deadline: _deadline,
                                   ),
                                 );
                               },
                               onDelete: () {
                                 stepBlocSink.add(
-                                  DeleteDeadline(
-                                    taskId: widget.taskId,
-                                    branchId: widget.branchId,
-                                  ),
+                                  DeleteDeadline(),
                                 );
                               },
                             ),
@@ -298,10 +270,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
         widget.onComplete();
         widget.onRefresh();
         stepBlocSink.add(
-          UpdateTask(
-            taskId: widget.taskId,
-            branchId: widget.branchId,
-          ),
+          UpdateTask(),
         );
       },
       child: Container(
@@ -328,8 +297,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
     );
   }
 
-  Widget _deadlineButton(String text, IconData icon, bool isHaveValue,
-      {VoidCallback onTap, VoidCallback onDelete}) {
+  Widget _deadlineButton(String text, IconData icon, bool isHaveValue, {VoidCallback onTap, VoidCallback onDelete}) {
     return GestureDetector(
       child: Container(
         margin: EdgeInsets.all(10),
@@ -402,8 +370,6 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                     onTap: () {
                       stepBlocSink.add(
                         DeleteImage(
-                          taskId: widget.taskId,
-                          branchId: widget.branchId,
                           imageId: state.task.images[i].id,
                         ),
                       );
@@ -437,12 +403,11 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                   builder: (context) => FlickrPage(
                     widget.branchId,
                     widget.taskId,
-                    widget.customColorTheme,
+                    widget.mainColor,
+                    widget.backgroundColor,
                     onSave: (imageUrl) {
                       stepBlocSink.add(
                         SaveImage(
-                          branchId: widget.branchId,
-                          taskId: widget.taskId,
                           imageUrl: imageUrl,
                         ),
                       );
@@ -459,11 +424,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                 borderRadius: BorderRadius.circular(15),
                 color: const Color(0xFF01A39D),
                 boxShadow: [
-                  BoxShadow(
-                      offset: Offset.fromDirection(1.5, 3),
-                      color: Colors.black26,
-                      spreadRadius: 0.1,
-                      blurRadius: 3),
+                  BoxShadow(offset: Offset.fromDirection(1.5, 3), color: Colors.black26, spreadRadius: 0.1, blurRadius: 3),
                 ],
               ),
               child: Icon(

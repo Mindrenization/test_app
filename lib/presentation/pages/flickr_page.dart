@@ -6,15 +6,15 @@ import 'package:test_app/presentation/bloc/flickr_event.dart';
 import 'package:test_app/presentation/bloc/flickr_state.dart';
 import 'package:test_app/presentation/widgets/save_image_dialog.dart';
 import 'package:test_app/presentation/widgets/search_appbar.dart';
-import 'package:test_app/resources/custom_color_theme.dart';
 
 // Страница работы с flickr
 class FlickrPage extends StatefulWidget {
   final String branchId;
   final String taskId;
-  final CustomColorTheme customColorTheme;
+  final Color mainColor;
+  final Color backgroundColor;
   final Function onSave;
-  FlickrPage(this.branchId, this.taskId, this.customColorTheme, {this.onSave});
+  FlickrPage(this.branchId, this.taskId, this.mainColor, this.backgroundColor, {this.onSave});
   @override
   _FlickrPageState createState() => _FlickrPageState();
 }
@@ -25,17 +25,6 @@ class _FlickrPageState extends State<FlickrPage> {
   List<String> _imageList = [];
   String _search;
   int _page = 1;
-  _scrollListener() {
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
-        !_scrollController.position.outOfRange) {
-      if (_search == null)
-        _flickrBlocSink.add(FetchFlickr(imageList: _imageList, page: ++_page));
-      else
-        _flickrBlocSink.add(
-            FetchFlickr(imageList: _imageList, page: ++_page, search: _search));
-    }
-  }
 
   @override
   void initState() {
@@ -53,11 +42,11 @@ class _FlickrPageState extends State<FlickrPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.customColorTheme.backgroundColor,
+      backgroundColor: widget.backgroundColor,
       appBar: PreferredSize(
         preferredSize: Size(0, 55),
         child: SearchAppBar(
-          customColorTheme: widget.customColorTheme,
+          color: widget.mainColor,
           onSearch: (_value) {
             _page = 1;
             _search = _value;
@@ -99,7 +88,7 @@ class _FlickrPageState extends State<FlickrPage> {
                         'Попробовать снова',
                         style: TextStyle(color: Colors.white),
                       ),
-                      color: widget.customColorTheme.mainColor,
+                      color: widget.mainColor,
                     )
                   ],
                 ),
@@ -171,5 +160,14 @@ class _FlickrPageState extends State<FlickrPage> {
         ),
       ),
     );
+  }
+
+  void _scrollListener() {
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
+      if (_search == null)
+        _flickrBlocSink.add(FetchFlickr(imageList: _imageList, page: ++_page));
+      else
+        _flickrBlocSink.add(FetchFlickr(imageList: _imageList, page: ++_page, search: _search));
+    }
   }
 }

@@ -3,71 +3,63 @@ import 'package:test_app/data/models/branch.dart';
 import 'package:test_app/data/repository/branch_repository.dart';
 import 'package:test_app/presentation/bloc/branch_event.dart';
 import 'package:test_app/presentation/bloc/branch_state.dart';
-import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class BranchBloc extends Bloc<BranchEvent, BranchState> {
   BranchBloc(BranchState initialState) : super(initialState);
-  BranchInteractor _branchInteractor = BranchInteractor();
+  BranchRepository _branchRepository = BranchRepository();
 
   @override
   Stream<BranchState> mapEventToState(BranchEvent event) async* {
-    if (event is FetchBranchList) {
-      yield BranchLoading();
-      try {
-        List<Branch> _branchList = await _updateBranchList();
-        double _totalTasksCount = _totalTasks(_branchList);
-        double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
-        yield BranchLoaded(
-          branchList: _branchList,
-          totalTasks: _totalTasksCount,
-          totalCompletedTasks: _totalCompletedTasksCount,
-        );
-      } catch (_) {
-        yield BranchError();
-      }
-    }
-    if (event is UpdateBranchList) {
-      try {
-        List<Branch> _branchList = await _updateBranchList();
-        double _totalTasksCount = _totalTasks(_branchList);
-        double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
-        yield BranchLoaded(
-            branchList: _branchList,
-            totalTasks: _totalTasksCount,
-            totalCompletedTasks: _totalCompletedTasksCount);
-      } catch (_) {
-        yield BranchError();
-      }
-    }
-    if (event is CreateBranch) {
-      try {
-        List<Branch> _branchList = await _createBranch(event.title);
-        double _totalTasksCount = _totalTasks(_branchList);
-        double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
-        yield BranchLoaded(
-            branchList: _branchList,
-            totalTasks: _totalTasksCount,
-            totalCompletedTasks: _totalCompletedTasksCount);
-      } catch (_) {
-        yield BranchError();
-      }
-    }
-    if (event is DeleteBranch) {
-      try {
-        List<Branch> _branchList =
-            await _branchInteractor.deleteBranch(event.branch.id);
-        double _totalTasksCount = _totalTasks(_branchList);
-        double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
-        yield BranchLoaded(
-            branchList: _branchList,
-            totalTasks: _totalTasksCount,
-            totalCompletedTasks: _totalCompletedTasksCount);
-      } catch (_) {
-        yield BranchError();
-      }
-    }
+    if (event is FetchBranchList) yield* _mapFetchBranchListEventToState(event);
+    if (event is UpdateBranchList) yield* _mapUpdateBranchListEventToState(event);
+    if (event is CreateBranch) yield* _mapCreateBranchEventToState(event);
+    if (event is DeleteBranch) yield* _mapDeleteBranchEventToState(event);
+  }
+
+  Stream<BranchState> _mapFetchBranchListEventToState(FetchBranchList event) async* {
+    List<Branch> _branchList = await _updateBranchList();
+    double _totalTasksCount = _totalTasks(_branchList);
+    double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
+    yield BranchLoaded(
+      branchList: _branchList,
+      totalTasks: _totalTasksCount,
+      totalCompletedTasks: _totalCompletedTasksCount,
+    );
+  }
+
+  Stream<BranchState> _mapUpdateBranchListEventToState(UpdateBranchList event) async* {
+    List<Branch> _branchList = await _updateBranchList();
+    double _totalTasksCount = _totalTasks(_branchList);
+    double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
+    yield BranchLoaded(
+      branchList: _branchList,
+      totalTasks: _totalTasksCount,
+      totalCompletedTasks: _totalCompletedTasksCount,
+    );
+  }
+
+  Stream<BranchState> _mapCreateBranchEventToState(CreateBranch event) async* {
+    List<Branch> _branchList = await _createBranch(event.title);
+    double _totalTasksCount = _totalTasks(_branchList);
+    double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
+    yield BranchLoaded(
+      branchList: _branchList,
+      totalTasks: _totalTasksCount,
+      totalCompletedTasks: _totalCompletedTasksCount,
+    );
+  }
+
+  Stream<BranchState> _mapDeleteBranchEventToState(DeleteBranch event) async* {
+    List<Branch> _branchList = await _branchRepository.deleteBranch(event.branch.id);
+    double _totalTasksCount = _totalTasks(_branchList);
+    double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
+    yield BranchLoaded(
+      branchList: _branchList,
+      totalTasks: _totalTasksCount,
+      totalCompletedTasks: _totalCompletedTasksCount,
+    );
   }
 
   Future<List<Branch>> _updateBranchList() async {
@@ -79,7 +71,7 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
 
   Future<List<Branch>> _createBranch(String title) async {
     Branch _branch = Branch(Uuid().v1(), title);
-    List<Branch> _branchList = await _branchInteractor.createBranch(_branch);
+    List<Branch> _branchList = await _branchRepository.createBranch(_branch);
     _completedTasks(_branchList);
     _uncompletedTasks(_branchList);
     return _branchList;
@@ -87,19 +79,17 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
 
   void _completedTasks(List<Branch> branchList) {
     for (int i = 0; i < branchList.length; i++) {
-      branchList[i].completedTasks =
-          branchList[i].tasks.where((Task task) => task.isComplete).length;
+      branchList[i].completedTasks = branchList[i].tasks.where((task) => task.isComplete).length;
     }
   }
 
   void _uncompletedTasks(List<Branch> branchList) {
     for (int i = 0; i < branchList.length; i++) {
-      branchList[i].uncompletedTasks =
-          branchList[i].tasks.where((Task task) => !task.isComplete).length;
+      branchList[i].uncompletedTasks = branchList[i].tasks.where((task) => !task.isComplete).length;
     }
   }
 
-  double _totalTasks(branchList) {
+  double _totalTasks(List<Branch> branchList) {
     double _totalTasks = 0.0;
     for (var i = 0; i < branchList.length; i++) {
       _totalTasks += branchList[i].tasks.length;
@@ -107,11 +97,10 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
     return _totalTasks;
   }
 
-  double _totalCompletedTasks(branchList) {
+  double _totalCompletedTasks(List<Branch> branchList) {
     double _totalCompletedTasks = 0.0;
     for (var i = 0; i < branchList.length; i++) {
-      _totalCompletedTasks +=
-          branchList[i].tasks.where((Task task) => task.isComplete).length;
+      _totalCompletedTasks += branchList[i].tasks.where((task) => task.isComplete).length;
     }
     return _totalCompletedTasks;
   }

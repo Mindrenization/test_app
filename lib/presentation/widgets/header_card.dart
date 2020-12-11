@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:test_app/presentation/bloc/branch_state.dart';
 import 'package:test_app/presentation/widgets/linear_progress_bar.dart';
 import 'package:test_app/resources/resources.dart';
 
+// Карточка для шапки главной страницы
 class HeaderCard extends StatelessWidget {
-  final BranchLoaded state;
-  HeaderCard(this.state);
+  final double totalTasks;
+  final double totalCompletedTasks;
+  HeaderCard({
+    this.totalTasks,
+    this.totalCompletedTasks,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +25,18 @@ class HeaderCard extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.bottomLeft,
-          child: state.totalTasks != 0
+          child: totalTasks != 0
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Завершено ${state.totalCompletedTasks.toInt()} задач из ${state.totalTasks.toInt()}',
+                      'Завершено ${totalCompletedTasks.toInt()} задач из ${totalTasks.toInt()}',
                       style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold),
+                        fontSize: 11,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(
                       height: 5,
@@ -39,7 +44,7 @@ class HeaderCard extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(left: 5),
                       child: LinearProgressBar(
-                        state.totalCompletedTasks / state.totalTasks,
+                        totalCompletedTasks / totalTasks,
                       ),
                     ),
                   ],

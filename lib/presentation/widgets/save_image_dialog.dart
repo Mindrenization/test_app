@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
+// Модальное окно для сохранения картинки из flickr в галерею задачи
 class SaveImageDialog extends StatelessWidget {
   final Function onSave;
-  final imageUrl;
-  SaveImageDialog(this.imageUrl, {this.onSave});
+  final String imageUrl;
+  SaveImageDialog(
+    this.imageUrl, {
+    this.onSave,
+  });
 
   @override
   Widget build(BuildContext context) {

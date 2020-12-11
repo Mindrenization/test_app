@@ -8,7 +8,13 @@ class TaskTile extends StatefulWidget {
   final VoidCallback onDelete;
   final VoidCallback onTap;
   final VoidCallback onCheck;
-  TaskTile({this.task, this.color, this.onDelete, this.onTap, this.onCheck});
+  TaskTile({
+    this.task,
+    this.color,
+    this.onDelete,
+    this.onTap,
+    this.onCheck,
+  });
 
   @override
   _TaskTileState createState() => _TaskTileState();
@@ -66,8 +72,7 @@ class _TaskTileState extends State<TaskTile> {
                         ? Container()
                         : Text(
                             '${widget.task.completedSteps} из ${widget.task.maxSteps}',
-                            style: TextStyle(
-                                fontSize: 16, color: Colors.grey[600]),
+                            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                           ),
                   ],
                 ),

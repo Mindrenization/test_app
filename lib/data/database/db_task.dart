@@ -20,20 +20,19 @@ class DbTask {
     await db.update(tableTask, task.toMap(), where: 'ID="${task.id}"');
   }
 
-  Future<void> deleteTask(Task task) async {
+  Future<void> deleteTask(String taskId) async {
     final db = await database;
-    await db.delete(tableTask, where: 'ID="${task.id}"');
+    await db.delete(tableTask, where: 'ID="$taskId"');
   }
 
   Future<void> deleteCompletedTasks(String branchId) async {
     final db = await database;
-    await db.delete(tableTask,
-        where: 'parentID="$branchId" AND complete="true"');
+    await db.delete(tableTask, where: 'parentID="$branchId" AND complete="true"');
   }
 
-  Future<void> deleteAllSteps(Task task) async {
+  Future<void> deleteAllSteps(String taskId) async {
     final db = await database;
-    await db.delete(tableStep, where: 'parentID="${task.id}"');
+    await db.delete(tableStep, where: 'parentID="$taskId"');
   }
 
   Future<void> deleteImage(String imageId) async {
@@ -48,8 +47,7 @@ class DbTask {
 
   Future<List<Task>> fetchTaskList(Branch branch) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps =
-        await db.query(tableTask, where: 'parentID="${branch.id}"');
+    final List<Map<String, dynamic>> maps = await db.query(tableTask, where: 'parentID="${branch.id}"');
     return List.generate(maps.length, (i) {
       return Task(
         maps[i]['ID'],
@@ -58,12 +56,8 @@ class DbTask {
         isComplete: maps[i]['complete'] == 'true' ? true : false,
         description: maps[i]['description'],
         createDate: DateTime.fromMillisecondsSinceEpoch(maps[i]['createDate']),
-        deadline: maps[i]['deadline'] == null
-            ? null
-            : DateTime.fromMillisecondsSinceEpoch(maps[i]['deadline']),
-        notification: maps[i]['notification'] == null
-            ? null
-            : DateTime.fromMillisecondsSinceEpoch(maps[i]['notification']),
+        deadline: maps[i]['deadline'] == null ? null : DateTime.fromMillisecondsSinceEpoch(maps[i]['deadline']),
+        notification: maps[i]['notification'] == null ? null : DateTime.fromMillisecondsSinceEpoch(maps[i]['notification']),
       );
     });
   }

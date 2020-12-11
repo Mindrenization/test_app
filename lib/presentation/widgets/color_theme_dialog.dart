@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/resources/custom_color_theme.dart';
 
-// Модальное окно для выбора цветовой темы
+// Модальное окно для выбора цветовой темы ветки
 class ColorThemeDialog extends StatefulWidget {
-  final CustomColorTheme customColorTheme;
-  final VoidCallback onChange;
-  ColorThemeDialog({this.customColorTheme, this.onChange});
+  final Function onChange;
+  ColorThemeDialog({
+    this.onChange,
+  });
 
   @override
   _ColorThemeDialogState createState() => _ColorThemeDialogState();
 }
 
 class _ColorThemeDialogState extends State<ColorThemeDialog> {
+  Color _mainColor;
+  Color _backgroundColor;
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
@@ -63,7 +65,7 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
       child: Radio(
         activeColor: Colors.black,
         value: color,
-        groupValue: widget.customColorTheme.mainColor,
+        groupValue: _mainColor,
         onChanged: (value) {
           _onTap(value);
         },
@@ -75,21 +77,20 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
     setState(
       () {
         if (value == Colors.orange[700]) {
-          widget.customColorTheme.mainColor = value;
-          widget.customColorTheme.backgroundColor = Colors.orange[100];
+          _mainColor = value;
+          _backgroundColor = Colors.orange[100];
         } else if (value == Colors.green[700]) {
-          widget.customColorTheme.mainColor = value;
-          widget.customColorTheme.backgroundColor = Colors.green[100];
+          _mainColor = value;
+          _backgroundColor = Colors.green[100];
         } else if (value == Colors.cyan[800]) {
-          widget.customColorTheme.mainColor = value;
-          widget.customColorTheme.backgroundColor = Colors.cyan[100];
+          _mainColor = value;
+          _backgroundColor = Colors.cyan[100];
         } else if (value == const Color(0xFF6202EE)) {
-          widget.customColorTheme.mainColor = value;
-          widget.customColorTheme.backgroundColor =
-              const Color.fromRGBO(181, 201, 253, 1);
+          _mainColor = value;
+          _backgroundColor = const Color.fromRGBO(181, 201, 253, 1);
         }
       },
     );
-    widget.onChange();
+    widget.onChange(_mainColor, _backgroundColor);
   }
 }

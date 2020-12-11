@@ -9,7 +9,9 @@ class CreateTaskDialog extends StatefulWidget {
   _CreateTaskDialogState createState() => _CreateTaskDialogState();
   final Function onCreate;
 
-  CreateTaskDialog({this.onCreate});
+  CreateTaskDialog({
+    this.onCreate,
+  });
 }
 
 class _CreateTaskDialogState extends State<CreateTaskDialog> {
@@ -47,9 +49,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
         Column(
           children: [
             _deadlineButton(
-                text: _notification == null
-                    ? 'Напомнить'
-                    : '${DateFormat('dd.MM.yyyy (hh:mm)').format(_notification)}',
+                text: _notification == null ? 'Напомнить' : '${DateFormat('dd.MM.yyyy (hh:mm)').format(_notification)}',
                 icon: Icons.notifications_on_outlined,
                 onTap: () async {
                   _notification = await showDialog(
@@ -65,9 +65,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
               height: 10,
             ),
             _deadlineButton(
-              text: _deadline == null
-                  ? 'Дата выполнения'
-                  : '${DateFormat('dd.MM.yyyy').format(_deadline)}',
+              text: _deadline == null ? 'Дата выполнения' : '${DateFormat('dd.MM.yyyy').format(_deadline)}',
               icon: Icons.calendar_today_outlined,
               onTap: () async {
                 _deadline = await showDialog(

@@ -1,4 +1,4 @@
-import 'package:test_app/data/models/image.dart';
+import 'package:test_app/data/models/flickr_image.dart';
 import 'package:test_app/data/models/task_step.dart';
 
 class Task {
@@ -13,15 +13,15 @@ class Task {
   DateTime deadline;
   DateTime notification;
   List<TaskStep> steps = [];
-  List<Image> images = [];
+  List<FlickrImage> images = [];
 
   Task(this.id, this.parentId, this.title,
-      {this.deadline,
-      this.notification,
+      {this.description,
+      this.deadline,
       this.isComplete = false,
       this.completedSteps = 0,
       this.maxSteps = 0,
-      this.description,
+      this.notification,
       this.createDate});
 
   Map<String, dynamic> toMap() {
@@ -33,9 +33,7 @@ class Task {
       'description': description,
       'createDate': createDate.millisecondsSinceEpoch,
       'deadline': deadline == null ? deadline : deadline.millisecondsSinceEpoch,
-      'notification': notification == null
-          ? notification
-          : notification.millisecondsSinceEpoch,
+      'notification': notification == null ? notification : notification.millisecondsSinceEpoch,
     };
   }
 }

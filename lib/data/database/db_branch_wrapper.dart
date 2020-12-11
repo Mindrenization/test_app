@@ -20,6 +20,5 @@ class DbBranchWrapper {
 
   Future<void> deleteBranch(String branchId) async {
     await _dbBranch.deleteBranch(branchId);
-    await _dbBranch.deleteAllTasks(branchId);
   }
 }

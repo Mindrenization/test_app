@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:test_app/data/models/task.dart';
 
+// Карточка для страницы детализации задачи со списком шагов и описанием
 class StepList extends StatefulWidget {
   final Task task;
   final Color color;
@@ -10,12 +11,15 @@ class StepList extends StatefulWidget {
   final VoidCallback onRefresh;
   final Function onComplete;
   final Function onSaveDescription;
-  StepList(this.task, this.color,
-      {this.onCreate,
-      this.onDelete,
-      this.onRefresh,
-      this.onComplete,
-      this.onSaveDescription});
+  StepList(
+    this.task,
+    this.color, {
+    this.onCreate,
+    this.onDelete,
+    this.onRefresh,
+    this.onComplete,
+    this.onSaveDescription,
+  });
   @override
   _StepListState createState() => _StepListState();
 }
@@ -48,8 +52,7 @@ class _StepListState extends State<StepList> {
               style: TextStyle(fontSize: 12, color: Colors.grey[700]),
             ),
           ),
-          for (int index = 0; index < widget.task.steps.length; index++)
-            _stepTile(index, widget.task),
+          for (int index = 0; index < widget.task.steps.length; index++) _stepTile(index, widget.task),
           Padding(
             padding: EdgeInsets.all(10),
             child: _addStepButton(),
@@ -104,6 +107,7 @@ class _StepListState extends State<StepList> {
       return Form(
         key: _formKey,
         child: TextFormField(
+          autofocus: true,
           validator: (value) {
             if (value.isEmpty) {
               return 'Зачем?';

@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:test_app/data/models/branch.dart';
 import 'package:test_app/presentation/widgets/circular_progress_bar.dart';
 
+// Карточка ветки
 class BranchTile extends StatelessWidget {
   final Branch branch;
   final VoidCallback onTap;
   final VoidCallback onDelete;
-  BranchTile(this.branch, {this.onTap, this.onDelete});
+  BranchTile(
+    this.branch, {
+    this.onTap,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +41,8 @@ class BranchTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CircularProgressBar(
-                  branch.tasks.length == 0
-                      ? 0
-                      : branch.completedTasks / branch.tasks.length,
-                  branch.customColorTheme.mainColor,
+                  branch.tasks.length == 0 ? 0 : branch.completedTasks / branch.tasks.length,
+                  branch.mainColor,
                 ),
                 GestureDetector(
                   onTap: onDelete,
@@ -57,7 +60,7 @@ class BranchTile extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 3, bottom: 3),
+              padding: EdgeInsets.only(top: 3, bottom: 4),
               child: Text(
                 '${branch.tasks.length} задач(и)',
                 maxLines: 1,
@@ -70,8 +73,8 @@ class BranchTile extends StatelessWidget {
               children: [
                 _sticker(
                   text: '${branch.completedTasks} сделано',
-                  color: branch.customColorTheme.backgroundColor,
-                  textColor: branch.customColorTheme.mainColor,
+                  color: branch.backgroundColor,
+                  textColor: branch.mainColor,
                   context: context,
                 ),
                 _sticker(
@@ -88,8 +91,7 @@ class BranchTile extends StatelessWidget {
     );
   }
 
-  Widget _sticker(
-      {String text, Color color, Color textColor, BuildContext context}) {
+  Widget _sticker({String text, Color color, Color textColor, BuildContext context}) {
     return Container(
       width: MediaQuery.of(context).size.width / 5.6,
       height: 16,
@@ -100,9 +102,7 @@ class BranchTile extends StatelessWidget {
       child: Center(
         child: Text(
           text,
-          style: TextStyle(
-              color: textColor,
-              fontSize: MediaQuery.of(context).size.width / 37),
+          style: TextStyle(color: textColor, fontSize: MediaQuery.of(context).size.width / 37),
         ),
       ),
     );

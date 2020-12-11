@@ -12,3 +12,5 @@ class TaskDetailsLoaded extends TaskDetailsState {
 }
 
 class TaskDetailsError extends TaskDetailsState {}
+
+class UpdateTasksPage extends TaskDetailsState {}

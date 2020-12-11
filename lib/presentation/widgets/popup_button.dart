@@ -5,11 +5,15 @@ class PopupButton extends StatelessWidget {
   final String text;
   final IconData icon;
   final VoidCallback onTap;
-  PopupButton({this.text, this.icon, this.onTap});
+  PopupButton({
+    this.text,
+    this.icon,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: Row(
         children: [

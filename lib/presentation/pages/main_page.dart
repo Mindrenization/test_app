@@ -16,17 +16,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  BranchBloc branchBlocSink;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  BranchBloc _branchBlocSink;
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +33,9 @@ class _MainPageState extends State<MainPage> {
         ),
         body: BlocBuilder<BranchBloc, BranchState>(
           builder: (context, state) {
-            branchBlocSink = BlocProvider.of<BranchBloc>(context);
+            _branchBlocSink = BlocProvider.of<BranchBloc>(context);
             if (state is BranchLoading) {
-              branchBlocSink.add(FetchBranchList());
+              _branchBlocSink.add(FetchBranchList());
               return Center(
                 child: CircularProgressIndicator(),
               );
@@ -63,17 +53,13 @@ class _MainPageState extends State<MainPage> {
                     width: MediaQuery.of(context).size.width,
                     margin: EdgeInsets.fromLTRB(10, 25, 10, 10),
                     padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                        color: const Color(0xFF86A5F5),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                              offset: Offset.fromDirection(1.5, 3),
-                              color: Colors.black26,
-                              spreadRadius: 0.1,
-                              blurRadius: 3),
-                        ]),
-                    child: HeaderCard(state),
+                    decoration: BoxDecoration(color: const Color(0xFF86A5F5), borderRadius: BorderRadius.circular(20), boxShadow: [
+                      BoxShadow(offset: Offset.fromDirection(1.5, 3), color: Colors.black26, spreadRadius: 0.1, blurRadius: 3),
+                    ]),
+                    child: HeaderCard(
+                      totalTasks: state.totalTasks,
+                      totalCompletedTasks: state.totalCompletedTasks,
+                    ),
                   ),
                   Row(
                     children: [
@@ -93,9 +79,7 @@ class _MainPageState extends State<MainPage> {
                     child: GridView.count(
                       crossAxisCount: 2,
                       children: [
-                        for (int index = 0;
-                            index < state.branchList.length;
-                            index++)
+                        for (int index = 0; index < state.branchList.length; index++)
                           BranchTile(
                             state.branchList[index],
                             onTap: () {
@@ -104,9 +88,10 @@ class _MainPageState extends State<MainPage> {
                                 MaterialPageRoute(
                                   builder: (context) => TasksPage(
                                     state.branchList[index].id,
-                                    state.branchList[index].customColorTheme,
+                                    state.branchList[index].mainColor,
+                                    state.branchList[index].backgroundColor,
                                     onRefresh: () {
-                                      branchBlocSink.add(UpdateBranchList());
+                                      _branchBlocSink.add(UpdateBranchList());
                                     },
                                   ),
                                 ),
@@ -118,7 +103,7 @@ class _MainPageState extends State<MainPage> {
                                   builder: (context) {
                                     return DeleteBranchDialog(
                                       onDelete: () {
-                                        branchBlocSink.add(
+                                        _branchBlocSink.add(
                                           DeleteBranch(
                                             state.branchList[index],
                                           ),
@@ -152,7 +137,7 @@ class _MainPageState extends State<MainPage> {
           builder: (context) {
             return CreateBranchDialog(
               onCreate: (title) {
-                branchBlocSink.add(CreateBranch(title));
+                _branchBlocSink.add(CreateBranch(title));
               },
             );
           },
@@ -164,11 +149,7 @@ class _MainPageState extends State<MainPage> {
           borderRadius: BorderRadius.circular(20),
           color: const Color(0xFF01A39D),
           boxShadow: [
-            BoxShadow(
-                offset: Offset.fromDirection(1.5, 3),
-                color: Colors.black26,
-                spreadRadius: 0.1,
-                blurRadius: 3),
+            BoxShadow(offset: Offset.fromDirection(1.5, 3), color: Colors.black26, spreadRadius: 0.1, blurRadius: 3),
           ],
         ),
         child: Icon(

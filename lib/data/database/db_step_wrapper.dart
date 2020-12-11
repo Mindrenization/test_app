@@ -16,7 +16,7 @@ class DbStepWrapper {
     await _dbStep.updateStep(step);
   }
 
-  Future<void> deleteStep(TaskStep step) async {
-    await _dbStep.deleteStep(step);
+  Future<void> deleteStep(String stepId) async {
+    await _dbStep.deleteStep(stepId);
   }
 }

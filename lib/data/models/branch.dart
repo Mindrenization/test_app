@@ -1,5 +1,5 @@
+import 'package:flutter/material.dart';
 import 'package:test_app/data/models/task.dart';
-import 'package:test_app/resources/custom_color_theme.dart';
 
 class Branch {
   final String id;
@@ -7,7 +7,8 @@ class Branch {
   int completedTasks;
   int uncompletedTasks;
   List<Task> tasks = [];
-  CustomColorTheme customColorTheme = CustomColorTheme();
+  Color mainColor = const Color(0xFF6202EE);
+  Color backgroundColor = const Color.fromRGBO(181, 201, 253, 1);
 
   Branch(this.id, this.title);
 
