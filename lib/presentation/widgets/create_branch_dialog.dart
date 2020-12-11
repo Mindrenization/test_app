@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 
-// Модальное окно для изменения названия задачи
-class ChangeTaskTitleDialog extends StatefulWidget {
-  final task;
-  final VoidCallback onRefresh;
-  ChangeTaskTitleDialog({this.task, this.onRefresh});
+// Модал создания ветки
+class CreateBranchDialog extends StatefulWidget {
+  final Function onCreate;
+  CreateBranchDialog({this.onCreate});
   @override
-  _ChangeTaskTitleDialogState createState() => _ChangeTaskTitleDialogState();
+  _CreateBranchDialogState createState() => _CreateBranchDialogState();
 }
 
-class _ChangeTaskTitleDialogState extends State<ChangeTaskTitleDialog> {
+class _CreateBranchDialogState extends State<CreateBranchDialog> {
   final TextEditingController _titleController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
       contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       title: Text(
-        'Редактирование',
+        'Создать список',
         style: TextStyle(fontSize: 16),
       ),
       children: [
@@ -27,13 +25,10 @@ class _ChangeTaskTitleDialogState extends State<ChangeTaskTitleDialog> {
         Container(
           child: TextField(
             maxLength: 30,
-            autofocus: true,
+            onEditingComplete: () => _complete(_titleController.text),
             controller: _titleController,
             decoration: InputDecoration(
-                labelText: 'Введите новое название задачи',
-                labelStyle: TextStyle(color: Colors.grey[700]),
-                hintText: widget.task.title,
-                isDense: true),
+                hintText: 'Введите название списка', isDense: true),
           ),
         ),
         Container(
@@ -53,16 +48,10 @@ class _ChangeTaskTitleDialogState extends State<ChangeTaskTitleDialog> {
             ),
             FlatButton(
               child: Text(
-                'Выбрать',
+                'Создать',
                 style: TextStyle(fontSize: 18),
               ),
-              onPressed: () {
-                setState(() {
-                  widget.task.title = _titleController.text;
-                });
-                widget.onRefresh();
-                Navigator.pop(context);
-              },
+              onPressed: () => _complete(_titleController.text),
             ),
           ],
         ),
@@ -70,9 +59,8 @@ class _ChangeTaskTitleDialogState extends State<ChangeTaskTitleDialog> {
     );
   }
 
-  @override
-  void dispose() {
-    _titleController.dispose();
-    super.dispose();
+  _complete(String text) {
+    widget.onCreate(text);
+    Navigator.pop(context);
   }
 }

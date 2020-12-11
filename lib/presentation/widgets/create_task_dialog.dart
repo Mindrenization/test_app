@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/models/task.dart';
-import 'package:test_app/widgets/deadline_dialog.dart';
+import 'package:test_app/presentation/widgets/deadline_dialog.dart';
 import 'package:intl/intl.dart';
 
 // Модальное окно для создания задачи
 class CreateTaskDialog extends StatefulWidget {
   @override
   _CreateTaskDialogState createState() => _CreateTaskDialogState();
-  final List<Task> taskList;
-  final VoidCallback onRefresh;
-  CreateTaskDialog(this.taskList, {this.onRefresh});
+  final Function onCreate;
+
+  CreateTaskDialog({this.onCreate});
 }
 
 class _CreateTaskDialogState extends State<CreateTaskDialog> {
@@ -33,7 +32,6 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
             maxLength: 30,
             onEditingComplete: () {
               _complete();
-              widget.onRefresh();
             },
             controller: _titleController,
             decoration: InputDecoration(
@@ -53,19 +51,20 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
               height: 10,
             ),
             _deadlineButton(
-                text: _deadline == null
-                    ? 'Дата выполнения'
-                    : '${DateFormat('dd.MM.yyyy').format(_deadline)}',
-                icon: Icons.calendar_today_outlined,
-                onTap: () async {
-                  _deadline = await showDialog(
-                    context: context,
-                    builder: (context) {
-                      return DeadlineDialog();
-                    },
-                  );
-                  setState(() {});
-                }),
+              text: _deadline == null
+                  ? 'Дата выполнения'
+                  : '${DateFormat('dd.MM.yyyy').format(_deadline)}',
+              icon: Icons.calendar_today_outlined,
+              onTap: () async {
+                _deadline = await showDialog(
+                  context: context,
+                  builder: (context) {
+                    return DeadlineDialog();
+                  },
+                );
+                setState(() {});
+              },
+            ),
           ],
         ),
         Row(
@@ -87,7 +86,6 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
               ),
               onPressed: () {
                 _complete();
-                widget.onRefresh();
               },
             ),
           ],
@@ -132,11 +130,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
   }
 
   _complete() {
-    var lastTaskId = widget.taskList.isEmpty ? 0 : widget.taskList.last.id;
-    widget.taskList.add(
-      Task(++lastTaskId, _titleController.text, deadline: _deadline),
-    );
-    widget.onRefresh();
+    widget.onCreate(_titleController.text, _deadline);
     Navigator.pop(context);
   }
 }

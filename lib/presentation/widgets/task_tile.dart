@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/pages/task_details_page.dart';
+import 'package:test_app/data/models/task.dart';
 
 // Карточка задачи в списке
 class TaskTile extends StatefulWidget {
-  final task;
+  final Task task;
+  final Color color;
   final VoidCallback onDelete;
-  final VoidCallback onRefresh;
-  TaskTile({this.task, this.onDelete, this.onRefresh});
+  final VoidCallback onTap;
+  final VoidCallback onCheck;
+  TaskTile({this.task, this.color, this.onDelete, this.onTap, this.onCheck});
 
   @override
   _TaskTileState createState() => _TaskTileState();
@@ -19,7 +21,6 @@ class _TaskTileState extends State<TaskTile> {
       key: UniqueKey(),
       onDismissed: (direction) {
         widget.onDelete();
-        widget.onRefresh();
       },
       direction: DismissDirection.endToStart,
       background: Container(
@@ -37,19 +38,7 @@ class _TaskTileState extends State<TaskTile> {
         ),
       ),
       child: GestureDetector(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TaskDetailsPage(
-              task: widget.task,
-              onRefresh: () {
-                setState(() {});
-                widget.onRefresh();
-              },
-              onDelete: widget.onDelete,
-            ),
-          ),
-        ),
+        onTap: widget.onTap,
         child: Container(
           padding: EdgeInsets.all(10),
           width: MediaQuery.of(context).size.width,
@@ -61,10 +50,9 @@ class _TaskTileState extends State<TaskTile> {
             children: [
               Checkbox(
                 value: widget.task.isComplete,
-                activeColor: const Color(0xFF6202EE),
+                activeColor: widget.color,
                 onChanged: (value) {
-                  setState(() => widget.task.isComplete = value);
-                  widget.onRefresh();
+                  widget.onCheck();
                 },
               ),
               Column(

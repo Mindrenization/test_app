@@ -1,14 +1,20 @@
-import 'package:test_app/models/task_step.dart';
-import 'package:test_app/models/task.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:test_app/data/models/task.dart';
 
 class StepList extends StatefulWidget {
   final Task task;
+  final Function onCreate;
+  final Function onDelete;
   final VoidCallback onRefresh;
-  StepList(
-    this.task, {
-    this.onRefresh,
-  });
+  final Function onComplete;
+  final Function onSaveDescription;
+  StepList(this.task,
+      {this.onCreate,
+      this.onDelete,
+      this.onRefresh,
+      this.onComplete,
+      this.onSaveDescription});
   @override
   _StepListState createState() => _StepListState();
 }
@@ -33,11 +39,18 @@ class _StepListState extends State<StepList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: EdgeInsets.only(left: 10, top: 10),
+            child: Text(
+              'Создано: ${DateFormat('dd.MM.yyyy').format(widget.task.createDate)}',
+              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+            ),
+          ),
           for (int index = 0; index < widget.task.steps.length; index++)
-            _stepTile(widget.task, index),
+            _stepTile(index, widget.task),
           Padding(
             padding: EdgeInsets.all(10),
-            child: _addStepButton(widget.task),
+            child: _addStepButton(),
           ),
           Divider(
             indent: 25,
@@ -61,7 +74,7 @@ class _StepListState extends State<StepList> {
     super.dispose();
   }
 
-  Widget _addStepButton(task) {
+  Widget _addStepButton() {
     if (!isText) {
       return GestureDetector(
         onTap: () {
@@ -94,12 +107,8 @@ class _StepListState extends State<StepList> {
           border: InputBorder.none,
         ),
         onEditingComplete: () {
-          setState(() {
-            var lastStepId = task.steps.isEmpty ? 0 : task.steps.last.id;
-            task.steps.add(TaskStep(++lastStepId, _stepController.text, false));
-            task.maxSteps++;
-            _stepController.text = '';
-          });
+          widget.onCreate(_stepController.text);
+          _stepController.text = '';
           widget.onRefresh();
         },
       );
@@ -110,10 +119,11 @@ class _StepListState extends State<StepList> {
     return TextField(
       controller: _descriptionController,
       maxLines: null,
-      onChanged: (text) {
-        setState(() {
-          widget.task.description = text;
-        });
+      textInputAction: TextInputAction.done,
+      onEditingComplete: () {
+        widget.onSaveDescription(_descriptionController.text);
+        FocusScope.of(context).unfocus();
+        widget.onRefresh();
       },
       decoration: InputDecoration(
         isDense: true,
@@ -126,18 +136,15 @@ class _StepListState extends State<StepList> {
     );
   }
 
-  Widget _stepTile(task, index) {
+  Widget _stepTile(index, task) {
     return Row(
       children: [
         Checkbox(
-          value: task.steps[index].isComplete,
+          value: widget.task.steps[index].isComplete,
           activeColor: const Color(0xFF6202EE),
           onChanged: (value) {
+            widget.onComplete(index);
             widget.onRefresh();
-            setState(() {
-              task.steps[index].isComplete = value;
-              value ? task.currentStep++ : task.currentStep--;
-            });
           },
         ),
         Expanded(
@@ -154,17 +161,8 @@ class _StepListState extends State<StepList> {
               color: Colors.grey[700],
             ),
             onPressed: () {
-              setState(() {
-                widget.onRefresh();
-                task.maxSteps--;
-                if (task.steps[index].isComplete) {
-                  task.currentStep--;
-                }
-                task.steps.removeAt(index);
-                if (task.steps.isEmpty) {
-                  isText = false;
-                }
-              });
+              widget.onDelete(index);
+              widget.onRefresh();
             },
           ),
         ),

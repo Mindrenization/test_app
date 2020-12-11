@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class CircularProgressBar extends StatefulWidget {
   final double value;
-  CircularProgressBar(this.value);
+  final Color color;
+  CircularProgressBar(this.value, this.color);
   @override
   _CircularProgressBarState createState() => _CircularProgressBarState();
 }
@@ -41,17 +42,20 @@ class _CircularProgressBarState extends State<CircularProgressBar>
       });
 
     return Container(
-      width: 40,
+      width: 50,
+      padding: EdgeInsets.symmetric(vertical: 20),
       child: CustomPaint(
         child: Text(
           '${(value * 100).toInt()}%',
           textAlign: TextAlign.center,
+          maxLines: 1,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF01A39D),
+            color: widget.color,
+            fontSize: 14,
           ),
         ),
-        foregroundPainter: CircularPainter(value),
+        foregroundPainter: CircularPainter(value, widget.color),
       ),
     );
   }
@@ -65,20 +69,21 @@ class _CircularProgressBarState extends State<CircularProgressBar>
 
 class CircularPainter extends CustomPainter {
   final double value;
-  CircularPainter(this.value);
+  final Color color;
+  CircularPainter(this.value, this.color);
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final double radius = 28;
+    final double radius = 26;
 
     final foregroundPaint = Paint()
-      ..color = value == 0.0 ? Colors.grey[400] : const Color(0xFF01A39D)
-      ..strokeWidth = 6
+      ..color = value == 0.0 ? Colors.grey[400] : color
+      ..strokeWidth = 4
       ..style = PaintingStyle.stroke;
 
     final backgroundPaint = Paint()
       ..color = Colors.grey[400]
-      ..strokeWidth = 6
+      ..strokeWidth = 4
       ..style = PaintingStyle.stroke;
 
     canvas.drawCircle(center, radius, backgroundPaint);

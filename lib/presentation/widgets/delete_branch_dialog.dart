@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 // Модал удаления ветки
 class DeleteBranchDialog extends StatelessWidget {
-  final branch;
   final VoidCallback onDelete;
-  DeleteBranchDialog({this.branch, this.onDelete});
+  DeleteBranchDialog({this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +35,8 @@ class DeleteBranchDialog extends StatelessWidget {
                   style: TextStyle(fontSize: 18),
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
                   onDelete();
+                  Navigator.pop(context);
                 }),
           ],
         ),
