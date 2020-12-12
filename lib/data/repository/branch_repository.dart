@@ -1,6 +1,6 @@
 import 'package:test_app/data/database/db_branch_wrapper.dart';
 import 'package:test_app/data/models/branch.dart';
-import 'package:test_app/domain/repository/repository.dart';
+import 'package:test_app/data/repository/repository.dart';
 
 class BranchInteractor {
   DbBranchWrapper _dbBranchWrapper = DbBranchWrapper();
@@ -12,10 +12,10 @@ class BranchInteractor {
     return _branchList;
   }
 
-  Future<List<Branch>> deleteBranch(Branch _branch) async {
-    await _dbBranchWrapper.deleteBranch(_branch.id);
+  Future<List<Branch>> deleteBranch(String _branchId) async {
+    await _dbBranchWrapper.deleteBranch(_branchId);
     List<Branch> _branchList = await Repository.instance.getBranchList();
-    _branchList.removeWhere((element) => _branch.id == element.id);
+    _branchList.removeWhere((element) => _branchId == element.id);
     return _branchList;
   }
 }

@@ -22,9 +22,8 @@ class TasksPage extends StatefulWidget {
   _TasksPageState createState() => _TasksPageState();
 }
 
-class _TasksPageState extends State<TasksPage>
-    with SingleTickerProviderStateMixin {
-  var taskBlocSink;
+class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMixin {
+  TaskBloc _taskBlocSink;
 
   @override
   void initState() {
@@ -41,9 +40,9 @@ class _TasksPageState extends State<TasksPage>
     return BlocProvider(
       create: (context) => TaskBloc(TaskLoading()),
       child: BlocBuilder<TaskBloc, TaskState>(builder: (context, state) {
-        taskBlocSink = BlocProvider.of<TaskBloc>(context);
+        _taskBlocSink = BlocProvider.of<TaskBloc>(context);
         if (state is TaskLoading) {
-          taskBlocSink.add(FetchTaskList(widget.branchId));
+          _taskBlocSink.add(FetchTaskList(widget.branchId));
           return Center(
             child: CircularProgressIndicator(),
           );
@@ -65,12 +64,10 @@ class _TasksPageState extends State<TasksPage>
                     itemBuilder: (context) => [
                           PopupMenuItem(
                             child: PopupButton(
-                              text: state.isFiltered
-                                  ? 'Показать завершенные'
-                                  : 'Скрыть завершенные',
+                              text: state.isFiltered ? 'Показать завершенные' : 'Скрыть завершенные',
                               icon: Icons.check_circle,
                               onTap: () {
-                                taskBlocSink.add(
+                                _taskBlocSink.add(
                                   FilterTaskList(
                                     branchId: widget.branchId,
                                     isFiltered: state.isFiltered,
@@ -85,7 +82,7 @@ class _TasksPageState extends State<TasksPage>
                               text: 'Удалить завершенные',
                               icon: Icons.delete,
                               onTap: () {
-                                taskBlocSink.add(
+                                _taskBlocSink.add(
                                   DeleteCompletedTasks(
                                     branchId: widget.branchId,
                                   ),
@@ -105,7 +102,7 @@ class _TasksPageState extends State<TasksPage>
                                       customColorTheme: widget.customColorTheme,
                                       onChange: () {
                                         widget.onRefresh();
-                                        taskBlocSink.add(
+                                        _taskBlocSink.add(
                                           ChangeColorTheme(
                                             branchId: widget.branchId,
                                           ),
@@ -119,13 +116,23 @@ class _TasksPageState extends State<TasksPage>
                         ])
               ],
             ),
-            body: Padding(
-              padding: EdgeInsets.all(10),
-              child: state.taskList.isEmpty ||
-                      (state.taskList.isEmpty && state.isFiltered)
-                  ? NoTasksBackground(state.isFiltered)
-                  : taskListView(state.taskList, state.isFiltered),
-            ),
+            body: state.taskList.isEmpty || (state.taskList.isEmpty && state.isFiltered)
+                ? NoTasksBackground(state.isFiltered)
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      state.isFiltered
+                          ? Padding(
+                              padding: EdgeInsets.only(left: 15, top: 5),
+                              child: Text(
+                                'Фильтр: скрыть завершенные задачи',
+                                style: TextStyle(fontSize: 12, color: Colors.grey[800]),
+                              ),
+                            )
+                          : Container(),
+                      for (int index = 0; index < state.taskList.length; index++) taskListView(state.taskList[index], state.isFiltered),
+                    ],
+                  ),
             floatingActionButton: addTaskButton(),
           );
         }
@@ -136,73 +143,68 @@ class _TasksPageState extends State<TasksPage>
     );
   }
 
-  Widget taskListView(List<Task> taskList, bool isFiltered) {
-    return ListView.builder(
-      itemCount: taskList.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: 10),
-          child: TaskTile(
-            task: taskList[index],
-            color: widget.customColorTheme.mainColor,
-            onDelete: () {
-              taskBlocSink.add(
-                DeleteTask(
-                  branchId: widget.branchId,
-                  taskId: taskList[index].id,
-                  isFiltered: isFiltered,
-                ),
-              );
-            },
-            onCheck: () {
-              taskBlocSink.add(
-                CompleteTask(
-                  taskId: taskList[index].id,
-                  branchId: widget.branchId,
-                  isFiltered: isFiltered,
-                ),
-              );
-            },
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TaskDetailsPage(
-                    branchId: widget.branchId,
-                    taskId: taskList[index].id,
-                    customColorTheme: widget.customColorTheme,
-                    onRefresh: () {
-                      taskBlocSink.add(
-                        UpdateTask(
-                          branchId: widget.branchId,
-                          taskId: taskList[index].id,
-                        ),
-                      );
-                      widget.onRefresh();
-                    },
-                    onDelete: () {
-                      taskBlocSink.add(
-                        DeleteTask(
-                          branchId: widget.branchId,
-                          taskId: taskList[index].id,
-                        ),
-                      );
-                    },
-                    onComplete: () {
-                      taskBlocSink.add(
-                        CompleteTask(
-                          taskId: taskList[index].id,
-                          branchId: widget.branchId,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
+  Widget taskListView(Task task, bool isFiltered) {
+    return Padding(
+      padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+      child: TaskTile(
+        task: task,
+        color: widget.customColorTheme.mainColor,
+        onDelete: () {
+          _taskBlocSink.add(
+            DeleteTask(
+              branchId: widget.branchId,
+              taskId: task.id,
+              isFiltered: isFiltered,
+            ),
+          );
+        },
+        onCheck: () {
+          _taskBlocSink.add(
+            CompleteTask(
+              taskId: task.id,
+              branchId: widget.branchId,
+              isFiltered: isFiltered,
+            ),
+          );
+        },
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TaskDetailsPage(
+                branchId: widget.branchId,
+                taskId: task.id,
+                customColorTheme: widget.customColorTheme,
+                onRefresh: () {
+                  _taskBlocSink.add(
+                    UpdateTask(
+                      branchId: widget.branchId,
+                      taskId: task.id,
+                    ),
+                  );
+                  widget.onRefresh();
+                },
+                onDelete: () {
+                  _taskBlocSink.add(
+                    DeleteTask(
+                      branchId: widget.branchId,
+                      taskId: task.id,
+                    ),
+                  );
+                },
+                onComplete: () {
+                  _taskBlocSink.add(
+                    CompleteTask(
+                      taskId: task.id,
+                      branchId: widget.branchId,
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -215,7 +217,7 @@ class _TasksPageState extends State<TasksPage>
           context: context,
           builder: (context) {
             return CreateTaskDialog(onCreate: (title, deadline) {
-              taskBlocSink.add(
+              _taskBlocSink.add(
                 CreateTask(
                   branchId: widget.branchId,
                   title: title,

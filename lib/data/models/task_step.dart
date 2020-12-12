@@ -8,9 +8,9 @@ class TaskStep {
 
   Map<String, dynamic> toMap() {
     return {
+      'title': title,
       'ID': id,
       'parentID': parentId,
-      'title': title,
       'complete': isComplete.toString(),
     };
   }

@@ -26,6 +26,12 @@ CREATE TABLE "step"(
   "title" TEXT NOT NULL,
   "complete" TEXT NOT NULL
 );''';
+const sqlCreateStatementImages = '''
+CREATE TABLE "images"(
+  "ID" TEXT NOT NULL PRIMARY KEY,
+  "parentID" TEXT NOT NULL,
+  "path" TEXT NOT NULL
+);''';
 
 class Db {
   Db._();
@@ -44,6 +50,7 @@ class Db {
       await db.execute(sqlCreateStatementBranch);
       await db.execute(sqlCreateStatementTask);
       await db.execute(sqlCreateStatementStep);
+      await db.execute(sqlCreateStatementImages);
     });
   }
 }

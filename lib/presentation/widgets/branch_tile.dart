@@ -4,8 +4,8 @@ import 'package:test_app/presentation/widgets/circular_progress_bar.dart';
 
 class BranchTile extends StatelessWidget {
   final Branch branch;
-  final onTap;
-  final onDelete;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
   BranchTile(this.branch, {this.onTap, this.onDelete});
 
   @override
@@ -36,9 +36,7 @@ class BranchTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CircularProgressBar(
-                  branch.tasks.length == 0
-                      ? 0
-                      : branch.completedTasks / branch.tasks.length,
+                  branch.tasks.length == 0 ? 0 : branch.completedTasks / branch.tasks.length,
                   branch.customColorTheme.mainColor,
                 ),
                 GestureDetector(
@@ -88,8 +86,7 @@ class BranchTile extends StatelessWidget {
     );
   }
 
-  Widget _sticker(
-      {String text, Color color, Color textColor, BuildContext context}) {
+  Widget _sticker({String text, Color color, Color textColor, BuildContext context}) {
     return Container(
       width: MediaQuery.of(context).size.width / 5.6,
       height: 16,
@@ -100,9 +97,7 @@ class BranchTile extends StatelessWidget {
       child: Center(
         child: Text(
           text,
-          style: TextStyle(
-              color: textColor,
-              fontSize: MediaQuery.of(context).size.width / 37),
+          style: TextStyle(color: textColor, fontSize: MediaQuery.of(context).size.width / 37),
         ),
       ),
     );

@@ -4,17 +4,13 @@ import 'package:test_app/data/models/task.dart';
 
 class StepList extends StatefulWidget {
   final Task task;
+  final Color color;
   final Function onCreate;
   final Function onDelete;
   final VoidCallback onRefresh;
   final Function onComplete;
   final Function onSaveDescription;
-  StepList(this.task,
-      {this.onCreate,
-      this.onDelete,
-      this.onRefresh,
-      this.onComplete,
-      this.onSaveDescription});
+  StepList(this.task, this.color, {this.onCreate, this.onDelete, this.onRefresh, this.onComplete, this.onSaveDescription});
   @override
   _StepListState createState() => _StepListState();
 }
@@ -23,6 +19,7 @@ class _StepListState extends State<StepList> {
   TextEditingController _stepController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   bool isText = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -33,7 +30,7 @@ class _StepListState extends State<StepList> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal: 10),
       color: Colors.white,
       elevation: 5,
       child: Column(
@@ -46,8 +43,7 @@ class _StepListState extends State<StepList> {
               style: TextStyle(fontSize: 12, color: Colors.grey[700]),
             ),
           ),
-          for (int index = 0; index < widget.task.steps.length; index++)
-            _stepTile(index, widget.task),
+          for (int index = 0; index < widget.task.steps.length; index++) _stepTile(index, widget.task),
           Padding(
             padding: EdgeInsets.all(10),
             child: _addStepButton(),
@@ -99,18 +95,30 @@ class _StepListState extends State<StepList> {
         ),
       );
     } else {
-      return TextField(
-        autofocus: true,
-        controller: _stepController,
-        decoration: InputDecoration(
-          isDense: true,
-          border: InputBorder.none,
+      return Form(
+        key: _formKey,
+        child: TextFormField(
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Зачем?';
+            }
+            return null;
+          },
+          autofocus: true,
+          controller: _stepController,
+          decoration: InputDecoration(
+            isDense: true,
+            border: InputBorder.none,
+          ),
+          onEditingComplete: () {
+            if (_formKey.currentState.validate()) {
+              widget.onCreate(_stepController.text);
+              _stepController.text = '';
+              FocusScope.of(context).unfocus();
+              widget.onRefresh();
+            }
+          },
         ),
-        onEditingComplete: () {
-          widget.onCreate(_stepController.text);
-          _stepController.text = '';
-          widget.onRefresh();
-        },
       );
     }
   }
@@ -141,7 +149,7 @@ class _StepListState extends State<StepList> {
       children: [
         Checkbox(
           value: widget.task.steps[index].isComplete,
-          activeColor: const Color(0xFF6202EE),
+          activeColor: widget.color,
           onChanged: (value) {
             widget.onComplete(index);
             widget.onRefresh();

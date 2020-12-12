@@ -1,3 +1,4 @@
+import 'package:test_app/data/models/image.dart';
 import 'package:test_app/data/models/task_step.dart';
 
 class Task {
@@ -11,6 +12,7 @@ class Task {
   DateTime createDate = DateTime.now();
   DateTime deadline;
   List<TaskStep> steps = [];
+  List<Image> images = [];
 
   Task(this.id, this.parentId, this.title,
       {this.deadline,

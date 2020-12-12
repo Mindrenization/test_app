@@ -1,12 +1,15 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:test_app/data/database/db_flickr.dart';
 import 'package:test_app/data/database/db_step_wrapper.dart';
 import 'package:test_app/data/database/db_task_wrapper.dart';
+import 'package:test_app/data/models/image.dart';
 import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
-import 'package:test_app/domain/interactors/step_interactor.dart';
+import 'package:test_app/data/repository/step_repository.dart';
 import 'package:test_app/presentation/bloc/task_details_event.dart';
 import 'package:test_app/presentation/bloc/task_details_state.dart';
-import 'package:test_app/domain/repository/repository.dart';
+import 'package:test_app/data/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
@@ -14,6 +17,7 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
   DbStepWrapper _dbStepWrapper = DbStepWrapper();
   DbTaskWrapper _dbTaskWrapper = DbTaskWrapper();
   StepInteractor _stepInteractor = StepInteractor();
+  DbFlickr _dbFlickr = DbFlickr();
 
   @override
   Stream<TaskDetailsState> mapEventToState(TaskDetailsEvent event) async* {
@@ -21,6 +25,7 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
       Task _task = Repository.instance.getTask(event.branchId, event.taskId);
       yield TaskDetailsLoaded(task: _task);
     }
+
     if (event is UpdateTask) {
       Task _task = Repository.instance.getTask(event.branchId, event.taskId);
       yield TaskDetailsLoaded(task: _task);
@@ -30,13 +35,15 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is DeleteStep) {
-      Task _task =
-          await _deleteStep(event.branchId, event.taskId, event.stepId);
+      Task _task = await _deleteStep(event.branchId, event.taskId, event.stepId);
+      yield TaskDetailsLoaded(task: _task);
+    }
+    if (event is DeleteImage) {
+      Task _task = await _deleteImage(event.branchId, event.taskId, event.imageId);
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is CompleteStep) {
-      Task _task =
-          await _completeStep(event.branchId, event.taskId, event.stepId);
+      Task _task = await _completeStep(event.branchId, event.taskId, event.stepId);
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is SetDeadline) {
@@ -57,18 +64,35 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
       await _dbTaskWrapper.updateTask(_task);
       yield TaskDetailsLoaded(task: _task);
     }
+    if (event is SaveImage) {
+      var _file = await DefaultCacheManager().getSingleFile(event.imageUrl);
+      Task _task = Repository.instance.getTask(event.branchId, event.taskId);
+      Image _newImage = Image(Uuid().v1(), event.taskId, _file.path);
+      _task.images.add(_newImage);
+      _dbFlickr.createImage(_newImage);
+      yield TaskDetailsLoaded(task: _task);
+    }
   }
 
-  Future<Task> _createStep(
-      String _branchId, String _taskId, String _title) async {
+  Future<Task> _createStep(String _branchId, String _taskId, String _title) async {
     TaskStep _step = TaskStep(_title, id: Uuid().v1(), parentId: _taskId);
     Task _task = await _stepInteractor.createStep(_branchId, _taskId, _step);
     return _task;
   }
 
-  Future<Task> _deleteStep(
-      String _branchId, String _taskId, String _stepId) async {
+  Future<Task> _deleteStep(String _branchId, String _taskId, String _stepId) async {
     Task _task = await _stepInteractor.deleteStep(_branchId, _taskId, _stepId);
+    return _task;
+  }
+
+  Future<Task> _deleteImage(branchId, taskId, imageId) async {
+    Task _task = Repository.instance.getTask(
+      branchId,
+      taskId,
+    );
+    Image _image = Repository.instance.getImage(branchId, taskId, imageId);
+    await _dbTaskWrapper.deleteImage(_image.id);
+    _task.images.removeWhere((element) => _image.id == element.id);
     return _task;
   }
 

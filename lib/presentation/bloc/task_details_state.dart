@@ -8,7 +8,6 @@ class TaskDetailsLoading extends TaskDetailsState {}
 
 class TaskDetailsLoaded extends TaskDetailsState {
   final Task task;
-
   const TaskDetailsLoaded({this.task});
 }
 
