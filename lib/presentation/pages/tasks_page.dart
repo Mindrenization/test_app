@@ -22,8 +22,7 @@ class TasksPage extends StatefulWidget {
   _TasksPageState createState() => _TasksPageState();
 }
 
-class _TasksPageState extends State<TasksPage>
-    with SingleTickerProviderStateMixin {
+class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMixin {
   TaskBloc _taskBlocSink;
 
   @override
@@ -65,9 +64,7 @@ class _TasksPageState extends State<TasksPage>
                     itemBuilder: (context) => [
                           PopupMenuItem(
                             child: PopupButton(
-                              text: state.isFiltered
-                                  ? 'Показать завершенные'
-                                  : 'Скрыть завершенные',
+                              text: state.isFiltered ? 'Показать завершенные' : 'Скрыть завершенные',
                               icon: Icons.check_circle,
                               onTap: () {
                                 _taskBlocSink.add(
@@ -119,8 +116,7 @@ class _TasksPageState extends State<TasksPage>
                         ])
               ],
             ),
-            body: state.taskList.isEmpty ||
-                    (state.taskList.isEmpty && state.isFiltered)
+            body: state.taskList.isEmpty || (state.taskList.isEmpty && state.isFiltered)
                 ? NoTasksBackground(state.isFiltered)
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,15 +126,11 @@ class _TasksPageState extends State<TasksPage>
                               padding: EdgeInsets.only(left: 15, top: 5),
                               child: Text(
                                 'Фильтр: скрыть завершенные задачи',
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.grey[800]),
+                                style: TextStyle(fontSize: 12, color: Colors.grey[800]),
                               ),
                             )
                           : Container(),
-                      for (int index = 0;
-                          index < state.taskList.length;
-                          index++)
-                        taskListView(state.taskList[index], state.isFiltered),
+                      for (int index = 0; index < state.taskList.length; index++) taskListView(state.taskList[index], state.isFiltered),
                     ],
                   ),
             floatingActionButton: addTaskButton(),

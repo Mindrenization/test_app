@@ -21,13 +21,7 @@ class TaskDetailsPage extends StatefulWidget {
   final VoidCallback onRefresh;
   final VoidCallback onDelete;
   final VoidCallback onComplete;
-  TaskDetailsPage(
-      {this.branchId,
-      this.taskId,
-      this.customColorTheme,
-      this.onRefresh,
-      this.onDelete,
-      this.onComplete});
+  TaskDetailsPage({this.branchId, this.taskId, this.customColorTheme, this.onRefresh, this.onDelete, this.onComplete});
   @override
   _TaskDetailsPageState createState() => _TaskDetailsPageState();
 }
@@ -49,8 +43,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TaskDetailsBloc(TaskDetailsLoading()),
-      child: BlocBuilder<TaskDetailsBloc, TaskDetailsState>(
-          builder: (context, state) {
+      child: BlocBuilder<TaskDetailsBloc, TaskDetailsState>(builder: (context, state) {
         stepBlocSink = BlocProvider.of<TaskDetailsBloc>(context);
         if (state is TaskDetailsLoading) {
           stepBlocSink.add(
@@ -80,8 +73,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                       backgroundColor: widget.customColorTheme.mainColor,
                       expandedHeight: 100,
                       flexibleSpace: FlexibleSpaceBar(
-                        titlePadding:
-                            EdgeInsets.symmetric(horizontal: 100, vertical: 10),
+                        titlePadding: EdgeInsets.symmetric(horizontal: 100, vertical: 10),
                         centerTitle: true,
                         title: Text(
                           state.task.title,
@@ -103,10 +95,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                       return ChangeTaskTitleDialog(
                                         state.task.title,
                                         onChange: (title) {
-                                          stepBlocSink.add(ChangeTaskTitle(
-                                              taskId: widget.taskId,
-                                              branchId: widget.branchId,
-                                              title: title));
+                                          stepBlocSink.add(ChangeTaskTitle(taskId: widget.taskId, branchId: widget.branchId, title: title));
                                           widget.onRefresh();
                                         },
                                       );
@@ -226,8 +215,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                 style: TextStyle(
                                   color: state.task.deadline == null
                                       ? Colors.grey[700]
-                                      : state.task.deadline
-                                              .isBefore(DateTime.now())
+                                      : state.task.deadline.isBefore(DateTime.now())
                                           ? Colors.red
                                           : Colors.blue,
                                 ),
@@ -236,8 +224,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                 Icons.calendar_today_outlined,
                                 color: state.task.deadline == null
                                     ? Colors.grey[700]
-                                    : state.task.deadline
-                                            .isBefore(DateTime.now())
+                                    : state.task.deadline.isBefore(DateTime.now())
                                         ? Colors.red
                                         : Colors.blue,
                               ),
@@ -249,10 +236,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                       },
                                     ) ??
                                     state.task.deadline;
-                                stepBlocSink.add(SetDeadline(
-                                    branchId: widget.branchId,
-                                    taskId: widget.taskId,
-                                    deadline: _deadline));
+                                stepBlocSink.add(SetDeadline(branchId: widget.branchId, taskId: widget.taskId, deadline: _deadline));
                               },
                             ),
                           ],
@@ -291,13 +275,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
         decoration: BoxDecoration(
           color: Colors.cyan[600],
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-                offset: Offset.zero,
-                spreadRadius: 1,
-                blurRadius: 3,
-                color: Colors.black38)
-          ],
+          boxShadow: [BoxShadow(offset: Offset.zero, spreadRadius: 1, blurRadius: 3, color: Colors.black38)],
         ),
         child: Icon(
           isComplete ? Icons.close : Icons.check,
@@ -418,11 +396,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                 borderRadius: BorderRadius.circular(15),
                 color: const Color(0xFF01A39D),
                 boxShadow: [
-                  BoxShadow(
-                      offset: Offset.fromDirection(1.5, 3),
-                      color: Colors.black26,
-                      spreadRadius: 0.1,
-                      blurRadius: 3),
+                  BoxShadow(offset: Offset.fromDirection(1.5, 3), color: Colors.black26, spreadRadius: 0.1, blurRadius: 3),
                 ],
               ),
               child: Icon(

@@ -55,6 +55,12 @@ class _MainPageState extends State<MainPage> {
                 child: Text('Failed to load page'),
               );
             }
+            if (state is BranchLoading) {
+              branchBlocSink.add(FetchBranchList());
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
             if (state is BranchLoaded) {
               return Column(
                 children: [
@@ -63,16 +69,9 @@ class _MainPageState extends State<MainPage> {
                     width: MediaQuery.of(context).size.width,
                     margin: EdgeInsets.fromLTRB(10, 25, 10, 10),
                     padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                        color: const Color(0xFF86A5F5),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                              offset: Offset.fromDirection(1.5, 3),
-                              color: Colors.black26,
-                              spreadRadius: 0.1,
-                              blurRadius: 3),
-                        ]),
+                    decoration: BoxDecoration(color: const Color(0xFF86A5F5), borderRadius: BorderRadius.circular(20), boxShadow: [
+                      BoxShadow(offset: Offset.fromDirection(1.5, 3), color: Colors.black26, spreadRadius: 0.1, blurRadius: 3),
+                    ]),
                     child: HeaderCard(state),
                   ),
                   Row(
@@ -93,9 +92,7 @@ class _MainPageState extends State<MainPage> {
                     child: GridView.count(
                       crossAxisCount: 2,
                       children: [
-                        for (int index = 0;
-                            index < state.branchList.length;
-                            index++)
+                        for (int index = 0; index < state.branchList.length; index++)
                           BranchTile(
                             state.branchList[index],
                             onTap: () {
@@ -164,11 +161,7 @@ class _MainPageState extends State<MainPage> {
           borderRadius: BorderRadius.circular(20),
           color: const Color(0xFF01A39D),
           boxShadow: [
-            BoxShadow(
-                offset: Offset.fromDirection(1.5, 3),
-                color: Colors.black26,
-                spreadRadius: 0.1,
-                blurRadius: 3),
+            BoxShadow(offset: Offset.fromDirection(1.5, 3), color: Colors.black26, spreadRadius: 0.1, blurRadius: 3),
           ],
         ),
         child: Icon(

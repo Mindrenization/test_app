@@ -35,18 +35,15 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is DeleteStep) {
-      Task _task =
-          await _deleteStep(event.branchId, event.taskId, event.stepId);
+      Task _task = await _deleteStep(event.branchId, event.taskId, event.stepId);
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is DeleteImage) {
-      Task _task =
-          await _deleteImage(event.branchId, event.taskId, event.imageId);
+      Task _task = await _deleteImage(event.branchId, event.taskId, event.imageId);
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is CompleteStep) {
-      Task _task =
-          await _completeStep(event.branchId, event.taskId, event.stepId);
+      Task _task = await _completeStep(event.branchId, event.taskId, event.stepId);
       yield TaskDetailsLoaded(task: _task);
     }
     if (event is SetDeadline) {
@@ -77,15 +74,13 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
     }
   }
 
-  Future<Task> _createStep(
-      String _branchId, String _taskId, String _title) async {
+  Future<Task> _createStep(String _branchId, String _taskId, String _title) async {
     TaskStep _step = TaskStep(_title, id: Uuid().v1(), parentId: _taskId);
     Task _task = await _stepInteractor.createStep(_branchId, _taskId, _step);
     return _task;
   }
 
-  Future<Task> _deleteStep(
-      String _branchId, String _taskId, String _stepId) async {
+  Future<Task> _deleteStep(String _branchId, String _taskId, String _stepId) async {
     Task _task = await _stepInteractor.deleteStep(_branchId, _taskId, _stepId);
     return _task;
   }

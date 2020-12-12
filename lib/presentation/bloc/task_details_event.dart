@@ -29,20 +29,17 @@ class CompleteStep extends TaskDetailsEvent {
 
 class SetDeadline extends TaskDetailsEvent {
   final DateTime deadline;
-  const SetDeadline({taskId, branchId, this.deadline})
-      : super(branchId, taskId);
+  const SetDeadline({taskId, branchId, this.deadline}) : super(branchId, taskId);
 }
 
 class ChangeTaskTitle extends TaskDetailsEvent {
   final String title;
-  const ChangeTaskTitle({branchId, taskId, this.title})
-      : super(branchId, taskId);
+  const ChangeTaskTitle({branchId, taskId, this.title}) : super(branchId, taskId);
 }
 
 class SaveDescription extends TaskDetailsEvent {
   final String text;
-  const SaveDescription({branchId, taskId, this.text})
-      : super(branchId, taskId);
+  const SaveDescription({branchId, taskId, this.text}) : super(branchId, taskId);
 }
 
 class DeleteImage extends TaskDetailsEvent {

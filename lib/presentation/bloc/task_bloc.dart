@@ -20,8 +20,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       yield TaskLoaded(taskList: _taskList);
     }
     if (event is CreateTask) {
-      List<Task> _taskList =
-          await _createTask(event.title, event.branchId, event.deadline);
+      List<Task> _taskList = await _createTask(event.title, event.branchId, event.deadline);
       yield TaskLoaded(taskList: _taskList);
     }
     if (event is ChangeColorTheme) {
@@ -33,26 +32,19 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       yield TaskLoaded(taskList: _taskList);
     }
     if (event is DeleteTask) {
-      List<Task> _taskList =
-          await _deleteTask(event.branchId, event.taskId, event.isFiltered);
+      List<Task> _taskList = await _deleteTask(event.branchId, event.taskId, event.isFiltered);
       yield TaskLoaded(taskList: _taskList, isFiltered: event.isFiltered);
     }
     if (event is CompleteTask) {
-      List<Task> _taskList =
-          await _completeTask(event.branchId, event.taskId, event.isFiltered);
+      List<Task> _taskList = await _completeTask(event.branchId, event.taskId, event.isFiltered);
       yield TaskLoaded(taskList: _taskList, isFiltered: event.isFiltered);
     }
     if (event is FilterTaskList) {
       List<Task> taskList;
       bool _isFiltered;
       if (!event.isFiltered) {
-        if (Repository.instance
-            .getTaskList(event.branchId)
-            .any((task) => task.isComplete)) {
-          taskList = Repository.instance
-              .getTaskList(event.branchId)
-              .where((element) => !element.isComplete)
-              .toList();
+        if (Repository.instance.getTaskList(event.branchId).any((task) => task.isComplete)) {
+          taskList = Repository.instance.getTaskList(event.branchId).where((element) => !element.isComplete).toList();
           _isFiltered = true;
         } else {
           taskList = Repository.instance.getTaskList(event.branchId);
@@ -73,8 +65,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     }
   }
 
-  Future<List<Task>> _createTask(
-      String title, String branchId, DateTime deadline) async {
+  Future<List<Task>> _createTask(String title, String branchId, DateTime deadline) async {
     Task _task = Task(
       Uuid().v1(),
       branchId,
@@ -90,34 +81,25 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     List<Task> _taskList = Repository.instance.getTaskList(branchId);
     Task _task = Repository.instance.getTask(branchId, taskId);
     _task.maxSteps = _task.steps.length;
-    _task.completedSteps =
-        _task.steps.where((element) => element.isComplete).length;
+    _task.completedSteps = _task.steps.where((element) => element.isComplete).length;
     return _taskList;
   }
 
-  Future<List<Task>> _deleteTask(
-      String branchId, String taskId, bool isFiltered) async {
+  Future<List<Task>> _deleteTask(String branchId, String taskId, bool isFiltered) async {
     List<Task> _taskList = await _taskInteractor.deleteTask(branchId, taskId);
     if (isFiltered) {
-      _taskList = Repository.instance
-          .getTaskList(branchId)
-          .where((element) => !element.isComplete)
-          .toList();
+      _taskList = Repository.instance.getTaskList(branchId).where((element) => !element.isComplete).toList();
     }
     return _taskList;
   }
 
-  Future<List<Task>> _completeTask(
-      String branchId, String taskId, bool isFiltered) async {
+  Future<List<Task>> _completeTask(String branchId, String taskId, bool isFiltered) async {
     List<Task> _taskList = Repository.instance.getTaskList(branchId);
     Task _task = Repository.instance.getTask(branchId, taskId);
     _isComplete(_task);
     await _dbTaskWrapper.updateTask(_task);
     if (isFiltered) {
-      _taskList = Repository.instance
-          .getTaskList(branchId)
-          .where((element) => !element.isComplete)
-          .toList();
+      _taskList = Repository.instance.getTaskList(branchId).where((element) => !element.isComplete).toList();
     }
     return _taskList;
   }
@@ -132,8 +114,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   Future<List<Task>> _deleteCompletedTasks(branchId) async {
     List<Task> _taskList = Repository.instance.getTaskList(branchId);
-    List<Task> _completedTasks =
-        _taskList.where((task) => task.isComplete).toList();
+    List<Task> _completedTasks = _taskList.where((task) => task.isComplete).toList();
     for (int i = 0; i < _completedTasks.length; i++) {
       await _dbTaskWrapper.deleteAllSteps(_completedTasks[i]);
     }

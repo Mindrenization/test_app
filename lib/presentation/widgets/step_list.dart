@@ -10,12 +10,7 @@ class StepList extends StatefulWidget {
   final VoidCallback onRefresh;
   final Function onComplete;
   final Function onSaveDescription;
-  StepList(this.task, this.color,
-      {this.onCreate,
-      this.onDelete,
-      this.onRefresh,
-      this.onComplete,
-      this.onSaveDescription});
+  StepList(this.task, this.color, {this.onCreate, this.onDelete, this.onRefresh, this.onComplete, this.onSaveDescription});
   @override
   _StepListState createState() => _StepListState();
 }
@@ -48,8 +43,7 @@ class _StepListState extends State<StepList> {
               style: TextStyle(fontSize: 12, color: Colors.grey[700]),
             ),
           ),
-          for (int index = 0; index < widget.task.steps.length; index++)
-            _stepTile(index, widget.task),
+          for (int index = 0; index < widget.task.steps.length; index++) _stepTile(index, widget.task),
           Padding(
             padding: EdgeInsets.all(10),
             child: _addStepButton(),
@@ -136,6 +130,7 @@ class _StepListState extends State<StepList> {
       textInputAction: TextInputAction.done,
       onEditingComplete: () {
         widget.onSaveDescription(_descriptionController.text);
+        FocusScope.of(context).unfocus();
         widget.onRefresh();
       },
       decoration: InputDecoration(
