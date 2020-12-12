@@ -3,7 +3,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:test_app/data/database/db_flickr.dart';
 import 'package:test_app/data/database/db_step_wrapper.dart';
 import 'package:test_app/data/database/db_task_wrapper.dart';
-import 'package:test_app/data/models/image.dart';
+import 'package:test_app/data/models/flickr_image.dart';
 import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
 import 'package:test_app/data/repository/step_repository.dart';
@@ -67,7 +67,7 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
     if (event is SaveImage) {
       var _file = await DefaultCacheManager().getSingleFile(event.imageUrl);
       Task _task = Repository.instance.getTask(event.branchId, event.taskId);
-      Image _newImage = Image(Uuid().v1(), event.taskId, _file.path);
+      FlickrImage _newImage = FlickrImage(Uuid().v1(), event.taskId, _file.path);
       _task.images.add(_newImage);
       _dbFlickr.createImage(_newImage);
       yield TaskDetailsLoaded(task: _task);
@@ -90,7 +90,7 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
       branchId,
       taskId,
     );
-    Image _image = Repository.instance.getImage(branchId, taskId, imageId);
+    FlickrImage _image = Repository.instance.getImage(branchId, taskId, imageId);
     await _dbTaskWrapper.deleteImage(_image.id);
     _task.images.removeWhere((element) => _image.id == element.id);
     return _task;
