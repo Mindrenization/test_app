@@ -1,6 +1,5 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:test_app/data/database/db.dart';
-import 'package:test_app/data/models/branch.dart';
 import 'package:test_app/data/models/task.dart';
 
 const tableTask = 'task';
@@ -45,9 +44,9 @@ class DbTask {
     await db.delete(tableImages, where: 'parentID="$taskId"');
   }
 
-  Future<List<Task>> fetchTaskList(Branch branch) async {
+  Future<List<Task>> fetchTaskList(String branchId) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(tableTask, where: 'parentID="${branch.id}"');
+    final List<Map<String, dynamic>> maps = await db.query(tableTask, where: 'parentID="$branchId"');
     return List.generate(maps.length, (i) {
       return Task(
         maps[i]['ID'],

@@ -4,8 +4,8 @@ import 'package:test_app/data/models/task_step.dart';
 class DbStepWrapper {
   DbStep _dbStep = DbStep();
 
-  Future<List<TaskStep>> getStepList(String id) async {
-    return _dbStep.fetchStepList(id);
+  Future<List<TaskStep>> getStepList(String taskId) async {
+    return _dbStep.fetchStepList(taskId);
   }
 
   Future<void> createStep(TaskStep step) async {

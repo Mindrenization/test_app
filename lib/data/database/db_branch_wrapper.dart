@@ -9,7 +9,7 @@ class DbBranchWrapper {
   Future<List<Branch>> getBranchList() async {
     List<Branch> branchList = await _dbBranch.fetchBranchList();
     for (int i = 0; i < branchList.length; i++) {
-      branchList[i].tasks = await _dbTaskWrapper.getTaskList(branchList[i]);
+      branchList[i].tasks = await _dbTaskWrapper.getTaskList(branchList[i].id);
     }
     return branchList;
   }
