@@ -1,6 +1,5 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:test_app/data/database/db.dart';
-import 'package:test_app/data/models/branch.dart';
 import 'package:test_app/data/models/task.dart';
 
 const tableTask = 'task';
@@ -20,20 +19,19 @@ class DbTask {
     await db.update(tableTask, task.toMap(), where: 'ID="${task.id}"');
   }
 
-  Future<void> deleteTask(Task task) async {
+  Future<void> deleteTask(String taskId) async {
     final db = await database;
-    await db.delete(tableTask, where: 'ID="${task.id}"');
+    await db.delete(tableTask, where: 'ID="$taskId"');
   }
 
   Future<void> deleteCompletedTasks(String branchId) async {
     final db = await database;
-    await db.delete(tableTask,
-        where: 'parentID="$branchId" AND complete="true"');
+    await db.delete(tableTask, where: 'parentID="$branchId" AND complete="true"');
   }
 
-  Future<void> deleteAllSteps(Task task) async {
+  Future<void> deleteAllSteps(String taskId) async {
     final db = await database;
-    await db.delete(tableStep, where: 'parentID="${task.id}"');
+    await db.delete(tableStep, where: 'parentID="$taskId"');
   }
 
   Future<void> deleteImage(String imageId) async {
@@ -46,10 +44,9 @@ class DbTask {
     await db.delete(tableImages, where: 'parentID="$taskId"');
   }
 
-  Future<List<Task>> fetchTaskList(Branch branch) async {
+  Future<List<Task>> fetchTaskList(String branchId) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps =
-        await db.query(tableTask, where: 'parentID="${branch.id}"');
+    final List<Map<String, dynamic>> maps = await db.query(tableTask, where: 'parentID="$branchId"');
     return List.generate(maps.length, (i) {
       return Task(
         maps[i]['ID'],
@@ -58,9 +55,7 @@ class DbTask {
         isComplete: maps[i]['complete'] == 'true' ? true : false,
         description: maps[i]['description'],
         createDate: DateTime.fromMillisecondsSinceEpoch(maps[i]['createDate']),
-        deadline: maps[i]['deadline'] == null
-            ? null
-            : DateTime.fromMillisecondsSinceEpoch(maps[i]['deadline']),
+        deadline: maps[i]['deadline'] == null ? null : DateTime.fromMillisecondsSinceEpoch(maps[i]['deadline']),
       );
     });
   }

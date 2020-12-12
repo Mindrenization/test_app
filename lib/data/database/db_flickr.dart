@@ -1,7 +1,5 @@
-// id, parentId, path
 import 'package:sqflite/sqflite.dart';
 import 'package:test_app/data/database/db.dart';
-import 'package:test_app/data/models/branch.dart';
 import 'package:test_app/data/models/image.dart';
 
 const tableImages = 'images';
@@ -15,15 +13,14 @@ class DbFlickr {
     await db.insert(tableImages, image.toMap());
   }
 
-  Future<void> deleteImage(Branch branch) async {
+  Future<void> deleteImage(String branchId) async {
     final db = await database;
-    await db.delete(tableImages, where: 'ID="${branch.id}"');
+    await db.delete(tableImages, where: 'ID="$branchId"');
   }
 
   Future<List<Image>> fetchImageList(taskId) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps =
-        await db.query(tableImages, where: 'parentID="$taskId"');
+    final List<Map<String, dynamic>> maps = await db.query(tableImages, where: 'parentID="$taskId"');
     return List.generate(maps.length, (i) {
       return Image(
         maps[i]['ID'],

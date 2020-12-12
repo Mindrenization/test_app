@@ -14,9 +14,8 @@ class TaskInteractor {
 
   Future<List<Task>> deleteTask(String _branchId, String _taskId) async {
     List<Task> _taskList = Repository.instance.getTaskList(_branchId);
-    Task _task = Repository.instance.getTask(_branchId, _taskId);
-    await _dbTaskWrapper.deleteTask(_task);
-    _taskList.removeWhere((element) => _task.id == element.id);
+    await _dbTaskWrapper.deleteTask(_taskId);
+    _taskList.removeWhere((element) => _taskId == element.id);
     return _taskList;
   }
 }
