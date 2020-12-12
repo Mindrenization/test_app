@@ -20,7 +20,6 @@ class _CircularProgressBarState extends State<CircularProgressBar> with SingleTi
   void initState() {
     super.initState();
     controller = AnimationController(duration: Duration(seconds: 2), vsync: this);
-    _animation = Tween(begin: 0.0, end: widget.value).animate(controller);
     controller.forward();
   }
 
@@ -36,6 +35,7 @@ class _CircularProgressBarState extends State<CircularProgressBar> with SingleTi
 
   @override
   Widget build(BuildContext context) {
+    _animation = Tween(begin: 0.0, end: widget.value).animate(controller);
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {

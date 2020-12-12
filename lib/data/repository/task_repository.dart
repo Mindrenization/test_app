@@ -16,7 +16,9 @@ class TaskRepository {
   Future<List<Task>> deleteTask(String _branchId, String _taskId) async {
     List<Task> _taskList = Repository.instance.getTaskList(_branchId);
     Task _task = Repository.instance.getTask(_branchId, _taskId);
-    if (_task.notification != null) await NotificationService().cancelNotification(_task);
+    if (_task.notification != null) {
+      await NotificationService().cancelNotification(_task);
+    }
     await _dbTaskWrapper.deleteTask(_taskId);
     await _dbTaskWrapper.deleteAllSteps(_taskId);
     await _dbTaskWrapper.deleteAllImages(_taskId);

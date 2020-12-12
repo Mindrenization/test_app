@@ -10,7 +10,7 @@ class DbTaskWrapper {
   DbFlickr _dbFlickr = DbFlickr();
 
   Future<List<Task>> getTaskList(Branch branch) async {
-    var taskList = await _dbTask.fetchTaskList(branch);
+    List<Task> taskList = await _dbTask.fetchTaskList(branch);
     for (int i = 0; i < taskList.length; i++) {
       taskList[i].steps = await _dbStepWrapper.getStepList(taskList[i].id);
       taskList[i].maxSteps = taskList[i].steps.length;

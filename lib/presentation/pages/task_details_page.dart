@@ -97,7 +97,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                       return ChangeTaskTitleDialog(
                                         state.task.title,
                                         onChange: (title) {
-                                          stepBlocSink.add(ChangeTaskTitle(title: title));
+                                          stepBlocSink.add(ChangeTaskTitle(title));
                                           widget.onRefresh();
                                         },
                                       );
@@ -152,24 +152,24 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                           onCreate: (title) {
                             stepBlocSink.add(
                               CreateStep(
-                                title: title,
+                                title,
                               ),
                             );
                           },
                           onComplete: (index) {
                             stepBlocSink.add(CompleteStep(
-                              stepId: state.task.steps[index].id,
+                              state.task.steps[index].id,
                             ));
                           },
                           onSaveDescription: (text) {
                             stepBlocSink.add(SaveDescription(
-                              text: text,
+                              text,
                             ));
                           },
                           onDelete: (index) {
                             stepBlocSink.add(
                               DeleteStep(
-                                stepId: state.task.steps[index].id,
+                                state.task.steps[index].id,
                               ),
                             );
                           },
@@ -201,7 +201,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                     state.task.notification;
                                 stepBlocSink.add(
                                   SetNotification(
-                                    notification: _notification,
+                                    _notification,
                                   ),
                                 );
                               },
@@ -233,7 +233,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                     state.task.deadline;
                                 stepBlocSink.add(
                                   SetDeadline(
-                                    deadline: _deadline,
+                                    _deadline,
                                   ),
                                 );
                               },
@@ -370,7 +370,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                     onTap: () {
                       stepBlocSink.add(
                         DeleteImage(
-                          imageId: state.task.images[i].id,
+                          state.task.images[i].id,
                         ),
                       );
                     },

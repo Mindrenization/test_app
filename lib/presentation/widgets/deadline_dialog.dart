@@ -23,15 +23,17 @@ class DeadlineDialog extends StatelessWidget {
         FlatButton(
           child: Text('Выбрать дату'),
           onPressed: () async {
-            var now = DateTime.now();
-            var futureYear = now.year + 100;
+            DateTime now = DateTime.now();
+            int futureYear = now.year + 100;
             DateTime _deadline = await showDatePicker(
               context: context,
               initialDate: now,
               firstDate: now,
               lastDate: DateTime(futureYear, now.month, now.day),
             );
-            if (_deadline != null) _deadline = DateTime(_deadline.year, _deadline.month, _deadline.day, 23, 59, 59);
+            if (_deadline != null) {
+              _deadline = DateTime(_deadline.year, _deadline.month, _deadline.day, 23, 59, 59);
+            }
             Navigator.pop(context, _deadline);
           },
         ),

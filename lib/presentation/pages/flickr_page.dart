@@ -51,7 +51,7 @@ class _FlickrPageState extends State<FlickrPage> {
             _page = 1;
             _search = _value;
             _flickrBlocSink.add(
-              SearchFlickr(search: _value),
+              SearchFlickr(_value),
             );
           },
         ),
@@ -63,7 +63,7 @@ class _FlickrPageState extends State<FlickrPage> {
             _flickrBlocSink = BlocProvider.of<FlickrBloc>(context);
             if (state is FlickrEmpty) {
               _flickrBlocSink.add(
-                FetchFlickr(imageList: _imageList, page: _page),
+                FetchFlickr(_imageList, _page),
               );
             }
             if (state is FlickrError) {
@@ -81,7 +81,7 @@ class _FlickrPageState extends State<FlickrPage> {
                     FlatButton(
                       onPressed: () {
                         _flickrBlocSink.add(
-                          FetchFlickr(imageList: _imageList, page: _page),
+                          FetchFlickr(_imageList, _page),
                         );
                       },
                       child: Text(
@@ -164,10 +164,11 @@ class _FlickrPageState extends State<FlickrPage> {
 
   void _scrollListener() {
     if (_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
-      if (_search == null)
-        _flickrBlocSink.add(FetchFlickr(imageList: _imageList, page: ++_page));
-      else
-        _flickrBlocSink.add(FetchFlickr(imageList: _imageList, page: ++_page, search: _search));
+      if (_search == null) {
+        _flickrBlocSink.add(FetchFlickr(_imageList, ++_page));
+      } else {
+        _flickrBlocSink.add(FetchFlickr(_imageList, ++_page, search: _search));
+      }
     }
   }
 }

@@ -8,16 +8,16 @@ abstract class TaskState {
 class TaskLoading extends TaskState {}
 
 class TaskLoaded extends TaskState {
-  final bool isFiltered;
   final List<Task> taskList;
   final Color mainColor;
   final Color backgroundColor;
+  final bool isFiltered;
 
-  const TaskLoaded({
-    this.isFiltered = false,
+  const TaskLoaded(
     this.taskList,
     this.mainColor,
-    this.backgroundColor,
+    this.backgroundColor, {
+    this.isFiltered = false,
   });
 }
 

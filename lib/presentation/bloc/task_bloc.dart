@@ -20,22 +20,38 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   @override
   Stream<TaskState> mapEventToState(TaskEvent event) async* {
-    if (event is FetchTaskList) yield* _mapFetchTaskListEventToState(event);
-    if (event is CreateTask) yield* _mapCreateTaskEventToState(event);
-    if (event is ChangeColorTheme) yield* _mapChangeColorThemeEventToState(event);
-    if (event is UpdateTask) yield* _mapUpdateTaskEventToState(event);
-    if (event is DeleteTask) yield* _mapDeleteTaskEventToState(event);
-    if (event is CompleteTask) yield* _mapCompleteTaskEventToState(event);
-    if (event is FilterTaskList) yield* _mapFilterTaskListEventToState(event);
-    if (event is DeleteCompletedTasks) yield* _mapDeleteCompletedTasksEventToState(event);
+    if (event is FetchTaskList) {
+      yield* _mapFetchTaskListEventToState(event);
+    }
+    if (event is CreateTask) {
+      yield* _mapCreateTaskEventToState(event);
+    }
+    if (event is ChangeColorTheme) {
+      yield* _mapChangeColorThemeEventToState(event);
+    }
+    if (event is UpdateTask) {
+      yield* _mapUpdateTaskEventToState(event);
+    }
+    if (event is DeleteTask) {
+      yield* _mapDeleteTaskEventToState(event);
+    }
+    if (event is CompleteTask) {
+      yield* _mapCompleteTaskEventToState(event);
+    }
+    if (event is FilterTaskList) {
+      yield* _mapFilterTaskListEventToState(event);
+    }
+    if (event is DeleteCompletedTasks) {
+      yield* _mapDeleteCompletedTasksEventToState(event);
+    }
   }
 
   Stream<TaskState> _mapFetchTaskListEventToState(FetchTaskList event) async* {
     List<Task> _taskList = Repository.instance.getTaskList(branchId);
     yield TaskLoaded(
-      taskList: _taskList,
-      mainColor: mainColor,
-      backgroundColor: backgroundColor,
+      _taskList,
+      mainColor,
+      backgroundColor,
     );
   }
 
@@ -43,9 +59,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     List<Task> _taskList = await _createTask(event.title, branchId, event.deadline, event.notification);
     yield UpdateMainPage();
     yield TaskLoaded(
-      taskList: _taskList,
-      mainColor: mainColor,
-      backgroundColor: backgroundColor,
+      _taskList,
+      mainColor,
+      backgroundColor,
     );
   }
 
@@ -57,18 +73,18 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     backgroundColor = event.backgroundColor;
     List<Task> _taskList = Repository.instance.getTaskList(branchId);
     yield TaskLoaded(
-      taskList: _taskList,
-      mainColor: mainColor,
-      backgroundColor: backgroundColor,
+      _taskList,
+      mainColor,
+      backgroundColor,
     );
   }
 
   Stream<TaskState> _mapUpdateTaskEventToState(UpdateTask event) async* {
     List<Task> _taskList = _updateTask(branchId, event.taskId);
     yield TaskLoaded(
-      taskList: _taskList,
-      mainColor: mainColor,
-      backgroundColor: backgroundColor,
+      _taskList,
+      mainColor,
+      backgroundColor,
     );
   }
 
@@ -76,10 +92,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     List<Task> _taskList = await _deleteTask(branchId, event.taskId, event.isFiltered);
     yield UpdateMainPage();
     yield TaskLoaded(
-      taskList: _taskList,
+      _taskList,
+      mainColor,
+      backgroundColor,
       isFiltered: event.isFiltered,
-      mainColor: mainColor,
-      backgroundColor: backgroundColor,
     );
   }
 
@@ -87,10 +103,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     List<Task> _taskList = await _completeTask(branchId, event.taskId, event.isFiltered);
     yield UpdateMainPage();
     yield TaskLoaded(
-      taskList: _taskList,
+      _taskList,
+      mainColor,
+      backgroundColor,
       isFiltered: event.isFiltered,
-      mainColor: mainColor,
-      backgroundColor: backgroundColor,
     );
   }
 
@@ -110,10 +126,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       _isFiltered = false;
     }
     yield TaskLoaded(
-      taskList: taskList,
+      taskList,
+      mainColor,
+      backgroundColor,
       isFiltered: _isFiltered,
-      mainColor: mainColor,
-      backgroundColor: backgroundColor,
     );
   }
 
@@ -121,10 +137,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     List<Task> _taskList = await _taskRepository.deleteCompletedTasks(branchId);
     yield UpdateMainPage();
     yield TaskLoaded(
-      taskList: _taskList,
+      _taskList,
+      mainColor,
+      backgroundColor,
       isFiltered: false,
-      mainColor: mainColor,
-      backgroundColor: backgroundColor,
     );
   }
 

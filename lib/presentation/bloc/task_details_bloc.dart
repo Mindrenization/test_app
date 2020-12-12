@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:test_app/data/database/db_flickr.dart';
@@ -24,59 +26,85 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
 
   @override
   Stream<TaskDetailsState> mapEventToState(TaskDetailsEvent event) async* {
-    if (event is FetchTask) yield* _mapFetchTaskEventToState(event);
-    if (event is UpdateTask) yield* _mapUpdateTaskEventToState(event);
-    if (event is CreateStep) yield* _mapCreateStepEventToState(event);
-    if (event is DeleteStep) yield* _mapDeleteStepEventToState(event);
-    if (event is DeleteImage) yield* _mapDeleteImageEventToState(event);
-    if (event is CompleteStep) yield* _mapCompleteStepEventToState(event);
-    if (event is SetDeadline) yield* _mapSetDeadlineEventToState(event);
-    if (event is SetNotification) yield* _mapSetNotificationEventToState(event);
-    if (event is DeleteDeadline) yield* _mapDeleteDeadlineEventToState(event);
-    if (event is DeleteNotification) yield* _mapDeleteNotificationEventToState(event);
-    if (event is ChangeTaskTitle) yield* _mapChangeTaskTitleEventToState(event);
-    if (event is SaveDescription) yield* _mapSaveDescriptionEventToState(event);
-    if (event is SaveImage) yield* _mapSaveImageEventToState(event);
+    if (event is FetchTask) {
+      yield* _mapFetchTaskEventToState(event);
+    }
+    if (event is UpdateTask) {
+      yield* _mapUpdateTaskEventToState(event);
+    }
+    if (event is CreateStep) {
+      yield* _mapCreateStepEventToState(event);
+    }
+    if (event is DeleteStep) {
+      yield* _mapDeleteStepEventToState(event);
+    }
+    if (event is DeleteImage) {
+      yield* _mapDeleteImageEventToState(event);
+    }
+    if (event is CompleteStep) {
+      yield* _mapCompleteStepEventToState(event);
+    }
+    if (event is SetDeadline) {
+      yield* _mapSetDeadlineEventToState(event);
+    }
+    if (event is SetNotification) {
+      yield* _mapSetNotificationEventToState(event);
+    }
+    if (event is DeleteDeadline) {
+      yield* _mapDeleteDeadlineEventToState(event);
+    }
+    if (event is DeleteNotification) {
+      yield* _mapDeleteNotificationEventToState(event);
+    }
+    if (event is ChangeTaskTitle) {
+      yield* _mapChangeTaskTitleEventToState(event);
+    }
+    if (event is SaveDescription) {
+      yield* _mapSaveDescriptionEventToState(event);
+    }
+    if (event is SaveImage) {
+      yield* _mapSaveImageEventToState(event);
+    }
   }
 
   Stream<TaskDetailsState> _mapFetchTaskEventToState(FetchTask event) async* {
     Task _task = Repository.instance.getTask(branchId, taskId);
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapUpdateTaskEventToState(UpdateTask event) async* {
     Task _task = Repository.instance.getTask(branchId, taskId);
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapCreateStepEventToState(CreateStep event) async* {
     Task _task = await _createStep(branchId, taskId, event.title);
     yield UpdateTasksPage();
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapDeleteStepEventToState(DeleteStep event) async* {
     Task _task = await _deleteStep(branchId, taskId, event.stepId);
     yield UpdateTasksPage();
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapDeleteImageEventToState(DeleteImage event) async* {
     Task _task = await _deleteImage(branchId, taskId, event.imageId);
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapCompleteStepEventToState(CompleteStep event) async* {
     Task _task = await _completeStep(branchId, taskId, event.stepId);
     yield UpdateTasksPage();
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapSetDeadlineEventToState(SetDeadline event) async* {
     Task _task = Repository.instance.getTask(branchId, taskId);
     _task.deadline = event.deadline;
     await _dbTaskWrapper.updateTask(_task);
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapSetNotificationEventToState(SetNotification event) async* {
@@ -89,14 +117,14 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
       await NotificationService().scheduleNotification(_task);
       await _dbTaskWrapper.updateTask(_task);
     }
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapDeleteDeadlineEventToState(DeleteDeadline event) async* {
     Task _task = Repository.instance.getTask(branchId, taskId);
     _task.deadline = null;
     await _dbTaskWrapper.updateTask(_task);
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapDeleteNotificationEventToState(DeleteNotification event) async* {
@@ -104,7 +132,7 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
     await NotificationService().cancelNotification(_task);
     _task.notification = null;
     await _dbTaskWrapper.updateTask(_task);
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapChangeTaskTitleEventToState(ChangeTaskTitle event) async* {
@@ -112,23 +140,23 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
     _task.title = event.title;
     await _dbTaskWrapper.updateTask(_task);
     yield UpdateTasksPage();
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapSaveDescriptionEventToState(SaveDescription event) async* {
     Task _task = Repository.instance.getTask(branchId, taskId);
     _task.description = event.text;
     await _dbTaskWrapper.updateTask(_task);
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Stream<TaskDetailsState> _mapSaveImageEventToState(SaveImage event) async* {
-    var _file = await DefaultCacheManager().getSingleFile(event.imageUrl);
+    File _file = await DefaultCacheManager().getSingleFile(event.imageUrl);
     Task _task = Repository.instance.getTask(branchId, taskId);
     FlickrImage _newImage = FlickrImage(Uuid().v1(), taskId, _file.path);
     _task.images.add(_newImage);
     _dbFlickr.saveImage(_newImage);
-    yield TaskDetailsLoaded(task: _task);
+    yield TaskDetailsLoaded(_task);
   }
 
   Future<Task> _createStep(String _branchId, String _taskId, String _title) async {

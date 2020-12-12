@@ -50,7 +50,7 @@ class NotificationDialog extends StatelessWidget {
                 context: context,
                 initialTime: TimeOfDay.now(),
               );
-              if (_time != null)
+              if (_time != null) {
                 _deadline = DateTime(
                   _deadline.year,
                   _deadline.month,
@@ -58,7 +58,7 @@ class NotificationDialog extends StatelessWidget {
                   _time.hour,
                   _time.minute,
                 );
-              else
+              } else
                 _deadline = null;
             }
             Navigator.pop(context, _deadline);

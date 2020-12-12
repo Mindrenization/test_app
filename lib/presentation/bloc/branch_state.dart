@@ -11,11 +11,11 @@ class BranchLoaded extends BranchState {
   final double totalTasks;
   final double totalCompletedTasks;
 
-  const BranchLoaded({
+  const BranchLoaded(
     this.branchList,
-    this.totalCompletedTasks,
     this.totalTasks,
-  });
+    this.totalCompletedTasks,
+  );
 }
 
 class BranchError extends BranchState {}

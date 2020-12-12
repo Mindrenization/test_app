@@ -62,7 +62,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                               onTap: () {
                                 _taskBlocSink.add(
                                   FilterTaskList(
-                                    isFiltered: state.isFiltered,
+                                    state.isFiltered,
                                   ),
                                 );
                                 Navigator.pop(context);
@@ -92,8 +92,8 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                                     widget.onRefresh();
                                     _taskBlocSink.add(
                                       ChangeColorTheme(
-                                        mainColor: mainColor,
-                                        backgroundColor: backgroundColor,
+                                        mainColor,
+                                        backgroundColor,
                                       ),
                                     );
                                   }),
@@ -115,7 +115,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                         children: [
                           state.isFiltered
                               ? Padding(
-                                  padding: EdgeInsets.only(left: 15, top: 5),
+                                  padding: EdgeInsets.only(left: 5, bottom: 10),
                                   child: Text(
                                     'Фильтр: скрыть завершенные задачи',
                                     style: TextStyle(fontSize: 12, color: Colors.grey[800]),
@@ -152,7 +152,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
         onDelete: () {
           _taskBlocSink.add(
             DeleteTask(
-              taskId: task.id,
+              task.id,
               isFiltered: isFiltered,
             ),
           );
@@ -160,7 +160,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
         onCheck: () {
           _taskBlocSink.add(
             CompleteTask(
-              taskId: task.id,
+              task.id,
               isFiltered: isFiltered,
             ),
           );
@@ -177,7 +177,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                 onRefresh: () {
                   _taskBlocSink.add(
                     UpdateTask(
-                      taskId: task.id,
+                      task.id,
                     ),
                   );
                   widget.onRefresh();
@@ -185,14 +185,14 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                 onDelete: () {
                   _taskBlocSink.add(
                     DeleteTask(
-                      taskId: task.id,
+                      task.id,
                     ),
                   );
                 },
                 onComplete: () {
                   _taskBlocSink.add(
                     CompleteTask(
-                      taskId: task.id,
+                      task.id,
                     ),
                   );
                 },
@@ -215,9 +215,9 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
             return CreateTaskDialog(onCreate: (title, deadline, notification) {
               _taskBlocSink.add(
                 CreateTask(
-                  title: title,
-                  deadline: deadline,
-                  notification: notification,
+                  title,
+                  deadline,
+                  notification,
                 ),
               );
             });
