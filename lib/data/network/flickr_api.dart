@@ -10,9 +10,7 @@ class FlickrApi {
     final response = await http.get(url);
     final parsed = await jsonDecode(response.body);
     if (parsed["stat"] == 'ok') {
-      List<RawImage> images = parsed["photos"]["photo"]
-          .map<RawImage>((json) => RawImage.fromJson(json))
-          .toList();
+      List<RawImage> images = parsed["photos"]["photo"].map<RawImage>((json) => RawImage.fromJson(json)).toList();
       for (int i = 0; i < images.length; i++) {
         String url =
             'https://farm${images[i].farm == 0 ? 66 : images[i].farm}.staticflickr.com/${images[i].server}/${images[i].id}_${images[i].secret}.jpg';

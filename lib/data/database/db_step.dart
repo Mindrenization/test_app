@@ -22,9 +22,9 @@ class DbStep {
     await db.delete(tableStep, where: 'ID="$stepId"');
   }
 
-  Future<List<TaskStep>> fetchStepList(String id) async {
+  Future<List<TaskStep>> fetchStepList(String taskId) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(tableStep, where: 'parentID="$id"');
+    final List<Map<String, dynamic>> maps = await db.query(tableStep, where: 'parentID="$taskId"');
     return List.generate(maps.length, (i) {
       return TaskStep(maps[i]['title'],
           id: maps[i]['ID'], parentId: maps[i]['parentID'], isComplete: maps[i]['complete'] == 'true' ? true : false);
