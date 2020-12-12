@@ -45,6 +45,12 @@ class _MainPageState extends State<MainPage> {
                 child: Text('Failed to load page'),
               );
             }
+            if (state is BranchLoading) {
+              _branchBlocSink.add(FetchBranchList());
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
             if (state is BranchLoaded) {
               return Column(
                 children: [
