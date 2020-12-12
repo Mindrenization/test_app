@@ -22,7 +22,7 @@ class TaskRepository {
     await _dbTaskWrapper.deleteTask(_taskId);
     await _dbTaskWrapper.deleteAllSteps(_taskId);
     await _dbTaskWrapper.deleteAllImages(_taskId);
-    _taskList.removeWhere((element) => _task.id == element.id);
+    _taskList.removeWhere((element) => _taskId == element.id);
     return _taskList;
   }
 
