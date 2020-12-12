@@ -13,7 +13,7 @@ class DbFlickr {
     await db.insert(tableImages, image.toMap());
   }
 
-  Future<List<FlickrImage>> fetchImageList(taskId) async {
+  Future<List<FlickrImage>> fetchImageList(String taskId) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(tableImages, where: 'parentID="$taskId"');
     return List.generate(maps.length, (i) {
