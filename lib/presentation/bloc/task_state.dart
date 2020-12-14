@@ -21,6 +21,4 @@ class TaskLoaded extends TaskState {
   });
 }
 
-class TaskError extends TaskState {}
-
 class UpdateMainPage extends TaskState {}

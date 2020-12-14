@@ -11,7 +11,7 @@ import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/repository/repository.dart';
 
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
-  TaskBloc(TaskState initialState, this.branchId, this.mainColor, this.backgroundColor) : super(initialState);
+  TaskBloc(this.branchId, this.mainColor, this.backgroundColor) : super(TaskLoading());
   final String branchId;
   Color mainColor;
   Color backgroundColor;
@@ -22,26 +22,19 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Stream<TaskState> mapEventToState(TaskEvent event) async* {
     if (event is FetchTaskList) {
       yield* _mapFetchTaskListEventToState(event);
-    }
-    if (event is CreateTask) {
+    } else if (event is CreateTask) {
       yield* _mapCreateTaskEventToState(event);
-    }
-    if (event is ChangeColorTheme) {
+    } else if (event is ChangeColorTheme) {
       yield* _mapChangeColorThemeEventToState(event);
-    }
-    if (event is UpdateTask) {
+    } else if (event is UpdateTask) {
       yield* _mapUpdateTaskEventToState(event);
-    }
-    if (event is DeleteTask) {
+    } else if (event is DeleteTask) {
       yield* _mapDeleteTaskEventToState(event);
-    }
-    if (event is CompleteTask) {
+    } else if (event is CompleteTask) {
       yield* _mapCompleteTaskEventToState(event);
-    }
-    if (event is FilterTaskList) {
+    } else if (event is FilterTaskList) {
       yield* _mapFilterTaskListEventToState(event);
-    }
-    if (event is DeleteCompletedTasks) {
+    } else if (event is DeleteCompletedTasks) {
       yield* _mapDeleteCompletedTasksEventToState(event);
     }
   }

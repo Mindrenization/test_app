@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_app/presentation/bloc/flickr_bloc.dart';
 import 'package:test_app/presentation/bloc/flickr_event.dart';
 import 'package:test_app/presentation/bloc/flickr_state.dart';
+import 'package:test_app/presentation/widgets/flickr_bottom.dart';
 import 'package:test_app/presentation/widgets/save_image_dialog.dart';
 import 'package:test_app/presentation/widgets/search_appbar.dart';
 
@@ -20,17 +21,14 @@ class FlickrPage extends StatefulWidget {
 }
 
 class _FlickrPageState extends State<FlickrPage> {
-  FlickrBloc _flickrBlocSink;
+  FlickrBloc _flickrBloc;
   ScrollController _scrollController;
-  List<String> _imageList = [];
-  String _search;
-  int _page = 1;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
+    // _scrollController.addListener(_scrollListener);
   }
 
   @override
@@ -48,54 +46,40 @@ class _FlickrPageState extends State<FlickrPage> {
         child: SearchAppBar(
           color: widget.mainColor,
           onSearch: (_value) {
-            _page = 1;
-            _search = _value;
-            _flickrBlocSink.add(
+            _flickrBloc.add(
               SearchFlickr(_value),
             );
           },
         ),
       ),
       body: BlocProvider(
-        create: (context) => FlickrBloc(FlickrEmpty()),
+        create: (context) => FlickrBloc(),
         child: BlocBuilder<FlickrBloc, FlickrState>(
           builder: (context, state) {
-            _flickrBlocSink = BlocProvider.of<FlickrBloc>(context);
-            if (state is FlickrEmpty) {
-              _flickrBlocSink.add(
-                FetchFlickr(_imageList, _page),
+            _flickrBloc = BlocProvider.of<FlickrBloc>(context);
+            if (state is FlickrLoading) {
+              _flickrBloc.add(
+                FetchFlickr(),
+              );
+              return Center(
+                child: CircularProgressIndicator(),
               );
             }
-            if (state is FlickrError) {
+            if (state is EmptySearch) {
               return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.signal_wifi_off,
-                      size: 70,
-                    ),
-                    Text(
-                      'Нет соединения с интернетом',
-                    ),
-                    FlatButton(
-                      onPressed: () {
-                        _flickrBlocSink.add(
-                          FetchFlickr(_imageList, _page),
-                        );
-                      },
-                      child: Text(
-                        'Попробовать снова',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      color: widget.mainColor,
-                    )
-                  ],
+                child: Text(
+                  'По данному запросу\nкартинок не найдено',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey[700], fontSize: 20),
                 ),
               );
             }
             if (state is FlickrLoaded) {
-              _imageList = state.imageList;
+              if (state.response.error == null) {
+                _scrollController.addListener(_scrollListener);
+              } else {
+                _scrollController.removeListener(_scrollListener);
+              }
               return CustomScrollView(
                 controller: _scrollController,
                 slivers: [
@@ -109,14 +93,14 @@ class _FlickrPageState extends State<FlickrPage> {
                               context: context,
                               builder: (context) {
                                 return SaveImageDialog(
-                                  state.imageList[i],
+                                  state.response.imageList[i],
                                   onSave: widget.onSave,
                                 );
                               },
                             );
                           },
                           child: CachedNetworkImage(
-                            imageUrl: state.imageList[i],
+                            imageUrl: state.response.imageList[i],
                             fit: BoxFit.fill,
                             errorWidget: (context, url, error) {
                               return Icon(
@@ -135,7 +119,7 @@ class _FlickrPageState extends State<FlickrPage> {
                           ),
                         ),
                       ),
-                      childCount: state.imageList.length,
+                      childCount: state.response.imageList.length,
                     ),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -145,14 +129,19 @@ class _FlickrPageState extends State<FlickrPage> {
                     child: Center(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
-                        child: CircularProgressIndicator(),
+                        child: FlickrBottom(
+                          state.response.error,
+                          widget.mainColor,
+                          onTap: () => _flickrBloc.add(
+                            FetchFlickr(),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ],
               );
             }
-
             return Center(
               child: CircularProgressIndicator(),
             );
@@ -164,11 +153,7 @@ class _FlickrPageState extends State<FlickrPage> {
 
   void _scrollListener() {
     if (_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
-      if (_search == null) {
-        _flickrBlocSink.add(FetchFlickr(_imageList, ++_page));
-      } else {
-        _flickrBlocSink.add(FetchFlickr(_imageList, ++_page, search: _search));
-      }
+      _flickrBloc.add(FetchFlickr());
     }
   }
 }

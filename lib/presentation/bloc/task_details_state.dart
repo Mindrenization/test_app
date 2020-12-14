@@ -11,6 +11,4 @@ class TaskDetailsLoaded extends TaskDetailsState {
   const TaskDetailsLoaded(this.task);
 }
 
-class TaskDetailsError extends TaskDetailsState {}
-
 class UpdateTasksPage extends TaskDetailsState {}

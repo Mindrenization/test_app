@@ -42,7 +42,7 @@ class HeaderCard extends StatelessWidget {
                       height: 5,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(left: 5),
+                      padding: EdgeInsets.only(left: 4),
                       child: LinearProgressBar(
                         totalCompletedTasks / totalTasks,
                       ),

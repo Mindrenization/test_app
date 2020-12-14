@@ -17,5 +17,3 @@ class BranchLoaded extends BranchState {
     this.totalCompletedTasks,
   );
 }
-
-class BranchError extends BranchState {}

@@ -19,7 +19,7 @@ class BranchTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.all(10),
-        padding: EdgeInsets.all(15),
+        padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -60,7 +60,7 @@ class BranchTile extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 3, bottom: 4),
+              padding: EdgeInsets.symmetric(vertical: 4),
               child: Text(
                 '${branch.tasks.length} задач(и)',
                 maxLines: 1,

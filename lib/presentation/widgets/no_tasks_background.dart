@@ -33,7 +33,7 @@ class _NoTasksBackgroundState extends State<NoTasksBackground> with SingleTicker
           children: [
             widget.isFiltered
                 ? Padding(
-                    padding: EdgeInsets.only(left: 15, top: 10),
+                    padding: EdgeInsets.only(left: 14, top: 10),
                     child: Text(
                       'Фильтр: скрыть завершенные задачи',
                       style: TextStyle(fontSize: 12, color: Colors.grey[800]),

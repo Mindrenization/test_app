@@ -4,9 +4,7 @@ abstract class TaskEvent {
   const TaskEvent();
 }
 
-class FetchTaskList extends TaskEvent {
-  const FetchTaskList();
-}
+class FetchTaskList extends TaskEvent {}
 
 class CreateTask extends TaskEvent {
   final String title;
@@ -46,6 +44,4 @@ class FilterTaskList extends TaskEvent {
   const FilterTaskList(this.isFiltered);
 }
 
-class DeleteCompletedTasks extends TaskEvent {
-  const DeleteCompletedTasks();
-}
+class DeleteCompletedTasks extends TaskEvent {}

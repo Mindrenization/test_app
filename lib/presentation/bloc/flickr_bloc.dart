@@ -1,10 +1,14 @@
 import 'package:bloc/bloc.dart';
+import 'package:test_app/data/models/flickr_response.dart';
 import 'package:test_app/data/network/flickr_api_wrapper.dart';
 import 'package:test_app/presentation/bloc/flickr_event.dart';
 import 'package:test_app/presentation/bloc/flickr_state.dart';
 
 class FlickrBloc extends Bloc<FlickrEvent, FlickrState> {
-  FlickrBloc(FlickrState initialState) : super(initialState);
+  FlickrBloc() : super(FlickrLoading());
+  List<String> _imageList = [];
+  String _search;
+  int _page = 0;
 
   @override
   Stream<FlickrState> mapEventToState(FlickrEvent event) async* {
@@ -17,25 +21,32 @@ class FlickrBloc extends Bloc<FlickrEvent, FlickrState> {
   }
 
   Stream<FlickrState> _mapFetchFlickrEventToState(FetchFlickr event) async* {
-    List<String> _imageList = event.imageList;
-    var response;
-    if (event.search == null) {
-      response = await FlickrApiWrapper().fetchImages(page: event.page);
-      print(response.runtimeType);
+    FlickrResponse _response;
+    if (_search == null) {
+      _response = await FlickrApiWrapper().fetchImages(page: ++_page);
     } else {
-      response = await FlickrApiWrapper().fetchImages(search: event.search, page: event.page);
+      _response = await FlickrApiWrapper().fetchImages(search: _search, page: ++_page);
     }
-    if (response == 1) {
-      yield FlickrError();
-    } else {
-      _imageList.addAll(response);
-      yield FlickrLoaded(_imageList);
+    if (_response.imageList != null) {
+      _imageList.addAll(_response.imageList);
     }
+    _response.imageList = _imageList;
+    yield FlickrLoaded(_response);
   }
 
   Stream<FlickrState> _mapSearchFlickrEventToState(SearchFlickr event) async* {
     yield FlickrLoading();
-    List<String> _imageList = await FlickrApiWrapper().fetchImages(search: event.search);
-    yield FlickrLoaded(_imageList);
+    _page = 0;
+    _search = event.search;
+    FlickrResponse _response = await FlickrApiWrapper().fetchImages(search: event.search, page: ++_page);
+    _imageList = _response.imageList;
+    if (_response.imageList == null) {
+      _response.imageList = [];
+    }
+    if (_imageList.isEmpty) {
+      yield EmptySearch();
+    } else {
+      yield FlickrLoaded(_response);
+    }
   }
 }
