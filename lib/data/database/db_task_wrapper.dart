@@ -12,8 +12,6 @@ class DbTaskWrapper {
     List<Task> taskList = await _dbTask.fetchTaskList(branchId);
     for (int i = 0; i < taskList.length; i++) {
       taskList[i].steps = await _dbStepWrapper.getStepList(taskList[i].id);
-      taskList[i].maxSteps = taskList[i].steps.length;
-      taskList[i].completedSteps = taskList[i].steps.where((element) => element.isComplete).length;
       taskList[i].images = await _dbFlickr.fetchImageList(taskList[i].id);
     }
     return taskList;
