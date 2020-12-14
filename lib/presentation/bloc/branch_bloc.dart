@@ -65,29 +65,15 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
 
   Future<List<Branch>> _updateBranchList() async {
     List<Branch> _branchList = await Repository.instance.getBranchList();
-    _completedTasks(_branchList);
-    _uncompletedTasks(_branchList);
+
     return _branchList;
   }
 
   Future<List<Branch>> _createBranch(String title) async {
     Branch _branch = Branch(Uuid().v1(), title);
     List<Branch> _branchList = await _branchInteractor.createBranch(_branch);
-    _completedTasks(_branchList);
-    _uncompletedTasks(_branchList);
+
     return _branchList;
-  }
-
-  void _completedTasks(List<Branch> branchList) {
-    for (int i = 0; i < branchList.length; i++) {
-      branchList[i].completedTasks = branchList[i].tasks.where((Task task) => task.isComplete).length;
-    }
-  }
-
-  void _uncompletedTasks(List<Branch> branchList) {
-    for (int i = 0; i < branchList.length; i++) {
-      branchList[i].uncompletedTasks = branchList[i].tasks.where((Task task) => !task.isComplete).length;
-    }
   }
 
   double _totalTasks(branchList) {

@@ -4,10 +4,11 @@ import 'package:test_app/resources/custom_color_theme.dart';
 class Branch {
   final String id;
   final String title;
-  int completedTasks;
-  int uncompletedTasks;
   List<Task> tasks = [];
   CustomColorTheme customColorTheme = CustomColorTheme();
+
+  int get completedTasks => tasks.where((task) => task.isComplete).length;
+  int get uncompletedTasks => tasks.where((task) => !task.isComplete).length;
 
   Branch(this.id, this.title);
 

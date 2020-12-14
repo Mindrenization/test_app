@@ -7,15 +7,15 @@ class Task {
   String title;
   String description;
   bool isComplete;
-  int completedSteps;
-  int maxSteps;
   DateTime createDate = DateTime.now();
   DateTime deadline;
   List<TaskStep> steps = [];
   List<FlickrImage> images = [];
 
-  Task(this.id, this.parentId, this.title,
-      {this.deadline, this.isComplete = false, this.completedSteps = 0, this.maxSteps = 0, this.description, this.createDate});
+  int get completedSteps => steps.where((step) => step.isComplete).length;
+  int get maxSteps => steps.length;
+
+  Task(this.id, this.parentId, this.title, {this.deadline, this.isComplete = false, this.description, this.createDate});
 
   Map<String, dynamic> toMap() {
     return {

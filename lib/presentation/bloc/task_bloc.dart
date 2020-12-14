@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:uuid/uuid.dart';
 import 'package:test_app/data/repository/task_repository.dart';
 import 'package:test_app/presentation/bloc/task_event.dart';
 import 'package:test_app/presentation/bloc/task_state.dart';
 import 'package:test_app/data/database/db_task_wrapper.dart';
 import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/repository/repository.dart';
-import 'package:uuid/uuid.dart';
 
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   TaskBloc(TaskState initialState) : super(initialState);
@@ -41,18 +41,11 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     }
     if (event is FilterTaskList) {
       List<Task> taskList;
-      bool _isFiltered;
+      bool _isFiltered = !event.isFiltered;
       if (!event.isFiltered) {
-        if (Repository.instance.getTaskList(event.branchId).any((task) => task.isComplete)) {
-          taskList = Repository.instance.getTaskList(event.branchId).where((element) => !element.isComplete).toList();
-          _isFiltered = true;
-        } else {
-          taskList = Repository.instance.getTaskList(event.branchId);
-          _isFiltered = false;
-        }
+        taskList = Repository.instance.getTaskList(event.branchId).where((element) => !element.isComplete).toList();
       } else {
         taskList = Repository.instance.getTaskList(event.branchId);
-        _isFiltered = false;
       }
       yield TaskLoaded(
         taskList: taskList,
@@ -79,9 +72,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   List<Task> _updateTask(String branchId, String taskId) {
     List<Task> _taskList = Repository.instance.getTaskList(branchId);
-    Task _task = Repository.instance.getTask(branchId, taskId);
-    _task.maxSteps = _task.steps.length;
-    _task.completedSteps = _task.steps.where((element) => element.isComplete).length;
     return _taskList;
   }
 
