@@ -4,11 +4,12 @@ import 'package:test_app/data/models/task.dart';
 class Branch {
   final String id;
   final String title;
-  int completedTasks;
-  int uncompletedTasks;
   List<Task> tasks = [];
   Color mainColor = const Color(0xFF6202EE);
   Color backgroundColor = const Color.fromRGBO(181, 201, 253, 1);
+
+  int get completedTasks => tasks.where((task) => task.isComplete).length;
+  int get uncompletedTasks => tasks.where((task) => !task.isComplete).length;
 
   Branch(this.id, this.title);
 
