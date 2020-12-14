@@ -2,13 +2,9 @@ abstract class TaskDetailsEvent {
   const TaskDetailsEvent();
 }
 
-class FetchTask extends TaskDetailsEvent {
-  const FetchTask();
-}
+class FetchTask extends TaskDetailsEvent {}
 
-class UpdateTask extends TaskDetailsEvent {
-  const UpdateTask();
-}
+class UpdateTask extends TaskDetailsEvent {}
 
 class CreateStep extends TaskDetailsEvent {
   final String title;
@@ -35,13 +31,9 @@ class SetNotification extends TaskDetailsEvent {
   const SetNotification(this.notification);
 }
 
-class DeleteDeadline extends TaskDetailsEvent {
-  const DeleteDeadline();
-}
+class DeleteDeadline extends TaskDetailsEvent {}
 
-class DeleteNotification extends TaskDetailsEvent {
-  const DeleteNotification();
-}
+class DeleteNotification extends TaskDetailsEvent {}
 
 class ChangeTaskTitle extends TaskDetailsEvent {
   final String title;

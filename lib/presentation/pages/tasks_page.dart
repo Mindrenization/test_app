@@ -23,27 +23,22 @@ class TasksPage extends StatefulWidget {
 }
 
 class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMixin {
-  TaskBloc _taskBlocSink;
+  TaskBloc _taskBloc;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TaskBloc(TaskLoading(), widget.branchId, widget.mainColor, widget.backgroundColor),
+      create: (context) => TaskBloc(widget.branchId, widget.mainColor, widget.backgroundColor),
       child: BlocConsumer<TaskBloc, TaskState>(listener: (context, state) {
         if (state is UpdateMainPage) {
           widget.onRefresh();
         }
       }, builder: (context, state) {
-        _taskBlocSink = BlocProvider.of<TaskBloc>(context);
+        _taskBloc = BlocProvider.of<TaskBloc>(context);
         if (state is TaskLoading) {
-          _taskBlocSink.add(FetchTaskList());
+          _taskBloc.add(FetchTaskList());
           return Center(
             child: CircularProgressIndicator(),
-          );
-        }
-        if (state is TaskError) {
-          return Center(
-            child: Text('Failed to load page'),
           );
         }
         if (state is TaskLoaded) {
@@ -60,7 +55,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                               text: state.isFiltered ? 'Показать завершенные' : 'Скрыть завершенные',
                               icon: Icons.check_circle,
                               onTap: () {
-                                _taskBlocSink.add(
+                                _taskBloc.add(
                                   FilterTaskList(
                                     state.isFiltered,
                                   ),
@@ -74,7 +69,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                               text: 'Удалить завершенные',
                               icon: Icons.delete,
                               onTap: () {
-                                _taskBlocSink.add(
+                                _taskBloc.add(
                                   DeleteCompletedTasks(),
                                 );
                                 Navigator.pop(context);
@@ -90,7 +85,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                                   context: context,
                                   builder: (context) => ColorThemeDialog(onChange: (mainColor, backgroundColor) {
                                     widget.onRefresh();
-                                    _taskBlocSink.add(
+                                    _taskBloc.add(
                                       ChangeColorTheme(
                                         mainColor,
                                         backgroundColor,
@@ -115,7 +110,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                         children: [
                           state.isFiltered
                               ? Padding(
-                                  padding: EdgeInsets.only(left: 5, bottom: 10),
+                                  padding: EdgeInsets.only(left: 4, bottom: 10),
                                   child: Text(
                                     'Фильтр: скрыть завершенные задачи',
                                     style: TextStyle(fontSize: 12, color: Colors.grey[800]),
@@ -150,7 +145,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
         task: task,
         color: mainColor,
         onDelete: () {
-          _taskBlocSink.add(
+          _taskBloc.add(
             DeleteTask(
               task.id,
               isFiltered: isFiltered,
@@ -158,7 +153,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
           );
         },
         onCheck: () {
-          _taskBlocSink.add(
+          _taskBloc.add(
             CompleteTask(
               task.id,
               isFiltered: isFiltered,
@@ -175,7 +170,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                 mainColor: mainColor,
                 backgroundColor: backgroundColor,
                 onRefresh: () {
-                  _taskBlocSink.add(
+                  _taskBloc.add(
                     UpdateTask(
                       task.id,
                     ),
@@ -183,14 +178,14 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                   widget.onRefresh();
                 },
                 onDelete: () {
-                  _taskBlocSink.add(
+                  _taskBloc.add(
                     DeleteTask(
                       task.id,
                     ),
                   );
                 },
                 onComplete: () {
-                  _taskBlocSink.add(
+                  _taskBloc.add(
                     CompleteTask(
                       task.id,
                     ),
@@ -213,7 +208,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
           context: context,
           builder: (context) {
             return CreateTaskDialog(onCreate: (title, deadline, notification) {
-              _taskBlocSink.add(
+              _taskBloc.add(
                 CreateTask(
                   title,
                   deadline,

@@ -36,29 +36,24 @@ class TaskDetailsPage extends StatefulWidget {
 }
 
 class _TaskDetailsPageState extends State<TaskDetailsPage> {
-  TaskDetailsBloc stepBlocSink;
+  TaskDetailsBloc stepBloc;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TaskDetailsBloc(TaskDetailsLoading(), widget.branchId, widget.taskId),
+      create: (context) => TaskDetailsBloc(widget.branchId, widget.taskId),
       child: BlocConsumer<TaskDetailsBloc, TaskDetailsState>(listener: (context, state) {
         if (state is UpdateTasksPage) {
           widget.onRefresh();
         }
       }, builder: (context, state) {
-        stepBlocSink = BlocProvider.of<TaskDetailsBloc>(context);
+        stepBloc = BlocProvider.of<TaskDetailsBloc>(context);
         if (state is TaskDetailsLoading) {
-          stepBlocSink.add(
+          stepBloc.add(
             FetchTask(),
           );
           return Center(
             child: CircularProgressIndicator(),
-          );
-        }
-        if (state is TaskDetailsError) {
-          return Center(
-            child: Text('Failed to load page'),
           );
         }
         if (state is TaskDetailsLoaded) {
@@ -97,7 +92,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                       return ChangeTaskTitleDialog(
                                         state.task.title,
                                         onChange: (title) {
-                                          stepBlocSink.add(ChangeTaskTitle(title));
+                                          stepBloc.add(ChangeTaskTitle(title));
                                           widget.onRefresh();
                                         },
                                       );
@@ -150,24 +145,24 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                           state.task,
                           widget.mainColor,
                           onCreate: (title) {
-                            stepBlocSink.add(
+                            stepBloc.add(
                               CreateStep(
                                 title,
                               ),
                             );
                           },
                           onComplete: (index) {
-                            stepBlocSink.add(CompleteStep(
+                            stepBloc.add(CompleteStep(
                               state.task.steps[index].id,
                             ));
                           },
                           onSaveDescription: (text) {
-                            stepBlocSink.add(SaveDescription(
+                            stepBloc.add(SaveDescription(
                               text,
                             ));
                           },
                           onDelete: (index) {
-                            stepBlocSink.add(
+                            stepBloc.add(
                               DeleteStep(
                                 state.task.steps[index].id,
                               ),
@@ -199,14 +194,14 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                       },
                                     ) ??
                                     state.task.notification;
-                                stepBlocSink.add(
+                                stepBloc.add(
                                   SetNotification(
                                     _notification,
                                   ),
                                 );
                               },
                               onDelete: () {
-                                stepBlocSink.add(
+                                stepBloc.add(
                                   DeleteNotification(),
                                 );
                               },
@@ -231,14 +226,14 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                                       },
                                     ) ??
                                     state.task.deadline;
-                                stepBlocSink.add(
+                                stepBloc.add(
                                   SetDeadline(
                                     _deadline,
                                   ),
                                 );
                               },
                               onDelete: () {
-                                stepBlocSink.add(
+                                stepBloc.add(
                                   DeleteDeadline(),
                                 );
                               },
@@ -269,7 +264,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
       onTap: () {
         widget.onComplete();
         widget.onRefresh();
-        stepBlocSink.add(
+        stepBloc.add(
           UpdateTask(),
         );
       },
@@ -301,12 +296,12 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
     return GestureDetector(
       child: Container(
         margin: EdgeInsets.all(10),
-        padding: EdgeInsets.symmetric(horizontal: 15),
+        padding: EdgeInsets.symmetric(horizontal: 14),
         height: 25,
         child: Row(
           children: [
             Padding(
-              padding: EdgeInsets.only(right: 15),
+              padding: EdgeInsets.only(right: 16),
               child: Icon(
                 icon,
                 color: isHaveValue ? Colors.blue : Colors.grey[700],
@@ -368,7 +363,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      stepBlocSink.add(
+                      stepBloc.add(
                         DeleteImage(
                           state.task.images[i].id,
                         ),
@@ -377,7 +372,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                     child: Align(
                       alignment: Alignment.topRight,
                       child: Padding(
-                        padding: EdgeInsets.only(top: 5, right: 5),
+                        padding: EdgeInsets.only(top: 4, right: 4),
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
@@ -406,7 +401,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                     widget.mainColor,
                     widget.backgroundColor,
                     onSave: (imageUrl) {
-                      stepBlocSink.add(
+                      stepBloc.add(
                         SaveImage(
                           imageUrl: imageUrl,
                         ),

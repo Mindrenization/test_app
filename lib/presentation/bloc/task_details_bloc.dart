@@ -16,7 +16,7 @@ import 'package:test_app/data/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
-  TaskDetailsBloc(TaskDetailsState initialState, this.branchId, this.taskId) : super(initialState);
+  TaskDetailsBloc(this.branchId, this.taskId) : super(TaskDetailsLoading());
   final String branchId;
   final String taskId;
   DbStepWrapper _dbStepWrapper = DbStepWrapper();
@@ -28,41 +28,29 @@ class TaskDetailsBloc extends Bloc<TaskDetailsEvent, TaskDetailsState> {
   Stream<TaskDetailsState> mapEventToState(TaskDetailsEvent event) async* {
     if (event is FetchTask) {
       yield* _mapFetchTaskEventToState(event);
-    }
-    if (event is UpdateTask) {
+    } else if (event is UpdateTask) {
       yield* _mapUpdateTaskEventToState(event);
-    }
-    if (event is CreateStep) {
+    } else if (event is CreateStep) {
       yield* _mapCreateStepEventToState(event);
-    }
-    if (event is DeleteStep) {
+    } else if (event is DeleteStep) {
       yield* _mapDeleteStepEventToState(event);
-    }
-    if (event is DeleteImage) {
+    } else if (event is DeleteImage) {
       yield* _mapDeleteImageEventToState(event);
-    }
-    if (event is CompleteStep) {
+    } else if (event is CompleteStep) {
       yield* _mapCompleteStepEventToState(event);
-    }
-    if (event is SetDeadline) {
+    } else if (event is SetDeadline) {
       yield* _mapSetDeadlineEventToState(event);
-    }
-    if (event is SetNotification) {
+    } else if (event is SetNotification) {
       yield* _mapSetNotificationEventToState(event);
-    }
-    if (event is DeleteDeadline) {
+    } else if (event is DeleteDeadline) {
       yield* _mapDeleteDeadlineEventToState(event);
-    }
-    if (event is DeleteNotification) {
+    } else if (event is DeleteNotification) {
       yield* _mapDeleteNotificationEventToState(event);
-    }
-    if (event is ChangeTaskTitle) {
+    } else if (event is ChangeTaskTitle) {
       yield* _mapChangeTaskTitleEventToState(event);
-    }
-    if (event is SaveDescription) {
+    } else if (event is SaveDescription) {
       yield* _mapSaveDescriptionEventToState(event);
-    }
-    if (event is SaveImage) {
+    } else if (event is SaveImage) {
       yield* _mapSaveImageEventToState(event);
     }
   }

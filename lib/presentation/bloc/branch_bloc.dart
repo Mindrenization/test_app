@@ -7,21 +7,18 @@ import 'package:test_app/data/repository/repository.dart';
 import 'package:uuid/uuid.dart';
 
 class BranchBloc extends Bloc<BranchEvent, BranchState> {
-  BranchBloc(BranchState initialState) : super(initialState);
+  BranchBloc() : super(BranchLoading());
   BranchRepository _branchRepository = BranchRepository();
 
   @override
   Stream<BranchState> mapEventToState(BranchEvent event) async* {
     if (event is FetchBranchList) {
       yield* _mapFetchBranchListEventToState(event);
-    }
-    if (event is UpdateBranchList) {
+    } else if (event is UpdateBranchList) {
       yield* _mapUpdateBranchListEventToState(event);
-    }
-    if (event is CreateBranch) {
+    } else if (event is CreateBranch) {
       yield* _mapCreateBranchEventToState(event);
-    }
-    if (event is DeleteBranch) {
+    } else if (event is DeleteBranch) {
       yield* _mapDeleteBranchEventToState(event);
     }
   }
@@ -72,14 +69,12 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
 
   Future<List<Branch>> _updateBranchList() async {
     List<Branch> _branchList = await Repository.instance.getBranchList();
-
     return _branchList;
   }
 
   Future<List<Branch>> _createBranch(String title) async {
     Branch _branch = Branch(Uuid().v1(), title);
     List<Branch> _branchList = await _branchRepository.createBranch(_branch);
-
     return _branchList;
   }
 

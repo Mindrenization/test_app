@@ -3,10 +3,8 @@ abstract class FlickrEvent {
 }
 
 class FetchFlickr extends FlickrEvent {
-  final List<String> imageList;
-  final int page;
   final String search;
-  const FetchFlickr(this.imageList, this.page, {this.search});
+  const FetchFlickr({this.search});
 }
 
 class SearchFlickr extends FlickrEvent {

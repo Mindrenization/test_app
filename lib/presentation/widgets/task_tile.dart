@@ -34,7 +34,7 @@ class _TaskTileState extends State<TaskTile> {
           color: Colors.red,
           borderRadius: BorderRadius.circular(10),
         ),
-        padding: EdgeInsets.only(right: 25),
+        padding: EdgeInsets.only(right: 24),
         child: Align(
           alignment: Alignment.centerRight,
           child: Icon(

@@ -1,15 +1,14 @@
+import 'package:test_app/data/models/flickr_response.dart';
+
 abstract class FlickrState {
   const FlickrState();
 }
 
-class FlickrEmpty extends FlickrState {}
-
 class FlickrLoading extends FlickrState {}
 
 class FlickrLoaded extends FlickrState {
-  final List<String> imageList;
-
-  FlickrLoaded(this.imageList);
+  final FlickrResponse response;
+  FlickrLoaded(this.response);
 }
 
-class FlickrError extends FlickrState {}
+class EmptySearch extends FlickrState {}
