@@ -6,10 +6,10 @@ class DbBranchWrapper {
   DbBranch _dbBranch = DbBranch();
   DbTaskWrapper _dbTaskWrapper = DbTaskWrapper();
 
-  Future<List<Branch>> getBranchList() async {
+  Future<List<Branch>> fetchBranchList() async {
     List<Branch> branchList = await _dbBranch.fetchBranchList();
     for (int i = 0; i < branchList.length; i++) {
-      branchList[i].tasks = await _dbTaskWrapper.getTaskList(branchList[i].id);
+      branchList[i].tasks = await _dbTaskWrapper.fetchTaskList(branchList[i].id);
     }
     return branchList;
   }

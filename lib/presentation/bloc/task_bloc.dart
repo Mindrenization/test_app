@@ -26,8 +26,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       yield* _mapCreateTaskEventToState(event);
     } else if (event is ChangeColorTheme) {
       yield* _mapChangeColorThemeEventToState(event);
-    } else if (event is UpdateTask) {
-      yield* _mapUpdateTaskEventToState(event);
     } else if (event is DeleteTask) {
       yield* _mapDeleteTaskEventToState(event);
     } else if (event is CompleteTask) {
@@ -65,15 +63,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     mainColor = event.mainColor;
     backgroundColor = event.backgroundColor;
     List<Task> _taskList = Repository.instance.getTaskList(branchId);
-    yield TaskLoaded(
-      _taskList,
-      mainColor,
-      backgroundColor,
-    );
-  }
-
-  Stream<TaskState> _mapUpdateTaskEventToState(UpdateTask event) async* {
-    List<Task> _taskList = _updateTask(branchId, event.taskId);
     yield TaskLoaded(
       _taskList,
       mainColor,
@@ -120,7 +109,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   Stream<TaskState> _mapDeleteCompletedTasksEventToState(DeleteCompletedTasks event) async* {
-    List<Task> _taskList = await _taskRepository.deleteCompletedTasks(branchId);
+    List<Task> _taskList = Repository.instance.getTaskList(branchId);
+    await _taskRepository.deleteCompletedTasks(branchId);
     yield UpdateMainPage();
     yield TaskLoaded(
       _taskList,
@@ -140,23 +130,22 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       Uuid().v1(),
       branchId,
       title,
-      deadline: deadline,
-      notification: notification,
-      createDate: DateTime.now(),
+      DateTime.now(),
+      deadline,
+      notification,
     );
-    List<Task> _taskList = await _taskRepository.createTask(_task, branchId);
-    return _taskList;
-  }
-
-  List<Task> _updateTask(String branchId, String taskId) {
+    await _taskRepository.createTask(_task, branchId);
     List<Task> _taskList = Repository.instance.getTaskList(branchId);
     return _taskList;
   }
 
   Future<List<Task>> _deleteTask(String branchId, String taskId, bool isFiltered) async {
-    List<Task> _taskList = await _taskRepository.deleteTask(branchId, taskId);
+    await _taskRepository.deleteTask(branchId, taskId);
+    List<Task> _taskList;
     if (isFiltered) {
       _taskList = Repository.instance.getTaskList(branchId).where((element) => !element.isComplete).toList();
+    } else {
+      _taskList = Repository.instance.getTaskList(branchId);
     }
     return _taskList;
   }
@@ -169,6 +158,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     if (isFiltered) {
       _taskList = Repository.instance.getTaskList(branchId).where((element) => !element.isComplete).toList();
     }
+
     return _taskList;
   }
 

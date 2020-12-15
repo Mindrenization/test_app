@@ -8,10 +8,10 @@ class DbTaskWrapper {
   DbStepWrapper _dbStepWrapper = DbStepWrapper();
   DbFlickr _dbFlickr = DbFlickr();
 
-  Future<List<Task>> getTaskList(String branchId) async {
+  Future<List<Task>> fetchTaskList(String branchId) async {
     List<Task> taskList = await _dbTask.fetchTaskList(branchId);
     for (int i = 0; i < taskList.length; i++) {
-      taskList[i].steps = await _dbStepWrapper.getStepList(taskList[i].id);
+      taskList[i].steps = await _dbStepWrapper.fetchStepList(taskList[i].id);
       taskList[i].images = await _dbFlickr.fetchImageList(taskList[i].id);
     }
     return taskList;
@@ -27,10 +27,6 @@ class DbTaskWrapper {
 
   Future<void> deleteTask(String taskId) async {
     await _dbTask.deleteTask(taskId);
-  }
-
-  Future<void> deleteCompletedTasks(String branchId) async {
-    await _dbTask.deleteCompletedTasks(branchId);
   }
 
   Future<void> deleteAllSteps(String taskId) async {

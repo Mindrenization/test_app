@@ -171,9 +171,7 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                 backgroundColor: backgroundColor,
                 onRefresh: () {
                   _taskBloc.add(
-                    UpdateTask(
-                      task.id,
-                    ),
+                    FetchTaskList(),
                   );
                   widget.onRefresh();
                 },

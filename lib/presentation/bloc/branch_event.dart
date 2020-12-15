@@ -15,5 +15,3 @@ class DeleteBranch extends BranchEvent {
   final Branch branch;
   const DeleteBranch(this.branch);
 }
-
-class UpdateBranchList extends BranchEvent {}

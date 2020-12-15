@@ -24,11 +24,6 @@ class DbTask {
     await db.delete(tableTask, where: 'ID="$taskId"');
   }
 
-  Future<void> deleteCompletedTasks(String branchId) async {
-    final db = await database;
-    await db.delete(tableTask, where: 'parentID="$branchId" AND complete="true"');
-  }
-
   Future<void> deleteAllSteps(String taskId) async {
     final db = await database;
     await db.delete(tableStep, where: 'parentID="$taskId"');
@@ -52,11 +47,11 @@ class DbTask {
         maps[i]['ID'],
         maps[i]['parentID'],
         maps[i]['title'],
+        DateTime.fromMillisecondsSinceEpoch(maps[i]['createDate']),
+        maps[i]['deadline'] == null ? null : DateTime.fromMillisecondsSinceEpoch(maps[i]['deadline']),
+        maps[i]['notification'] == null ? null : DateTime.fromMillisecondsSinceEpoch(maps[i]['notification']),
         isComplete: maps[i]['complete'] == 'true' ? true : false,
         description: maps[i]['description'],
-        createDate: DateTime.fromMillisecondsSinceEpoch(maps[i]['createDate']),
-        deadline: maps[i]['deadline'] == null ? null : DateTime.fromMillisecondsSinceEpoch(maps[i]['deadline']),
-        notification: maps[i]['notification'] == null ? null : DateTime.fromMillisecondsSinceEpoch(maps[i]['notification']),
       );
     });
   }

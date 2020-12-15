@@ -86,7 +86,7 @@ class _MainPageState extends State<MainPage> {
                                     state.branchList[index].mainColor,
                                     state.branchList[index].backgroundColor,
                                     onRefresh: () {
-                                      _branchBloc.add(UpdateBranchList());
+                                      _branchBloc.add(FetchBranchList());
                                     },
                                   ),
                                 ),
@@ -126,6 +126,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget _addBranchButton(state) {
     return GestureDetector(
+      key: Key('addBranchButton'),
       onTap: () {
         showDialog(
           context: context,

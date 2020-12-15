@@ -3,16 +3,17 @@ import 'package:mockito/mockito.dart';
 import 'package:test_app/data/models/branch.dart';
 import 'package:test_app/data/repository/branch_repository.dart';
 
-class MockBranchRepository extends Mock implements BranchRepository {}
+class BranchRepositoryMock extends Mock implements BranchRepository {}
 
 void main() {
   group('BranchRepository', () {
     BranchRepository branchRepository;
     setUp(() {
-      branchRepository = MockBranchRepository();
+      branchRepository = BranchRepositoryMock();
     });
     test('Создание ветки', () async {
-      await branchRepository.createBranch(Branch('', ''));
+      Branch branch = Branch('', '');
+      await branchRepository.createBranch(branch);
       verify(branchRepository.createBranch(any));
     });
     test('Удаление ветки', () async {

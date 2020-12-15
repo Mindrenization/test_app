@@ -5,24 +5,42 @@ import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
 
 class Repository {
-  static final instance = Repository();
+  static final Repository instance = Repository();
   List<Branch> _branchList;
 
   Future<List<Branch>> getBranchList() async {
     DbBranchWrapper _dbBranchWrapper = DbBranchWrapper();
-    return Repository.instance._branchList = _branchList ?? await _dbBranchWrapper.getBranchList();
+    return Repository.instance._branchList = _branchList ?? await _dbBranchWrapper.fetchBranchList();
   }
 
-  Branch getBranch(String id) {
-    return _branchList.firstWhere((element) => id == element.id);
+  Branch getBranch(String branchId) {
+    return _branchList.firstWhere((branch) => branchId == branch.id);
   }
 
-  List<Task> getTaskList(String id) {
-    return getBranch(id).tasks;
+  void createBranch(Branch branch) {
+    _branchList.add(branch);
+  }
+
+  void deleteBranch(String branchId) {
+    _branchList.removeWhere((branch) => branchId == branch.id);
+  }
+
+  List<Task> getTaskList(String branchId) {
+    return getBranch(branchId).tasks;
   }
 
   Task getTask(String branchId, String taskId) {
-    return getBranch(branchId).tasks.firstWhere((element) => taskId == element.id);
+    return getBranch(branchId).tasks.firstWhere((task) => taskId == task.id);
+  }
+
+  void createTask(Task task, String branchId) {
+    Branch _branch = getBranch(branchId);
+    _branch.tasks.add(task);
+  }
+
+  void deleteTask(String branchId, String taskId) {
+    Branch _branch = getBranch(branchId);
+    _branch.tasks.removeWhere((task) => taskId == task.id);
   }
 
   FlickrImage getImage(branchId, taskId, imageId) {
@@ -35,5 +53,25 @@ class Repository {
 
   TaskStep getStep(String branchId, String taskId, String stepId) {
     return getStepList(branchId, taskId).firstWhere((element) => stepId == element.id);
+  }
+
+  void createStep(String branchId, String taskId, TaskStep step) {
+    Task _task = getTask(branchId, taskId);
+    _task.steps.add(step);
+  }
+
+  void deleteStep(String branchId, String taskId, String stepId) {
+    Task _task = getTask(branchId, taskId);
+    _task.steps.removeWhere((step) => stepId == step.id);
+  }
+
+  void saveImage(String branchId, String taskId, FlickrImage image) {
+    Task _task = getTask(branchId, taskId);
+    _task.images.add(image);
+  }
+
+  void deleteImage(String branchId, String taskId, String imageId) {
+    Task _task = getTask(branchId, taskId);
+    _task.images.removeWhere((image) => imageId == image.id);
   }
 }

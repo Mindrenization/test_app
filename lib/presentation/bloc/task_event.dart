@@ -13,11 +13,6 @@ class CreateTask extends TaskEvent {
   const CreateTask(this.title, this.deadline, this.notification);
 }
 
-class UpdateTask extends TaskEvent {
-  final String taskId;
-  const UpdateTask(this.taskId);
-}
-
 class ChangeColorTheme extends TaskEvent {
   final Color mainColor;
   final Color backgroundColor;
