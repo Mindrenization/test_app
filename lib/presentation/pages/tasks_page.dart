@@ -83,15 +83,18 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                               onTap: () {
                                 showBottomSheet(
                                   context: context,
-                                  builder: (context) => ColorThemeDialog(onChange: (mainColor, backgroundColor) {
-                                    widget.onRefresh();
-                                    _taskBloc.add(
-                                      ChangeColorTheme(
-                                        mainColor,
-                                        backgroundColor,
-                                      ),
-                                    );
-                                  }),
+                                  builder: (context) => ColorThemeDialog(
+                                    state.mainColor,
+                                    onChange: (mainColor, backgroundColor) {
+                                      widget.onRefresh();
+                                      _taskBloc.add(
+                                        ChangeColorTheme(
+                                          mainColor,
+                                          backgroundColor,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 );
                                 Navigator.pop(context);
                               },

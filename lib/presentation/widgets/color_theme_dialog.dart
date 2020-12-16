@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:test_app/presentation/constants/color_themes.dart';
 
 // Модальное окно для выбора цветовой темы ветки
 class ColorThemeDialog extends StatefulWidget {
+  final Color currentMainColor;
   final Function onChange;
-  ColorThemeDialog({
+  ColorThemeDialog(
+    this.currentMainColor, {
     this.onChange,
   });
 
@@ -14,6 +17,14 @@ class ColorThemeDialog extends StatefulWidget {
 class _ColorThemeDialogState extends State<ColorThemeDialog> {
   Color _mainColor;
   Color _backgroundColor;
+  Color _currentMainColor;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentMainColor = widget.currentMainColor;
+  }
+
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
@@ -36,19 +47,11 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                _radioTheme(Colors.orange[700]),
-                Container(
-                  width: 10,
-                ),
-                _radioTheme(Colors.green[700]),
-                Container(
-                  width: 10,
-                ),
-                _radioTheme(Colors.cyan[800]),
-                Container(
-                  width: 10,
-                ),
-                _radioTheme(const Color(0xFF6202EE)),
+                for (int i = 0; i < ColorThemes.colorThemes.length; i++)
+                  Padding(
+                    padding: EdgeInsets.only(right: 14),
+                    child: _radioTheme(ColorThemes.colorThemes[i].mainColor, i),
+                  )
               ],
             )
           ],
@@ -57,7 +60,7 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
     );
   }
 
-  Widget _radioTheme(Color color) {
+  Widget _radioTheme(Color color, int index) {
     return Container(
       height: 15,
       width: 15,
@@ -65,30 +68,20 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
       child: Radio(
         activeColor: Colors.black,
         value: color,
-        groupValue: _mainColor,
+        groupValue: _currentMainColor,
         onChanged: (value) {
-          _onTap(value);
+          _onTap(value, index);
         },
       ),
     );
   }
 
-  void _onTap(value) {
+  void _onTap(Color value, int index) {
     setState(
       () {
-        if (value == Colors.orange[700]) {
-          _mainColor = value;
-          _backgroundColor = Colors.orange[100];
-        } else if (value == Colors.green[700]) {
-          _mainColor = value;
-          _backgroundColor = Colors.green[100];
-        } else if (value == Colors.cyan[800]) {
-          _mainColor = value;
-          _backgroundColor = Colors.cyan[100];
-        } else if (value == const Color(0xFF6202EE)) {
-          _mainColor = value;
-          _backgroundColor = const Color.fromRGBO(181, 201, 253, 1);
-        }
+        _currentMainColor = ColorThemes.colorThemes[index].mainColor;
+        _mainColor = ColorThemes.colorThemes[index].mainColor;
+        _backgroundColor = ColorThemes.colorThemes[index].backgroundColor;
       },
     );
     widget.onChange(_mainColor, _backgroundColor);
