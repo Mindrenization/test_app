@@ -11,9 +11,6 @@ class Branch {
   int get completedTasks => tasks.where((task) => task.isComplete).length;
   int get uncompletedTasks => tasks.where((task) => !task.isComplete).length;
 
-  int get completedTasks => tasks.where((task) => task.isComplete).length;
-  int get uncompletedTasks => tasks.where((task) => !task.isComplete).length;
-
   Branch(this.id, this.title);
 
   Map<String, dynamic> toMap() {
