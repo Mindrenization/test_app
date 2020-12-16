@@ -12,7 +12,7 @@ class Branch {
   int get uncompletedTasks => tasks.where((task) => !task.isComplete).length;
   int get totalTasks => tasks.length;
 
-  Branch(this.id, this.title);
+  Branch(this.id, this.title, {this.tasks});
 
   Map<String, dynamic> toMap() {
     return {

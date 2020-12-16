@@ -6,7 +6,7 @@ import 'package:test_app/presentation/widgets/branch_tile.dart';
 void main() {
   group('BranchTile', () {
     testWidgets('Отображается название ветки', (WidgetTester tester) async {
-      final branch = Branch('1', 'Branch1');
+      final branch = Branch('1', 'Branch1', tasks: []);
       await tester.pumpWidget(
         MaterialApp(
           home: BranchTile(

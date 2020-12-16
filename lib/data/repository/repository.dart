@@ -5,16 +5,21 @@ import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
 
 class Repository {
-  static final Repository instance = Repository();
+  static final Repository _instance = Repository._();
+  Repository._();
   List<Branch> _branchList;
+
+  static Repository getInstance() {
+    return _instance;
+  }
 
   Future<List<Branch>> getBranchList() async {
     DbBranchWrapper _dbBranchWrapper = DbBranchWrapper();
-    return Repository.instance._branchList = _branchList ?? await _dbBranchWrapper.fetchBranchList();
+    return Repository._instance._branchList = _branchList ?? await _dbBranchWrapper.fetchBranchList();
   }
 
   Branch getBranch(String branchId) {
-    return _branchList.firstWhere((branch) => branchId == branch.id);
+    return _branchList.firstWhere((branch) => branchId == branch.id, orElse: () => null);
   }
 
   void createBranch(Branch branch) {
@@ -30,7 +35,7 @@ class Repository {
   }
 
   Task getTask(String branchId, String taskId) {
-    return getBranch(branchId).tasks.firstWhere((task) => taskId == task.id);
+    return getBranch(branchId).tasks.firstWhere((task) => taskId == task.id, orElse: () => null);
   }
 
   void createTask(Task task, String branchId) {
@@ -44,7 +49,7 @@ class Repository {
   }
 
   FlickrImage getImage(branchId, taskId, imageId) {
-    return getTask(branchId, taskId).images.firstWhere((element) => imageId == element.id);
+    return getTask(branchId, taskId).images.firstWhere((element) => imageId == element.id, orElse: () => null);
   }
 
   List<TaskStep> getStepList(String branchId, String taskId) {
@@ -52,7 +57,7 @@ class Repository {
   }
 
   TaskStep getStep(String branchId, String taskId, String stepId) {
-    return getStepList(branchId, taskId).firstWhere((element) => stepId == element.id);
+    return getStepList(branchId, taskId).firstWhere((element) => stepId == element.id, orElse: () => null);
   }
 
   void createStep(String branchId, String taskId, TaskStep step) {
