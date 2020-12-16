@@ -16,22 +16,12 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  BranchBloc branchBlocSink;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  BranchBloc _branchBloc;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => BranchBloc(BranchLoading()),
+      create: (context) => BranchBloc(),
       child: Scaffold(
         backgroundColor: const Color.fromRGBO(181, 201, 253, 1),
         appBar: AppBar(
@@ -43,20 +33,9 @@ class _MainPageState extends State<MainPage> {
         ),
         body: BlocBuilder<BranchBloc, BranchState>(
           builder: (context, state) {
-            branchBlocSink = BlocProvider.of<BranchBloc>(context);
+            _branchBloc = BlocProvider.of<BranchBloc>(context);
             if (state is BranchLoading) {
-              branchBlocSink.add(FetchBranchList());
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            if (state is BranchError) {
-              return Center(
-                child: Text('Failed to load page'),
-              );
-            }
-            if (state is BranchLoading) {
-              branchBlocSink.add(FetchBranchList());
+              _branchBloc.add(FetchBranchList());
               return Center(
                 child: CircularProgressIndicator(),
               );
@@ -67,17 +46,20 @@ class _MainPageState extends State<MainPage> {
                   Container(
                     height: 130,
                     width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.fromLTRB(10, 25, 10, 10),
-                    padding: EdgeInsets.all(15),
+                    margin: EdgeInsets.fromLTRB(10, 24, 10, 10),
+                    padding: EdgeInsets.all(14),
                     decoration: BoxDecoration(color: const Color(0xFF86A5F5), borderRadius: BorderRadius.circular(20), boxShadow: [
                       BoxShadow(offset: Offset.fromDirection(1.5, 3), color: Colors.black26, spreadRadius: 0.1, blurRadius: 3),
                     ]),
-                    child: HeaderCard(state),
+                    child: HeaderCard(
+                      totalTasks: state.totalTasks,
+                      totalCompletedTasks: state.totalCompletedTasks,
+                    ),
                   ),
                   Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(left: 15, top: 15),
+                        padding: EdgeInsets.only(left: 14, top: 14),
                         child: Text(
                           'Ветки задач',
                           style: TextStyle(
@@ -85,7 +67,7 @@ class _MainPageState extends State<MainPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                   Expanded(
@@ -101,9 +83,10 @@ class _MainPageState extends State<MainPage> {
                                 MaterialPageRoute(
                                   builder: (context) => TasksPage(
                                     state.branchList[index].id,
-                                    state.branchList[index].customColorTheme,
+                                    state.branchList[index].mainColor,
+                                    state.branchList[index].backgroundColor,
                                     onRefresh: () {
-                                      branchBlocSink.add(UpdateBranchList());
+                                      _branchBloc.add(UpdateBranchList());
                                     },
                                   ),
                                 ),
@@ -115,7 +98,7 @@ class _MainPageState extends State<MainPage> {
                                   builder: (context) {
                                     return DeleteBranchDialog(
                                       onDelete: () {
-                                        branchBlocSink.add(
+                                        _branchBloc.add(
                                           DeleteBranch(
                                             state.branchList[index],
                                           ),
@@ -149,7 +132,7 @@ class _MainPageState extends State<MainPage> {
           builder: (context) {
             return CreateBranchDialog(
               onCreate: (title) {
-                branchBlocSink.add(CreateBranch(title));
+                _branchBloc.add(CreateBranch(title));
               },
             );
           },

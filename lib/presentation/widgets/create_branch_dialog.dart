@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-// Модал создания ветки
+// Модальное окно для создания ветки
 class CreateBranchDialog extends StatefulWidget {
   final Function onCreate;
-  CreateBranchDialog({this.onCreate});
+  CreateBranchDialog({
+    this.onCreate,
+  });
   @override
   _CreateBranchDialogState createState() => _CreateBranchDialogState();
 }
@@ -24,11 +26,9 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
         ),
         Container(
           child: TextField(
-            maxLength: 30,
             onEditingComplete: () => _complete(_titleController.text),
             controller: _titleController,
-            decoration: InputDecoration(
-                hintText: 'Введите название списка', isDense: true),
+            decoration: InputDecoration(hintText: 'Введите название списка', isDense: true),
           ),
         ),
         Container(

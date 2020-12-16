@@ -7,7 +7,7 @@ class DbBranchWrapper {
   DbTaskWrapper _dbTaskWrapper = DbTaskWrapper();
 
   Future<List<Branch>> getBranchList() async {
-    var branchList = await _dbBranch.fetchBranchList();
+    List<Branch> branchList = await _dbBranch.fetchBranchList();
     for (int i = 0; i < branchList.length; i++) {
       branchList[i].tasks = await _dbTaskWrapper.getTaskList(branchList[i].id);
     }
@@ -20,6 +20,5 @@ class DbBranchWrapper {
 
   Future<void> deleteBranch(String branchId) async {
     await _dbBranch.deleteBranch(branchId);
-    await _dbBranch.deleteAllTasks(branchId);
   }
 }

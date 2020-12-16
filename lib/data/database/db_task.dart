@@ -56,6 +56,7 @@ class DbTask {
         description: maps[i]['description'],
         createDate: DateTime.fromMillisecondsSinceEpoch(maps[i]['createDate']),
         deadline: maps[i]['deadline'] == null ? null : DateTime.fromMillisecondsSinceEpoch(maps[i]['deadline']),
+        notification: maps[i]['notification'] == null ? null : DateTime.fromMillisecondsSinceEpoch(maps[i]['notification']),
       );
     });
   }

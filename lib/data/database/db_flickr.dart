@@ -8,7 +8,7 @@ const tableTask = 'task';
 class DbFlickr {
   Future<Database> database = Db.sharedInstance.database;
 
-  Future<void> createImage(FlickrImage image) async {
+  Future<void> saveImage(FlickrImage image) async {
     final db = await database;
     await db.insert(tableImages, image.toMap());
   }

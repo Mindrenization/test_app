@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 class ChangeTaskTitleDialog extends StatefulWidget {
   final String oldTitle;
   final Function onChange;
-  ChangeTaskTitleDialog(this.oldTitle, {this.onChange});
+  ChangeTaskTitleDialog(
+    this.oldTitle, {
+    this.onChange,
+  });
   @override
   _ChangeTaskTitleDialogState createState() => _ChangeTaskTitleDialogState();
 }

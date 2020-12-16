@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:test_app/data/models/branch.dart';
 import 'package:test_app/presentation/widgets/circular_progress_bar.dart';
 
+// Карточка ветки
 class BranchTile extends StatelessWidget {
   final Branch branch;
   final VoidCallback onTap;
   final VoidCallback onDelete;
-  BranchTile(this.branch, {this.onTap, this.onDelete});
+  BranchTile(
+    this.branch, {
+    this.onTap,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +19,7 @@ class BranchTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.all(10),
-        padding: EdgeInsets.all(15),
+        padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -37,7 +42,7 @@ class BranchTile extends StatelessWidget {
               children: [
                 CircularProgressBar(
                   branch.tasks.length == 0 ? 0 : branch.completedTasks / branch.tasks.length,
-                  branch.customColorTheme.mainColor,
+                  branch.mainColor,
                 ),
                 GestureDetector(
                   onTap: onDelete,
@@ -55,7 +60,7 @@ class BranchTile extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 3, bottom: 3),
+              padding: EdgeInsets.symmetric(vertical: 4),
               child: Text(
                 '${branch.tasks.length} задач(и)',
                 maxLines: 1,
@@ -68,8 +73,8 @@ class BranchTile extends StatelessWidget {
               children: [
                 _sticker(
                   text: '${branch.completedTasks} сделано',
-                  color: branch.customColorTheme.backgroundColor,
-                  textColor: branch.customColorTheme.mainColor,
+                  color: branch.backgroundColor,
+                  textColor: branch.mainColor,
                   context: context,
                 ),
                 _sticker(

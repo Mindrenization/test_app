@@ -10,54 +10,42 @@ import 'package:test_app/presentation/widgets/task_tile.dart';
 import 'package:test_app/presentation/widgets/popup_button.dart';
 import 'package:test_app/presentation/widgets/create_task_dialog.dart';
 import 'package:test_app/presentation/widgets/color_theme_dialog.dart';
-import 'package:test_app/resources/custom_color_theme.dart';
 
 // Список задач
 class TasksPage extends StatefulWidget {
   final String branchId;
-  final CustomColorTheme customColorTheme;
+  final Color mainColor;
+  final Color backgroundColor;
   final VoidCallback onRefresh;
-  TasksPage(this.branchId, this.customColorTheme, {this.onRefresh});
+  TasksPage(this.branchId, this.mainColor, this.backgroundColor, {this.onRefresh});
   @override
   _TasksPageState createState() => _TasksPageState();
 }
 
 class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMixin {
-  TaskBloc _taskBlocSink;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  TaskBloc _taskBloc;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TaskBloc(TaskLoading()),
-      child: BlocBuilder<TaskBloc, TaskState>(builder: (context, state) {
-        _taskBlocSink = BlocProvider.of<TaskBloc>(context);
+      create: (context) => TaskBloc(widget.branchId, widget.mainColor, widget.backgroundColor),
+      child: BlocConsumer<TaskBloc, TaskState>(listener: (context, state) {
+        if (state is UpdateMainPage) {
+          widget.onRefresh();
+        }
+      }, builder: (context, state) {
+        _taskBloc = BlocProvider.of<TaskBloc>(context);
         if (state is TaskLoading) {
-          _taskBlocSink.add(FetchTaskList(widget.branchId));
+          _taskBloc.add(FetchTaskList());
           return Center(
             child: CircularProgressIndicator(),
           );
         }
-        if (state is TaskError) {
-          return Center(
-            child: Text('Failed to load page'),
-          );
-        }
         if (state is TaskLoaded) {
-          widget.onRefresh();
           return Scaffold(
-            backgroundColor: widget.customColorTheme.backgroundColor,
+            backgroundColor: state.backgroundColor,
             appBar: AppBar(
-              backgroundColor: widget.customColorTheme.mainColor,
+              backgroundColor: state.mainColor,
               title: Text('Задачи', style: TextStyle(color: Colors.white)),
               actions: [
                 PopupMenuButton(
@@ -67,10 +55,9 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                               text: state.isFiltered ? 'Показать завершенные' : 'Скрыть завершенные',
                               icon: Icons.check_circle,
                               onTap: () {
-                                _taskBlocSink.add(
+                                _taskBloc.add(
                                   FilterTaskList(
-                                    branchId: widget.branchId,
-                                    isFiltered: state.isFiltered,
+                                    state.isFiltered,
                                   ),
                                 );
                                 Navigator.pop(context);
@@ -82,10 +69,8 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                               text: 'Удалить завершенные',
                               icon: Icons.delete,
                               onTap: () {
-                                _taskBlocSink.add(
-                                  DeleteCompletedTasks(
-                                    branchId: widget.branchId,
-                                  ),
+                                _taskBloc.add(
+                                  DeleteCompletedTasks(),
                                 );
                                 Navigator.pop(context);
                               },
@@ -99,15 +84,17 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
                                 showBottomSheet(
                                   context: context,
                                   builder: (context) => ColorThemeDialog(
-                                      customColorTheme: widget.customColorTheme,
-                                      onChange: () {
-                                        widget.onRefresh();
-                                        _taskBlocSink.add(
-                                          ChangeColorTheme(
-                                            branchId: widget.branchId,
-                                          ),
-                                        );
-                                      }),
+                                    state.mainColor,
+                                    onChange: (mainColor, backgroundColor) {
+                                      widget.onRefresh();
+                                      _taskBloc.add(
+                                        ChangeColorTheme(
+                                          mainColor,
+                                          backgroundColor,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 );
                                 Navigator.pop(context);
                               },
@@ -118,20 +105,31 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
             ),
             body: state.taskList.isEmpty || (state.taskList.isEmpty && state.isFiltered)
                 ? NoTasksBackground(state.isFiltered)
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      state.isFiltered
-                          ? Padding(
-                              padding: EdgeInsets.only(left: 15, top: 5),
-                              child: Text(
-                                'Фильтр: скрыть завершенные задачи',
-                                style: TextStyle(fontSize: 12, color: Colors.grey[800]),
-                              ),
-                            )
-                          : Container(),
-                      for (int index = 0; index < state.taskList.length; index++) taskListView(state.taskList[index], state.isFiltered),
-                    ],
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          state.isFiltered
+                              ? Padding(
+                                  padding: EdgeInsets.only(left: 4, bottom: 10),
+                                  child: Text(
+                                    'Фильтр: скрыть завершенные задачи',
+                                    style: TextStyle(fontSize: 12, color: Colors.grey[800]),
+                                  ),
+                                )
+                              : Container(),
+                          for (int index = 0; index < state.taskList.length; index++)
+                            taskListView(
+                              state.taskList[index],
+                              state.isFiltered,
+                              state.mainColor,
+                              state.backgroundColor,
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
             floatingActionButton: addTaskButton(),
           );
@@ -143,26 +141,24 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
     );
   }
 
-  Widget taskListView(Task task, bool isFiltered) {
+  Widget taskListView(Task task, bool isFiltered, Color mainColor, Color backgroundColor) {
     return Padding(
-      padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+      padding: EdgeInsets.only(bottom: 10),
       child: TaskTile(
         task: task,
-        color: widget.customColorTheme.mainColor,
+        color: mainColor,
         onDelete: () {
-          _taskBlocSink.add(
+          _taskBloc.add(
             DeleteTask(
-              branchId: widget.branchId,
-              taskId: task.id,
+              task.id,
               isFiltered: isFiltered,
             ),
           );
         },
         onCheck: () {
-          _taskBlocSink.add(
+          _taskBloc.add(
             CompleteTask(
-              taskId: task.id,
-              branchId: widget.branchId,
+              task.id,
               isFiltered: isFiltered,
             ),
           );
@@ -174,29 +170,27 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
               builder: (context) => TaskDetailsPage(
                 branchId: widget.branchId,
                 taskId: task.id,
-                customColorTheme: widget.customColorTheme,
+                mainColor: mainColor,
+                backgroundColor: backgroundColor,
                 onRefresh: () {
-                  _taskBlocSink.add(
+                  _taskBloc.add(
                     UpdateTask(
-                      branchId: widget.branchId,
-                      taskId: task.id,
+                      task.id,
                     ),
                   );
                   widget.onRefresh();
                 },
                 onDelete: () {
-                  _taskBlocSink.add(
+                  _taskBloc.add(
                     DeleteTask(
-                      branchId: widget.branchId,
-                      taskId: task.id,
+                      task.id,
                     ),
                   );
                 },
                 onComplete: () {
-                  _taskBlocSink.add(
+                  _taskBloc.add(
                     CompleteTask(
-                      taskId: task.id,
-                      branchId: widget.branchId,
+                      task.id,
                     ),
                   );
                 },
@@ -216,12 +210,12 @@ class _TasksPageState extends State<TasksPage> with SingleTickerProviderStateMix
         await showDialog(
           context: context,
           builder: (context) {
-            return CreateTaskDialog(onCreate: (title, deadline) {
-              _taskBlocSink.add(
+            return CreateTaskDialog(onCreate: (title, deadline, notification) {
+              _taskBloc.add(
                 CreateTask(
-                  branchId: widget.branchId,
-                  title: title,
-                  deadline: deadline,
+                  title,
+                  deadline,
+                  notification,
                 ),
               );
             });

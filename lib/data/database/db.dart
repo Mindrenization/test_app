@@ -17,7 +17,8 @@ CREATE TABLE "task"(
   "complete" TEXT NOT NULL,
   "description" TEXT,
   "createDate" INTEGER,
-  "deadline" INTEGER
+  "deadline" INTEGER,
+  "notification" INTEGER
 );''';
 const sqlCreateStatementStep = '''
 CREATE TABLE "step"(

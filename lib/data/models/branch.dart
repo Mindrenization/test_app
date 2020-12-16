@@ -1,11 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:test_app/data/models/task.dart';
-import 'package:test_app/resources/custom_color_theme.dart';
 
 class Branch {
   final String id;
   final String title;
   List<Task> tasks = [];
-  CustomColorTheme customColorTheme = CustomColorTheme();
+  Color mainColor = const Color(0xFF6202EE);
+  Color backgroundColor = const Color.fromRGBO(181, 201, 253, 1);
 
   int get completedTasks => tasks.where((task) => task.isComplete).length;
   int get uncompletedTasks => tasks.where((task) => !task.isComplete).length;

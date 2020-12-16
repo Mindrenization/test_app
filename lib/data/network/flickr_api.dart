@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:test_app/data/models/flickr_response.dart';
 import 'package:test_app/data/models/raw_image.dart';
 
 class FlickrApi {
-  Future<List<String>> fetchImages({String search, int page}) async {
+  Future<FlickrResponse> fetchImages({String search, int page}) async {
     List<String> _imageList = [];
-    String url =
+    String _url =
         'https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=5750a56ca9958c60044e816bb5e24757&tags=$search&per_page=20&page=$page&format=json&nojsoncallback=1';
-    final response = await http.get(url);
+    final response = await http.get(_url);
     final parsed = await jsonDecode(response.body);
     if (parsed["stat"] == 'ok') {
       List<RawImage> images = parsed["photos"]["photo"].map<RawImage>((json) => RawImage.fromJson(json)).toList();
@@ -16,7 +17,8 @@ class FlickrApi {
             'https://farm${images[i].farm == 0 ? 66 : images[i].farm}.staticflickr.com/${images[i].server}/${images[i].id}_${images[i].secret}.jpg';
         _imageList.add(url);
       }
+      return FlickrResponse(imageList: _imageList);
     }
-    return _imageList;
+    return FlickrResponse(error: 'server error');
   }
 }

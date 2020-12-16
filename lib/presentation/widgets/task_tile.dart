@@ -8,7 +8,13 @@ class TaskTile extends StatefulWidget {
   final VoidCallback onDelete;
   final VoidCallback onTap;
   final VoidCallback onCheck;
-  TaskTile({this.task, this.color, this.onDelete, this.onTap, this.onCheck});
+  TaskTile({
+    this.task,
+    this.color,
+    this.onDelete,
+    this.onTap,
+    this.onCheck,
+  });
 
   @override
   _TaskTileState createState() => _TaskTileState();
@@ -28,7 +34,7 @@ class _TaskTileState extends State<TaskTile> {
           color: Colors.red,
           borderRadius: BorderRadius.circular(10),
         ),
-        padding: EdgeInsets.only(right: 25),
+        padding: EdgeInsets.only(right: 24),
         child: Align(
           alignment: Alignment.centerRight,
           child: Icon(
@@ -41,7 +47,6 @@ class _TaskTileState extends State<TaskTile> {
         onTap: widget.onTap,
         child: Container(
           padding: EdgeInsets.all(10),
-          width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -55,21 +60,22 @@ class _TaskTileState extends State<TaskTile> {
                   widget.onCheck();
                 },
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.task.title,
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  widget.task.maxSteps == 0
-                      ? Container()
-                      : Text(
-                          '${widget.task.completedSteps} из ${widget.task.maxSteps}',
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.grey[600]),
-                        ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.task.title,
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    widget.task.maxSteps == 0
+                        ? Container()
+                        : Text(
+                            '${widget.task.completedSteps} из ${widget.task.maxSteps}',
+                            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                          ),
+                  ],
+                ),
               ),
             ],
           ),

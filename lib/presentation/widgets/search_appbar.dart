@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/resources/custom_color_theme.dart';
 
+// appBar с поисковой строкой для страницы с flickr
 class SearchAppBar extends StatefulWidget {
   @override
   _SearchAppBarState createState() => _SearchAppBarState();
-  final CustomColorTheme customColorTheme;
+  final Color color;
   final Function onSearch;
 
-  SearchAppBar({this.customColorTheme, this.onSearch});
+  SearchAppBar({
+    this.color,
+    this.onSearch,
+  });
 }
 
 class _SearchAppBarState extends State<SearchAppBar> {
@@ -30,7 +33,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
     return _isActiveSearch
         ? AppBar(
             automaticallyImplyLeading: false,
-            backgroundColor: widget.customColorTheme.mainColor,
+            backgroundColor: widget.color,
             title: TextField(
               controller: _searchController,
               style: TextStyle(fontSize: 14),
@@ -76,7 +79,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
             ),
           )
         : AppBar(
-            backgroundColor: widget.customColorTheme.mainColor,
+            backgroundColor: widget.color,
             title: Text(
               'Flickr',
               style: TextStyle(color: Colors.white),

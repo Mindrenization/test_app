@@ -1,53 +1,58 @@
 abstract class TaskDetailsEvent {
-  final String branchId;
-  final String taskId;
-  const TaskDetailsEvent(this.branchId, this.taskId);
+  const TaskDetailsEvent();
 }
 
-class FetchTask extends TaskDetailsEvent {
-  const FetchTask({branchId, taskId}) : super(branchId, taskId);
-}
+class FetchTask extends TaskDetailsEvent {}
 
-class UpdateTask extends TaskDetailsEvent {
-  const UpdateTask({branchId, taskId}) : super(branchId, taskId);
-}
+class UpdateTask extends TaskDetailsEvent {}
 
 class CreateStep extends TaskDetailsEvent {
   final String title;
-  const CreateStep({this.title, taskId, branchId}) : super(branchId, taskId);
+  const CreateStep(this.title);
 }
 
 class DeleteStep extends TaskDetailsEvent {
   final String stepId;
-  const DeleteStep({branchId, taskId, this.stepId}) : super(branchId, taskId);
+  const DeleteStep(this.stepId);
 }
 
 class CompleteStep extends TaskDetailsEvent {
   final String stepId;
-  CompleteStep({branchId, taskId, this.stepId}) : super(branchId, taskId);
+  CompleteStep(this.stepId);
 }
 
 class SetDeadline extends TaskDetailsEvent {
   final DateTime deadline;
-  const SetDeadline({taskId, branchId, this.deadline}) : super(branchId, taskId);
+  const SetDeadline(this.deadline);
 }
+
+class SetNotification extends TaskDetailsEvent {
+  final DateTime notification;
+  const SetNotification(this.notification);
+}
+
+class DeleteDeadline extends TaskDetailsEvent {}
+
+class DeleteNotification extends TaskDetailsEvent {}
 
 class ChangeTaskTitle extends TaskDetailsEvent {
   final String title;
-  const ChangeTaskTitle({branchId, taskId, this.title}) : super(branchId, taskId);
+  const ChangeTaskTitle(this.title);
 }
 
 class SaveDescription extends TaskDetailsEvent {
   final String text;
-  const SaveDescription({branchId, taskId, this.text}) : super(branchId, taskId);
+  const SaveDescription(this.text);
 }
 
 class DeleteImage extends TaskDetailsEvent {
   final String imageId;
-  const DeleteImage({branchId, taskId, this.imageId}) : super(branchId, taskId);
+  const DeleteImage(this.imageId);
 }
 
 class SaveImage extends TaskDetailsEvent {
-  final imageUrl;
-  const SaveImage({this.imageUrl, branchId, taskId}) : super(branchId, taskId);
+  final String imageUrl;
+  const SaveImage({
+    this.imageUrl,
+  });
 }

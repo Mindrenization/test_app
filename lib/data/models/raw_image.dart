@@ -4,14 +4,19 @@ class RawImage {
   final String server;
   final int farm;
 
-  RawImage({this.id, this.farm, this.secret, this.server});
+  RawImage({
+    this.id,
+    this.secret,
+    this.server,
+    this.farm,
+  });
 
   factory RawImage.fromJson(Map<String, dynamic> json) {
     return RawImage(
       id: json['id'],
-      farm: json['farm'],
-      server: json['server'],
       secret: json['secret'],
+      server: json['server'],
+      farm: json['farm'],
     );
   }
 }

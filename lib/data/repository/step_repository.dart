@@ -3,7 +3,7 @@ import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/models/task_step.dart';
 import 'package:test_app/data/repository/repository.dart';
 
-class StepInteractor {
+class StepRepository {
   DbStepWrapper _dbStepWrapper = DbStepWrapper();
 
   Future<Task> createStep(String _branchId, String _taskId, TaskStep _step) async {

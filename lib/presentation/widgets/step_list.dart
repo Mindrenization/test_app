@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:test_app/data/models/task.dart';
 
+// Карточка для страницы детализации задачи со списком шагов и описанием
 class StepList extends StatefulWidget {
   final Task task;
   final Color color;
@@ -10,7 +11,15 @@ class StepList extends StatefulWidget {
   final VoidCallback onRefresh;
   final Function onComplete;
   final Function onSaveDescription;
-  StepList(this.task, this.color, {this.onCreate, this.onDelete, this.onRefresh, this.onComplete, this.onSaveDescription});
+  StepList(
+    this.task,
+    this.color, {
+    this.onCreate,
+    this.onDelete,
+    this.onRefresh,
+    this.onComplete,
+    this.onSaveDescription,
+  });
   @override
   _StepListState createState() => _StepListState();
 }
@@ -98,13 +107,13 @@ class _StepListState extends State<StepList> {
       return Form(
         key: _formKey,
         child: TextFormField(
+          autofocus: true,
           validator: (value) {
             if (value.isEmpty) {
               return 'Зачем?';
             }
             return null;
           },
-          autofocus: true,
           controller: _stepController,
           decoration: InputDecoration(
             isDense: true,
@@ -114,7 +123,6 @@ class _StepListState extends State<StepList> {
             if (_formKey.currentState.validate()) {
               widget.onCreate(_stepController.text);
               _stepController.text = '';
-              FocusScope.of(context).unfocus();
               widget.onRefresh();
             }
           },
@@ -124,21 +132,24 @@ class _StepListState extends State<StepList> {
   }
 
   Widget _descriptionField() {
-    return TextField(
-      controller: _descriptionController,
-      maxLines: null,
-      textInputAction: TextInputAction.done,
-      onEditingComplete: () {
-        widget.onSaveDescription(_descriptionController.text);
-        FocusScope.of(context).unfocus();
-        widget.onRefresh();
-      },
-      decoration: InputDecoration(
-        isDense: true,
-        border: InputBorder.none,
-        labelText: 'Заметки по задаче...',
-        labelStyle: TextStyle(
-          color: Colors.grey[700],
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: TextField(
+        controller: _descriptionController,
+        maxLines: null,
+        textInputAction: TextInputAction.done,
+        onEditingComplete: () {
+          widget.onSaveDescription(_descriptionController.text);
+          widget.onRefresh();
+          FocusScope.of(context).unfocus();
+        },
+        decoration: InputDecoration(
+          isDense: true,
+          border: InputBorder.none,
+          labelText: 'Заметки по задаче...',
+          labelStyle: TextStyle(
+            color: Colors.grey[700],
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/presentation/widgets/deadline_dialog.dart';
 import 'package:intl/intl.dart';
+import 'package:test_app/presentation/widgets/notification_dialog.dart';
 
 // Модальное окно для создания задачи
 class CreateTaskDialog extends StatefulWidget {
@@ -8,12 +9,15 @@ class CreateTaskDialog extends StatefulWidget {
   _CreateTaskDialogState createState() => _CreateTaskDialogState();
   final Function onCreate;
 
-  CreateTaskDialog({this.onCreate});
+  CreateTaskDialog({
+    this.onCreate,
+  });
 }
 
 class _CreateTaskDialogState extends State<CreateTaskDialog> {
   final TextEditingController _titleController = TextEditingController();
   DateTime _deadline;
+  DateTime _notification;
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +33,14 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
         ),
         Container(
           child: TextField(
-            maxLength: 30,
             onEditingComplete: () {
               _complete();
             },
             controller: _titleController,
             decoration: InputDecoration(
-                hintText: 'Введите название задачи', isDense: true),
+              hintText: 'Введите название задачи',
+              isDense: true,
+            ),
           ),
         ),
         Container(
@@ -44,24 +49,32 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
         Column(
           children: [
             _deadlineButton(
-                text: 'Напомнить',
+                text: _notification == null ? 'Напомнить' : '${DateFormat('dd.MM.yyyy (hh:mm)').format(_notification)}',
                 icon: Icons.notifications_on_outlined,
-                onTap: () {}),
+                onTap: () async {
+                  _notification = await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return NotificationDialog();
+                        },
+                      ) ??
+                      _notification;
+                  setState(() {});
+                }),
             Container(
               height: 10,
             ),
             _deadlineButton(
-              text: _deadline == null
-                  ? 'Дата выполнения'
-                  : '${DateFormat('dd.MM.yyyy').format(_deadline)}',
+              text: _deadline == null ? 'Дата выполнения' : '${DateFormat('dd.MM.yyyy').format(_deadline)}',
               icon: Icons.calendar_today_outlined,
               onTap: () async {
                 _deadline = await showDialog(
-                  context: context,
-                  builder: (context) {
-                    return DeadlineDialog();
-                  },
-                );
+                      context: context,
+                      builder: (context) {
+                        return DeadlineDialog();
+                      },
+                    ) ??
+                    _deadline;
                 setState(() {});
               },
             ),
@@ -130,7 +143,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
   }
 
   _complete() {
-    widget.onCreate(_titleController.text, _deadline);
+    widget.onCreate(_titleController.text, _deadline, _notification);
     Navigator.pop(context);
   }
 }

@@ -4,9 +4,7 @@ abstract class BranchEvent {
   const BranchEvent();
 }
 
-class FetchBranchList extends BranchEvent {
-  const FetchBranchList();
-}
+class FetchBranchList extends BranchEvent {}
 
 class CreateBranch extends BranchEvent {
   final String title;
@@ -18,6 +16,4 @@ class DeleteBranch extends BranchEvent {
   const DeleteBranch(this.branch);
 }
 
-class UpdateBranchList extends BranchEvent {
-  const UpdateBranchList();
-}
+class UpdateBranchList extends BranchEvent {}

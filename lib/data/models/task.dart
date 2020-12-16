@@ -9,13 +9,14 @@ class Task {
   bool isComplete;
   DateTime createDate = DateTime.now();
   DateTime deadline;
+  DateTime notification;
   List<TaskStep> steps = [];
   List<FlickrImage> images = [];
 
   int get completedSteps => steps.where((step) => step.isComplete).length;
   int get maxSteps => steps.length;
 
-  Task(this.id, this.parentId, this.title, {this.deadline, this.isComplete = false, this.description, this.createDate});
+  Task(this.id, this.parentId, this.title, {this.description, this.deadline, this.isComplete = false, this.notification, this.createDate});
 
   Map<String, dynamic> toMap() {
     return {
@@ -25,7 +26,8 @@ class Task {
       'complete': isComplete.toString(),
       'description': description,
       'createDate': createDate.millisecondsSinceEpoch,
-      if (deadline != null) 'deadline': deadline.millisecondsSinceEpoch,
+      'deadline': deadline == null ? deadline : deadline.millisecondsSinceEpoch,
+      'notification': notification == null ? notification : notification.millisecondsSinceEpoch,
     };
   }
 }
