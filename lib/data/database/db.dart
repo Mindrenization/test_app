@@ -7,7 +7,8 @@ const databaseName = 'todo.db';
 const sqlCreateStatementBranch = '''
 CREATE TABLE "branch"(
   "ID" TEXT NOT NULL PRIMARY KEY,
-  "title" TEXT NOT NULL
+  "title" TEXT NOT NULL,
+  "indexColorTheme" INTEGER NOT NULL
 );''';
 const sqlCreateStatementTask = '''
 CREATE TABLE "task"(
@@ -46,8 +47,7 @@ class Db {
   Future<Database> initDB() async {
     Directory docsDirectory = await getApplicationDocumentsDirectory();
     String path = join(docsDirectory.path, databaseName);
-    return await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
+    return await openDatabase(path, version: 1, onCreate: (Database db, int version) async {
       await db.execute(sqlCreateStatementBranch);
       await db.execute(sqlCreateStatementTask);
       await db.execute(sqlCreateStatementStep);

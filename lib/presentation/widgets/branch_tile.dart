@@ -43,7 +43,7 @@ class BranchTile extends StatelessWidget {
               children: [
                 CircularProgressBar(
                   branch.tasks.length == 0 ? 0 : branch.completedTasks / branch.tasks.length,
-                  branch.mainColor,
+                  branch.branchTheme.mainColor,
                 ),
                 GestureDetector(
                   onTap: onDelete,
@@ -74,8 +74,8 @@ class BranchTile extends StatelessWidget {
               children: [
                 _sticker(
                   text: '${branch.completedTasks} сделано',
-                  color: branch.backgroundColor,
-                  textColor: branch.mainColor,
+                  color: branch.branchTheme.backgroundColor,
+                  textColor: branch.branchTheme.mainColor,
                   context: context,
                 ),
                 _sticker(

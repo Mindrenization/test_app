@@ -8,7 +8,8 @@ class FetchBranchList extends BranchEvent {}
 
 class CreateBranch extends BranchEvent {
   final String title;
-  const CreateBranch(this.title);
+  final int index;
+  const CreateBranch(this.title, this.index);
 }
 
 class DeleteBranch extends BranchEvent {

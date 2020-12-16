@@ -47,7 +47,7 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
   }
 
   Stream<BranchState> _mapCreateBranchEventToState(CreateBranch event) async* {
-    List<Branch> _branchList = await _createBranch(event.title);
+    List<Branch> _branchList = await _createBranch(event.title, event.index);
     double _totalTasksCount = _totalTasks(_branchList);
     double _totalCompletedTasksCount = _totalCompletedTasks(_branchList);
     yield BranchLoaded(
@@ -74,8 +74,8 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
     return _branchList;
   }
 
-  Future<List<Branch>> _createBranch(String title) async {
-    Branch _branch = Branch(Uuid().v1(), title);
+  Future<List<Branch>> _createBranch(String title, int index) async {
+    Branch _branch = Branch(Uuid().v1(), title, indexColorTheme: index);
     await _branchRepository.createBranch(_branch);
     List<Branch> _branchList = await Repository.getInstance().getBranchList();
     return _branchList;

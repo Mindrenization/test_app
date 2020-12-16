@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:test_app/data/models/branch_theme.dart';
 import 'package:test_app/presentation/bloc/task_details_bloc.dart';
 import 'package:test_app/presentation/bloc/task_details_event.dart';
 import 'package:test_app/presentation/bloc/task_details_state.dart';
@@ -17,16 +18,14 @@ import 'package:test_app/presentation/widgets/step_list.dart';
 class TaskDetailsPage extends StatefulWidget {
   final String branchId;
   final String taskId;
-  final Color mainColor;
-  final Color backgroundColor;
+  final BranchTheme branchTheme;
   final VoidCallback onRefresh;
   final VoidCallback onDelete;
   final VoidCallback onComplete;
   TaskDetailsPage({
     this.branchId,
     this.taskId,
-    this.mainColor,
-    this.backgroundColor,
+    this.branchTheme,
     this.onRefresh,
     this.onDelete,
     this.onComplete,
@@ -59,7 +58,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
         if (state is TaskDetailsLoaded) {
           return SafeArea(
             child: Scaffold(
-              backgroundColor: widget.backgroundColor,
+              backgroundColor: widget.branchTheme.backgroundColor,
               body: NestedScrollView(
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
@@ -67,7 +66,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                       floating: true,
                       snap: true,
                       centerTitle: true,
-                      backgroundColor: widget.mainColor,
+                      backgroundColor: widget.branchTheme.mainColor,
                       expandedHeight: 100,
                       flexibleSpace: FlexibleSpaceBar(
                         titlePadding: EdgeInsets.symmetric(horizontal: 100, vertical: 10),
@@ -143,7 +142,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                         padding: EdgeInsets.symmetric(vertical: 30),
                         child: StepList(
                           state.task,
-                          widget.mainColor,
+                          widget.branchTheme.mainColor,
                           onCreate: (title) {
                             stepBloc.add(
                               CreateStep(
@@ -398,8 +397,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                   builder: (context) => FlickrPage(
                     widget.branchId,
                     widget.taskId,
-                    widget.mainColor,
-                    widget.backgroundColor,
+                    widget.branchTheme,
                     onSave: (imageUrl) {
                       stepBloc.add(
                         SaveImage(

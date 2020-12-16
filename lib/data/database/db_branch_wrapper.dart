@@ -14,6 +14,10 @@ class DbBranchWrapper {
     return branchList;
   }
 
+  Future<void> updateBranch(Branch branch) async {
+    await _dbBranch.updateBranch(branch);
+  }
+
   Future<void> createBranch(Branch branch) async {
     await _dbBranch.createBranch(branch);
   }

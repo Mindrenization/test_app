@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
+import 'package:test_app/data/models/branch_theme.dart';
 
 abstract class TaskEvent {
   const TaskEvent();
 }
 
-class FetchTaskList extends TaskEvent {}
+class FetchTaskList extends TaskEvent {
+  BranchTheme branchTheme;
+  FetchTaskList(this.branchTheme);
+}
 
 class CreateTask extends TaskEvent {
   final String title;
@@ -14,9 +17,8 @@ class CreateTask extends TaskEvent {
 }
 
 class ChangeColorTheme extends TaskEvent {
-  final Color mainColor;
-  final Color backgroundColor;
-  const ChangeColorTheme(this.mainColor, this.backgroundColor);
+  final int index;
+  const ChangeColorTheme(this.index);
 }
 
 class DeleteTask extends TaskEvent {

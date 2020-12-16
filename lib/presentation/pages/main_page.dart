@@ -83,8 +83,7 @@ class _MainPageState extends State<MainPage> {
                                 MaterialPageRoute(
                                   builder: (context) => TasksPage(
                                     state.branchList[index].id,
-                                    state.branchList[index].mainColor,
-                                    state.branchList[index].backgroundColor,
+                                    state.branchList[index].branchTheme,
                                     onRefresh: () {
                                       _branchBloc.add(FetchBranchList());
                                     },
@@ -132,8 +131,8 @@ class _MainPageState extends State<MainPage> {
           context: context,
           builder: (context) {
             return CreateBranchDialog(
-              onCreate: (title) {
-                _branchBloc.add(CreateBranch(title));
+              onCreate: (title, index) {
+                _branchBloc.add(CreateBranch(title, index));
               },
             );
           },

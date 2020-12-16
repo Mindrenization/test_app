@@ -18,6 +18,11 @@ class DbBranch {
     await db.delete(tableBranch, where: 'ID="$branchId"');
   }
 
+  Future<void> updateBranch(Branch branch) async {
+    final db = await database;
+    await db.update(tableBranch, branch.toMap(), where: 'ID="${branch.id}"');
+  }
+
   Future<void> deleteAllTasks(String branchId) async {
     final db = await database;
     await db.delete(tableTask, where: 'parentID="$branchId"');
@@ -30,6 +35,7 @@ class DbBranch {
       return Branch(
         maps[i]['ID'],
         maps[i]['title'],
+        indexColorTheme: maps[i]['indexColorTheme'],
       );
     });
   }

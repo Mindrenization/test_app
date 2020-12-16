@@ -5,8 +5,8 @@ import 'package:test_app/presentation/constants/color_themes.dart';
 class ColorThemeDialog extends StatefulWidget {
   final Color currentMainColor;
   final Function onChange;
-  ColorThemeDialog(
-    this.currentMainColor, {
+  ColorThemeDialog({
+    this.currentMainColor,
     this.onChange,
   });
 
@@ -15,8 +15,6 @@ class ColorThemeDialog extends StatefulWidget {
 }
 
 class _ColorThemeDialogState extends State<ColorThemeDialog> {
-  Color _mainColor;
-  Color _backgroundColor;
   Color _currentMainColor;
 
   @override
@@ -70,20 +68,18 @@ class _ColorThemeDialogState extends State<ColorThemeDialog> {
         value: color,
         groupValue: _currentMainColor,
         onChanged: (value) {
-          _onTap(value, index);
+          _onTap(index);
         },
       ),
     );
   }
 
-  void _onTap(Color value, int index) {
+  void _onTap(int index) {
     setState(
       () {
         _currentMainColor = ColorThemes.colorThemes[index].mainColor;
-        _mainColor = ColorThemes.colorThemes[index].mainColor;
-        _backgroundColor = ColorThemes.colorThemes[index].backgroundColor;
       },
     );
-    widget.onChange(_mainColor, _backgroundColor);
+    widget.onChange(index);
   }
 }

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:test_app/data/models/branch_theme.dart';
 import 'package:test_app/data/models/task.dart';
 
 abstract class TaskState {
@@ -9,14 +9,12 @@ class TaskLoading extends TaskState {}
 
 class TaskLoaded extends TaskState {
   final List<Task> taskList;
-  final Color mainColor;
-  final Color backgroundColor;
+  final BranchTheme branchTheme;
   final bool isFiltered;
 
   const TaskLoaded(
     this.taskList,
-    this.mainColor,
-    this.backgroundColor, {
+    this.branchTheme, {
     this.isFiltered = false,
   });
 }

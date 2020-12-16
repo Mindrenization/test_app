@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_app/presentation/widgets/color_theme_dialog.dart';
 
 // Модальное окно для создания ветки
 class CreateBranchDialog extends StatefulWidget {
@@ -11,6 +12,7 @@ class CreateBranchDialog extends StatefulWidget {
 }
 
 class _CreateBranchDialogState extends State<CreateBranchDialog> {
+  int _index = 3;
   final TextEditingController _titleController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -32,8 +34,15 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
             decoration: InputDecoration(hintText: 'Введите название списка', isDense: true),
           ),
         ),
-        Container(
-          height: 10,
+        Padding(
+          padding: EdgeInsets.only(bottom: 10),
+          child: ColorThemeDialog(
+            onChange: (index) {
+              setState(() {
+                _index = index;
+              });
+            },
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -62,7 +71,7 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
   }
 
   _complete(String text) {
-    widget.onCreate(text);
+    widget.onCreate(text, _index);
     Navigator.pop(context);
   }
 }

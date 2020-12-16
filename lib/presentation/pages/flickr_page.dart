@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_app/data/models/branch_theme.dart';
 import 'package:test_app/presentation/bloc/flickr_bloc.dart';
 import 'package:test_app/presentation/bloc/flickr_event.dart';
 import 'package:test_app/presentation/bloc/flickr_state.dart';
@@ -12,10 +13,9 @@ import 'package:test_app/presentation/widgets/search_appbar.dart';
 class FlickrPage extends StatefulWidget {
   final String branchId;
   final String taskId;
-  final Color mainColor;
-  final Color backgroundColor;
+  final BranchTheme branchTheme;
   final Function onSave;
-  FlickrPage(this.branchId, this.taskId, this.mainColor, this.backgroundColor, {this.onSave});
+  FlickrPage(this.branchId, this.taskId, this.branchTheme, {this.onSave});
   @override
   _FlickrPageState createState() => _FlickrPageState();
 }
@@ -28,7 +28,6 @@ class _FlickrPageState extends State<FlickrPage> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    // _scrollController.addListener(_scrollListener);
   }
 
   @override
@@ -40,11 +39,11 @@ class _FlickrPageState extends State<FlickrPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.backgroundColor,
+      backgroundColor: widget.branchTheme.backgroundColor,
       appBar: PreferredSize(
         preferredSize: Size(0, 55),
         child: SearchAppBar(
-          color: widget.mainColor,
+          color: widget.branchTheme.mainColor,
           onSearch: (_value) {
             _flickrBloc.add(
               SearchFlickr(_value),
@@ -131,7 +130,7 @@ class _FlickrPageState extends State<FlickrPage> {
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: FlickrBottom(
                           state.response.error,
-                          widget.mainColor,
+                          widget.branchTheme.mainColor,
                           onTap: () => _flickrBloc.add(
                             FetchFlickr(),
                           ),

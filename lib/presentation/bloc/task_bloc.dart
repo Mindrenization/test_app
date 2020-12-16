@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:test_app/data/database/db_branch_wrapper.dart';
 import 'package:test_app/data/database/db_flickr.dart';
+import 'package:test_app/data/models/branch_theme.dart';
 import 'package:test_app/data/notification_service.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter/material.dart';
 import 'package:test_app/data/models/branch.dart';
 import 'package:test_app/data/repository/task_repository.dart';
 import 'package:test_app/presentation/bloc/task_event.dart';
@@ -13,10 +14,10 @@ import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/repository/repository.dart';
 
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
-  TaskBloc(this.branchId, this.mainColor, this.backgroundColor) : super(TaskLoading());
+  TaskBloc(this.branchId) : super(TaskLoading());
   final String branchId;
-  Color mainColor;
-  Color backgroundColor;
+  BranchTheme branchTheme;
+  DbBranchWrapper _dbBranchWrapper = DbBranchWrapper();
   DbTaskWrapper _dbTaskWrapper = DbTaskWrapper();
   TaskRepository _taskRepository = TaskRepository(
     Repository.getInstance(),
@@ -46,10 +47,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   Stream<TaskState> _mapFetchTaskListEventToState(FetchTaskList event) async* {
     List<Task> _taskList = Repository.getInstance().getTaskList(branchId);
+    branchTheme = event.branchTheme;
     yield TaskLoaded(
       _taskList,
-      mainColor,
-      backgroundColor,
+      branchTheme,
     );
   }
 
@@ -58,22 +59,19 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     yield UpdateMainPage();
     yield TaskLoaded(
       _taskList,
-      mainColor,
-      backgroundColor,
+      branchTheme,
     );
   }
 
   Stream<TaskState> _mapChangeColorThemeEventToState(ChangeColorTheme event) async* {
     Branch _branch = Repository.getInstance().getBranch(branchId);
-    _branch.mainColor = event.mainColor;
-    _branch.backgroundColor = event.backgroundColor;
-    mainColor = event.mainColor;
-    backgroundColor = event.backgroundColor;
+    _branch.indexColorTheme = event.index;
+    branchTheme = _branch.branchTheme;
+    await _dbBranchWrapper.updateBranch(_branch);
     List<Task> _taskList = Repository.getInstance().getTaskList(branchId);
     yield TaskLoaded(
       _taskList,
-      mainColor,
-      backgroundColor,
+      branchTheme,
     );
   }
 
@@ -82,8 +80,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     yield UpdateMainPage();
     yield TaskLoaded(
       _taskList,
-      mainColor,
-      backgroundColor,
+      branchTheme,
       isFiltered: event.isFiltered,
     );
   }
@@ -93,8 +90,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     yield UpdateMainPage();
     yield TaskLoaded(
       _taskList,
-      mainColor,
-      backgroundColor,
+      branchTheme,
       isFiltered: event.isFiltered,
     );
   }
@@ -109,8 +105,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     }
     yield TaskLoaded(
       taskList,
-      mainColor,
-      backgroundColor,
+      branchTheme,
       isFiltered: _isFiltered,
     );
   }
@@ -121,8 +116,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     yield UpdateMainPage();
     yield TaskLoaded(
       _taskList,
-      mainColor,
-      backgroundColor,
+      branchTheme,
       isFiltered: false,
     );
   }
