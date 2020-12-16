@@ -16,6 +16,7 @@ class BranchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      key: Key('branchTile'),
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.all(10),
@@ -62,7 +63,7 @@ class BranchTile extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 4),
               child: Text(
-                '${branch.tasks.length} задач(и)',
+                '${branch.totalTasks} задач(и)',
                 maxLines: 1,
                 style: TextStyle(color: Colors.grey[700]),
               ),

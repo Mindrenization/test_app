@@ -10,7 +10,6 @@ class BranchLoaded extends BranchState {
   final List<Branch> branchList;
   final double totalTasks;
   final double totalCompletedTasks;
-
   const BranchLoaded(
     this.branchList,
     this.totalTasks,

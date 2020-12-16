@@ -1,39 +1,48 @@
+import 'package:test_app/data/database/db_flickr.dart';
 import 'package:test_app/data/database/db_task_wrapper.dart';
+import 'package:test_app/data/models/flickr_image.dart';
 import 'package:test_app/data/models/task.dart';
 import 'package:test_app/data/notification_service.dart';
 import 'package:test_app/data/repository/repository.dart';
 
 class TaskRepository {
-  DbTaskWrapper _dbTaskWrapper = DbTaskWrapper();
+  final Repository repository;
+  final DbTaskWrapper dbTaskWrapper;
+  final DbFlickr dbFlickr;
+  final NotificationService notificationService;
+  TaskRepository(this.repository, this.dbTaskWrapper, this.dbFlickr, this.notificationService);
 
-  Future<List<Task>> createTask(Task _task, String _branchId) async {
-    List<Task> _taskList = Repository.instance.getTaskList(_branchId);
-    await _dbTaskWrapper.createTask(_task);
-    _taskList.add(_task);
-    return _taskList;
+  Future<void> createTask(Task task, String branchId) async {
+    await dbTaskWrapper.createTask(task);
+    repository.createTask(task, branchId);
   }
 
-  Future<List<Task>> deleteTask(String _branchId, String _taskId) async {
-    List<Task> _taskList = Repository.instance.getTaskList(_branchId);
-    Task _task = Repository.instance.getTask(_branchId, _taskId);
+  Future<void> deleteTask(String branchId, String taskId) async {
+    Task _task = repository.getTask(branchId, taskId);
     if (_task.notification != null) {
-      await NotificationService().cancelNotification(_task);
+      await notificationService.cancelNotification(_task);
     }
-    await _dbTaskWrapper.deleteTask(_taskId);
-    await _dbTaskWrapper.deleteAllSteps(_taskId);
-    await _dbTaskWrapper.deleteAllImages(_taskId);
-    _taskList.removeWhere((element) => _taskId == element.id);
-    return _taskList;
+    await dbTaskWrapper.deleteTask(taskId);
+    await dbTaskWrapper.deleteAllSteps(taskId);
+    await dbTaskWrapper.deleteAllImages(taskId);
+    repository.deleteTask(branchId, taskId);
   }
 
-  Future<List<Task>> deleteCompletedTasks(String _branchId) async {
-    List<Task> _taskList = Repository.instance.getTaskList(_branchId);
+  Future<void> deleteCompletedTasks(String branchId) async {
+    List<Task> _taskList = repository.getTaskList(branchId);
     List<Task> _completedTasks = _taskList.where((task) => task.isComplete).toList();
     for (int i = 0; i < _completedTasks.length; i++) {
-      await _dbTaskWrapper.deleteTask(_completedTasks[i].id);
+      await deleteTask(branchId, _completedTasks[i].id);
     }
-    _taskList.removeWhere((task) => task.isComplete);
-    await _dbTaskWrapper.deleteCompletedTasks(_branchId);
-    return _taskList;
+  }
+
+  Future<void> saveImage(String branchId, String taskId, FlickrImage image) async {
+    await dbFlickr.saveImage(image);
+    repository.saveImage(branchId, taskId, image);
+  }
+
+  Future<void> deleteImage(String branchId, String taskId, String imageId) async {
+    await dbTaskWrapper.deleteImage(imageId);
+    repository.deleteImage(branchId, taskId, imageId);
   }
 }

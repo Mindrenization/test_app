@@ -26,6 +26,7 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
         ),
         Container(
           child: TextField(
+            key: Key('branchTextField'),
             onEditingComplete: () => _complete(_titleController.text),
             controller: _titleController,
             decoration: InputDecoration(hintText: 'Введите название списка', isDense: true),
@@ -47,6 +48,7 @@ class _CreateBranchDialogState extends State<CreateBranchDialog> {
               },
             ),
             FlatButton(
+              key: Key('confirmCreateBranch'),
               child: Text(
                 'Создать',
                 style: TextStyle(fontSize: 18),

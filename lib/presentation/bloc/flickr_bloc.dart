@@ -39,11 +39,12 @@ class FlickrBloc extends Bloc<FlickrEvent, FlickrState> {
     _page = 0;
     _search = event.search;
     FlickrResponse _response = await FlickrApiWrapper().fetchImages(search: event.search, page: ++_page);
-    _imageList = _response.imageList;
     if (_response.imageList == null) {
       _response.imageList = [];
+    } else {
+      _imageList = _response.imageList;
     }
-    if (_imageList.isEmpty) {
+    if (_imageList.isEmpty && _response.error == null) {
       yield EmptySearch();
     } else {
       yield FlickrLoaded(_response);

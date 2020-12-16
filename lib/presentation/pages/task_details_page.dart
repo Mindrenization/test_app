@@ -265,7 +265,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
         widget.onComplete();
         widget.onRefresh();
         stepBloc.add(
-          UpdateTask(),
+          FetchTask(),
         );
       },
       child: Container(
@@ -403,7 +403,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                     onSave: (imageUrl) {
                       stepBloc.add(
                         SaveImage(
-                          imageUrl: imageUrl,
+                          imageUrl,
                         ),
                       );
                     },

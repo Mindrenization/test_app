@@ -5,24 +5,23 @@ import 'package:test_app/data/repository/repository.dart';
 import 'package:test_app/data/repository/task_repository.dart';
 
 class BranchRepository {
-  DbBranchWrapper _dbBranchWrapper = DbBranchWrapper();
-  TaskRepository _taskRepository = TaskRepository();
+  final Repository repository;
+  final DbBranchWrapper dbBranchWrapper;
+  final TaskRepository taskRepository;
+  BranchRepository(this.repository, this.dbBranchWrapper, this.taskRepository);
 
-  Future<List<Branch>> createBranch(Branch _branch) async {
-    await _dbBranchWrapper.createBranch(_branch);
-    List<Branch> _branchList = await Repository.instance.getBranchList();
-    _branchList.add(_branch);
-    return _branchList;
+  Future<void> createBranch(Branch branch) async {
+    await dbBranchWrapper.createBranch(branch);
+    repository.createBranch(branch);
   }
 
-  Future<List<Branch>> deleteBranch(String _branchId) async {
-    await _dbBranchWrapper.deleteBranch(_branchId);
-    List<Branch> _branchList = await Repository.instance.getBranchList();
-    List<Task> _taskList = _branchList.firstWhere((element) => _branchId == element.id).tasks;
+  Future<void> deleteBranch(String branchId) async {
+    await dbBranchWrapper.deleteBranch(branchId);
+    List<Branch> _branchList = await repository.getBranchList();
+    List<Task> _taskList = _branchList.firstWhere((element) => branchId == element.id, orElse: () => null).tasks;
     for (int i = 0; i < _taskList.length; i++) {
-      _taskRepository.deleteTask(_branchId, _taskList[i].id);
+      await taskRepository.deleteTask(branchId, _taskList[i].id);
     }
-    _branchList.removeWhere((element) => _branchId == element.id);
-    return _branchList;
+    repository.deleteBranch(branchId);
   }
 }

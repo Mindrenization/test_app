@@ -4,8 +4,6 @@ abstract class TaskDetailsEvent {
 
 class FetchTask extends TaskDetailsEvent {}
 
-class UpdateTask extends TaskDetailsEvent {}
-
 class CreateStep extends TaskDetailsEvent {
   final String title;
   const CreateStep(this.title);
@@ -52,7 +50,7 @@ class DeleteImage extends TaskDetailsEvent {
 
 class SaveImage extends TaskDetailsEvent {
   final String imageUrl;
-  const SaveImage({
+  const SaveImage(
     this.imageUrl,
-  });
+  );
 }

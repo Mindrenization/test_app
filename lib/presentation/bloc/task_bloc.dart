@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:test_app/data/database/db_flickr.dart';
+import 'package:test_app/data/notification_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:test_app/data/models/branch.dart';
@@ -16,7 +18,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Color mainColor;
   Color backgroundColor;
   DbTaskWrapper _dbTaskWrapper = DbTaskWrapper();
-  TaskRepository _taskRepository = TaskRepository();
+  TaskRepository _taskRepository = TaskRepository(
+    Repository.getInstance(),
+    DbTaskWrapper(),
+    DbFlickr(),
+    NotificationService(),
+  );
 
   @override
   Stream<TaskState> mapEventToState(TaskEvent event) async* {
@@ -26,8 +33,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       yield* _mapCreateTaskEventToState(event);
     } else if (event is ChangeColorTheme) {
       yield* _mapChangeColorThemeEventToState(event);
-    } else if (event is UpdateTask) {
-      yield* _mapUpdateTaskEventToState(event);
     } else if (event is DeleteTask) {
       yield* _mapDeleteTaskEventToState(event);
     } else if (event is CompleteTask) {
@@ -40,7 +45,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   Stream<TaskState> _mapFetchTaskListEventToState(FetchTaskList event) async* {
-    List<Task> _taskList = Repository.instance.getTaskList(branchId);
+    List<Task> _taskList = Repository.getInstance().getTaskList(branchId);
     yield TaskLoaded(
       _taskList,
       mainColor,
@@ -59,21 +64,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   Stream<TaskState> _mapChangeColorThemeEventToState(ChangeColorTheme event) async* {
-    Branch _branch = Repository.instance.getBranch(branchId);
+    Branch _branch = Repository.getInstance().getBranch(branchId);
     _branch.mainColor = event.mainColor;
     _branch.backgroundColor = event.backgroundColor;
     mainColor = event.mainColor;
     backgroundColor = event.backgroundColor;
-    List<Task> _taskList = Repository.instance.getTaskList(branchId);
-    yield TaskLoaded(
-      _taskList,
-      mainColor,
-      backgroundColor,
-    );
-  }
-
-  Stream<TaskState> _mapUpdateTaskEventToState(UpdateTask event) async* {
-    List<Task> _taskList = _updateTask(branchId, event.taskId);
+    List<Task> _taskList = Repository.getInstance().getTaskList(branchId);
     yield TaskLoaded(
       _taskList,
       mainColor,
@@ -107,9 +103,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     List<Task> taskList;
     bool _isFiltered = !event.isFiltered;
     if (!event.isFiltered) {
-      taskList = Repository.instance.getTaskList(branchId).where((element) => !element.isComplete).toList();
+      taskList = Repository.getInstance().getTaskList(branchId).where((element) => !element.isComplete).toList();
     } else {
-      taskList = Repository.instance.getTaskList(branchId);
+      taskList = Repository.getInstance().getTaskList(branchId);
     }
     yield TaskLoaded(
       taskList,
@@ -120,7 +116,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   Stream<TaskState> _mapDeleteCompletedTasksEventToState(DeleteCompletedTasks event) async* {
-    List<Task> _taskList = await _taskRepository.deleteCompletedTasks(branchId);
+    List<Task> _taskList = Repository.getInstance().getTaskList(branchId);
+    await _taskRepository.deleteCompletedTasks(branchId);
     yield UpdateMainPage();
     yield TaskLoaded(
       _taskList,
@@ -140,35 +137,35 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       Uuid().v1(),
       branchId,
       title,
-      deadline: deadline,
-      notification: notification,
-      createDate: DateTime.now(),
+      DateTime.now(),
+      deadline,
+      notification,
     );
-    List<Task> _taskList = await _taskRepository.createTask(_task, branchId);
-    return _taskList;
-  }
-
-  List<Task> _updateTask(String branchId, String taskId) {
-    List<Task> _taskList = Repository.instance.getTaskList(branchId);
+    await _taskRepository.createTask(_task, branchId);
+    List<Task> _taskList = Repository.getInstance().getTaskList(branchId);
     return _taskList;
   }
 
   Future<List<Task>> _deleteTask(String branchId, String taskId, bool isFiltered) async {
-    List<Task> _taskList = await _taskRepository.deleteTask(branchId, taskId);
+    await _taskRepository.deleteTask(branchId, taskId);
+    List<Task> _taskList;
     if (isFiltered) {
-      _taskList = Repository.instance.getTaskList(branchId).where((element) => !element.isComplete).toList();
+      _taskList = Repository.getInstance().getTaskList(branchId).where((element) => !element.isComplete).toList();
+    } else {
+      _taskList = Repository.getInstance().getTaskList(branchId);
     }
     return _taskList;
   }
 
   Future<List<Task>> _completeTask(String branchId, String taskId, bool isFiltered) async {
-    List<Task> _taskList = Repository.instance.getTaskList(branchId);
-    Task _task = Repository.instance.getTask(branchId, taskId);
+    List<Task> _taskList = Repository.getInstance().getTaskList(branchId);
+    Task _task = Repository.getInstance().getTask(branchId, taskId);
     _isComplete(_task);
     await _dbTaskWrapper.updateTask(_task);
     if (isFiltered) {
-      _taskList = Repository.instance.getTaskList(branchId).where((element) => !element.isComplete).toList();
+      _taskList = Repository.getInstance().getTaskList(branchId).where((element) => !element.isComplete).toList();
     }
+
     return _taskList;
   }
 
