@@ -7,8 +7,6 @@ import 'package:test_app/data/repository/branch_repository.dart';
 import 'package:test_app/data/repository/repository.dart';
 import 'package:test_app/data/repository/task_repository.dart';
 
-// class BranchRepositoryMock extends Mock implements BranchRepository {}
-
 class DbBranchWrapperMock extends Mock implements DbBranchWrapper {}
 
 class RepositoryMock extends Mock implements Repository {}
@@ -18,9 +16,11 @@ class TaskRepositoryMock extends Mock implements TaskRepository {}
 void main() {
   group('BranchRepository', () {
     List<Branch> branchList = [
-      Branch('1', '', tasks: [Task('1', '', '', DateTime(1), DateTime(1), DateTime(1))]),
-      Branch('2', '', tasks: [Task('2', '', '', DateTime(1), DateTime(1), DateTime(1))]),
+      Branch('1', ''),
+      Branch('2', ''),
     ];
+    branchList[0].tasks = [Task('1', '', '', DateTime(1), DateTime(1), DateTime(1))];
+    branchList[1].tasks = [Task('2', '', '', DateTime(1), DateTime(1), DateTime(1))];
     BranchRepository branchRepository;
     DbBranchWrapper dbBranchWrapper;
     Repository repository;
